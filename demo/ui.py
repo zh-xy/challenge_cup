@@ -39,19 +39,54 @@ def render_global_styles() -> None:
     st.markdown(
         """
         <style>
+        /* 侧栏纯红 + 主区纯浅棕；白/近白底用黑字，浅棕底用深棕字 */
+        :root {
+            --main-bg: #F1E9C3;
+            --sidebar-red: #BF2F2F;
+            --text-main: #2d1810;
+            --text-muted: #5c4033;
+            --text-on-white: #0a0a0a;
+            --text-on-white-muted: rgba(0, 0, 0, 0.72);
+            --scrollbar-track: #3A3F3E;
+            --scrollbar-thumb: #3A3F3E;
+            --scrollbar-thumb-hover: #3A3F3E;
+        }
         .stApp {
-            background:
-                radial-gradient(circle at top left, rgba(255, 214, 102, 0.18), transparent 28%),
-                linear-gradient(180deg, #f7f2e8 0%, #f3eee3 52%, #ece6d9 100%);
-            color: #1f1a17;
+            background-color: var(--main-bg);
+            background-image: none;
+            color: var(--text-main);
+            /* Firefox：滑块色 轨道色 */
+            scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+            scrollbar-width: thin;
+        }
+        [data-testid="stHeader"] {
+            background-color: var(--main-bg) !important;
+            background-image: none !important;
+        }
+        [data-testid="stMain"] {
+            background-color: var(--main-bg) !important;
+            background-image: none !important;
+        }
+        section.main > div {
+            background-color: var(--main-bg) !important;
+        }
+        .main .block-container,
+        .main p,
+        .main label,
+        .main .stMarkdown,
+        .main .stMarkdown p,
+        .main span:not(.hero-kicker):not(.highlight-chip),
+        .stCaption {
+            color: var(--text-main) !important;
         }
         .block-container {
             max-width: 1360px;
             padding-top: 2rem;
             padding-bottom: 2.5rem;
         }
-        h1, h2, h3 {
-            color: #17120f;
+        .main h1, .main h2, .main h3,
+        section.main h1, section.main h2, section.main h3 {
+            color: var(--text-main) !important;
             letter-spacing: 0.02em;
         }
         h1 {
@@ -72,32 +107,106 @@ def render_global_styles() -> None:
         [data-testid="stMetricValue"] {
             font-size: 2rem !important;
             font-weight: 900 !important;
-            color: #9f2d16;
+            color: var(--sidebar-red) !important;
         }
         [data-testid="stMetricLabel"] {
             font-size: 1rem !important;
             font-weight: 700 !important;
+            color: var(--text-muted) !important;
         }
         [data-testid="stSidebar"] {
-            background: linear-gradient(180deg, #17120f 0%, #2a2019 100%);
+            background-color: var(--sidebar-red) !important;
+            background-image: none !important;
+            border-right: 2px solid rgba(0, 0, 0, 0.12);
         }
-        [data-testid="stSidebar"] * {
-            color: #f8f1e6 !important;
+        /* 侧栏标题、说明、单选、指标标签等保持白字（勿对全局 * 设白，否则会与浅底下拉/按钮冲突） */
+        [data-testid="stSidebar"] h1,
+        [data-testid="stSidebar"] h2,
+        [data-testid="stSidebar"] h3,
+        [data-testid="stSidebar"] [data-testid="stHeader"] {
+            color: #ffffff !important;
+        }
+        [data-testid="stSidebar"] [data-testid="stMarkdownContainer"] p,
+        [data-testid="stSidebar"] .stCaption,
+        [data-testid="stSidebar"] [data-baseweb="radio"] label,
+        [data-testid="stSidebar"] [data-testid="stMetricLabel"],
+        [data-testid="stSidebar"] [data-testid="stMetricValue"] {
+            color: #ffffff !important;
+        }
+        /* 演示案例：下拉框、侧栏次要按钮等为浅底 → 黑字 */
+        [data-testid="stSidebar"] .stSelectbox label {
+            color: #ffffff !important;
+        }
+        [data-testid="stSidebar"] .stSelectbox [data-baseweb="select"] > div {
+            background-color: #fff8f0 !important;
+            color: #0a0a0a !important;
+            border: 1px solid rgba(0, 0, 0, 0.14) !important;
+        }
+        [data-testid="stSidebar"] .stSelectbox [data-baseweb="select"] span,
+        [data-testid="stSidebar"] .stSelectbox [data-baseweb="select"] p {
+            color: #0a0a0a !important;
+        }
+        /* 载入案例等次要按钮：浅底黑字（含 Base Web 内层 p/span，避免继承侧栏白字） */
+        [data-testid="stSidebar"] .stButton > button:not([kind="primary"]),
+        [data-testid="stSidebar"] .stButton > button[kind="secondary"],
+        [data-testid="stSidebar"] button[data-testid="baseButton-secondary"],
+        [data-testid="stSidebar"] button[data-testid="stBaseButton-secondary"] {
+            background-color: #fff8f0 !important;
+            color: #0a0a0a !important;
+            border: 1px solid rgba(0, 0, 0, 0.14) !important;
+        }
+        [data-testid="stSidebar"] .stButton > button:not([kind="primary"]) *,
+        [data-testid="stSidebar"] .stButton > button[kind="secondary"] *,
+        [data-testid="stSidebar"] button[data-testid="baseButton-secondary"] *,
+        [data-testid="stSidebar"] button[data-testid="stBaseButton-secondary"] * {
+            color: #0a0a0a !important;
+        }
+        [data-testid="stSidebar"] .stSuccess,
+        [data-testid="stSidebar"] .stSuccess * {
+            color: #0d3d1a !important;
+        }
+        /* 页面右侧滚动条：固定灰色（WebKit） */
+        ::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--scrollbar-track);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--scrollbar-thumb);
+            border-radius: 8px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--scrollbar-thumb-hover);
+        }
+        /* 主区证据分数滑动条：轨道与已选段加深 */
+        section.main .stSlider [data-testid="stSliderTrack"] {
+            background-color: rgba(45, 24, 16, 0.28) !important;
+        }
+        section.main .stSlider [data-baseweb="slider"] div[data-testid="stSliderTickBar"] {
+            background-color: rgba(45, 24, 16, 0.35) !important;
+        }
+        section.main .stSlider [data-baseweb="slider"] [role="slider"] {
+            background-color: var(--sidebar-red) !important;
+            border: 2px solid #ffffff !important;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
         }
         .hero-panel {
-            background: linear-gradient(135deg, #fffaf1 0%, #f2e3cb 100%);
-            border: 1px solid rgba(110, 74, 37, 0.14);
+            background: #fffdf9;
+            border: 1px solid rgba(120, 37, 46, 0.22);
             border-radius: 24px;
             padding: 1.8rem 2rem;
-            box-shadow: 0 18px 40px rgba(82, 58, 34, 0.08);
+            box-shadow: 0 8px 24px rgba(45, 24, 16, 0.08);
             margin-bottom: 1.2rem;
+            color: var(--text-on-white);
         }
         .hero-kicker {
             display: inline-block;
             font-size: 0.95rem;
             font-weight: 800;
-            color: #9f2d16;
-            background: rgba(159, 45, 22, 0.1);
+            color: #ffffff;
+            background: var(--sidebar-red);
             border-radius: 999px;
             padding: 0.35rem 0.75rem;
             margin-bottom: 0.9rem;
@@ -107,32 +216,34 @@ def render_global_styles() -> None:
             font-weight: 900;
             line-height: 1.12;
             margin: 0 0 0.6rem 0;
+            color: var(--text-on-white) !important;
         }
         .hero-subtitle {
             font-size: 1.16rem;
             line-height: 1.7;
             font-weight: 600;
             margin: 0;
-            color: #4b3b30;
+            color: var(--text-on-white-muted) !important;
         }
         .section-card {
-            background: rgba(255, 250, 242, 0.92);
-            border: 1px solid rgba(123, 93, 65, 0.14);
+            background: #fffdf9;
+            border: 1px solid rgba(45, 24, 16, 0.12);
             border-radius: 22px;
             padding: 1.35rem 1.2rem 1.1rem 1.2rem;
-            box-shadow: 0 10px 28px rgba(72, 53, 34, 0.06);
+            box-shadow: 0 6px 20px rgba(45, 24, 16, 0.06);
             margin-bottom: 1rem;
+            color: var(--text-on-white);
         }
         .section-title {
             font-size: 1.5rem;
             font-weight: 900;
             margin-bottom: 0.3rem;
-            color: #17120f;
+            color: var(--text-on-white) !important;
         }
         .section-copy {
             font-size: 1rem;
             font-weight: 600;
-            color: #5d4b3d;
+            color: var(--text-on-white-muted) !important;
             margin-bottom: 0.8rem;
         }
         .highlight-chip {
@@ -140,35 +251,74 @@ def render_global_styles() -> None:
             margin: 0.15rem 0.45rem 0.15rem 0;
             padding: 0.36rem 0.75rem;
             border-radius: 999px;
-            background: #1f1a17;
-            color: #fff7eb;
+            background: var(--sidebar-red);
+            color: #ffffff;
             font-size: 0.92rem;
             font-weight: 800;
+        }
+        /* 覆盖 .main .stMarkdown p，保证白底卡片内为黑字 */
+        .main .stMarkdown .hero-panel .hero-title {
+            color: var(--text-on-white) !important;
+        }
+        .main .stMarkdown .hero-panel .hero-subtitle {
+            color: var(--text-on-white-muted) !important;
+        }
+        .main .stMarkdown .section-card .section-title {
+            color: var(--text-on-white) !important;
+        }
+        .main .stMarkdown .section-card .section-copy {
+            color: var(--text-on-white-muted) !important;
         }
         .stButton > button, .stDownloadButton > button {
             min-height: 3rem;
             border-radius: 14px;
             font-size: 1.02rem;
             font-weight: 800;
-            border: 1px solid #cdb79d;
-            background: #fff9f1;
-            color: #221a14;
+            border: 1px solid rgba(45, 24, 16, 0.25);
+            background: #ffffff;
+            color: var(--text-on-white);
             box-shadow: none;
         }
         .stButton > button[kind="primary"] {
-            background: linear-gradient(135deg, #ad341d 0%, #cf5834 100%);
-            color: #fff7f2;
+            background-color: var(--sidebar-red);
+            color: #ffffff;
             border: none;
         }
         .stTextInput input, .stTextArea textarea, .stSelectbox div[data-baseweb="select"] > div {
             border-radius: 14px !important;
-            background: rgba(255, 252, 247, 0.95) !important;
+            background: #ffffff !important;
+            border-color: rgba(45, 24, 16, 0.2) !important;
             font-size: 1.08rem !important;
+            color: var(--text-on-white) !important;
+        }
+        .stTextInput input::placeholder, .stTextArea textarea::placeholder {
+            color: rgba(0, 0, 0, 0.42) !important;
+        }
+        .stSelectbox [data-baseweb="select"] span,
+        .stMultiSelect [data-baseweb="select"] span {
+            color: var(--text-on-white) !important;
         }
         .stExpander {
             border-radius: 16px !important;
-            border: 1px solid rgba(123, 93, 65, 0.16) !important;
-            background: rgba(250, 243, 231, 0.8) !important;
+            border: 1px solid rgba(45, 24, 16, 0.15) !important;
+            background: #faf6f0 !important;
+            color: var(--text-on-white) !important;
+        }
+        .stExpander summary, .streamlit-expanderHeader {
+            color: var(--text-on-white) !important;
+        }
+        .stExpander .stMarkdown, .stExpander .stMarkdown p {
+            color: var(--text-on-white) !important;
+        }
+        div[data-testid="stDataFrame"] {
+            color: var(--text-on-white) !important;
+        }
+        [data-testid="stJson"] {
+            color: var(--text-on-white) !important;
+        }
+        pre code, .stCodeBlock {
+            color: var(--text-on-white) !important;
+            background: #faf6f0 !important;
         }
         </style>
         """,
