@@ -46,16 +46,49 @@
 
 ## 快速启动
 
-### 1. 安装依赖
+### 0. 环境要求
+
+- 推荐使用 Python 3.10 及以上版本
+- 推荐在 Linux / Ubuntu / WSL 中使用 `python3`
+- 不要直接依赖系统里的 `pip`、`uvicorn`、`streamlit` 命令是否已全局安装；本项目建议统一通过 `python -m ...` 方式启动
+
+如果你在 Ubuntu / WSL 中看到下面这类报错：
+
+- `pip: command not found`
+- `streamlit: command not found`
+
+先安装 Python 虚拟环境支持：
 
 ```bash
-pip install -r requirements.txt
+sudo apt update
+sudo apt install -y python3-venv
 ```
 
-### 2. 启动 FastAPI
+### 1. 创建虚拟环境
 
 ```bash
-uvicorn app.api:app --reload
+python3 -m venv .venv
+```
+
+激活虚拟环境：
+
+```bash
+source .venv/bin/activate
+```
+
+激活后，命令行前面通常会出现 `(.venv)`。
+
+### 2. 安装依赖
+
+```bash
+python -m pip install --upgrade pip
+python -m pip install -r requirements.txt
+```
+
+### 3. 启动 FastAPI
+
+```bash
+python -m uvicorn app.api:app --reload
 ```
 
 启动后可访问：
@@ -63,13 +96,13 @@ uvicorn app.api:app --reload
 - `http://127.0.0.1:8000/docs`
 - `http://127.0.0.1:8000/redoc`
 
-### 3. 启动 Streamlit 演示页
+### 4. 启动 Streamlit 演示页
 
 ```bash
-streamlit run demo/ui.py
+python -m streamlit run demo/ui.py
 ```
 
-### 4. 可选：接入阿里百炼智能问答
+### 5. 可选：接入阿里百炼智能问答
 
 `/qa/answer` 默认走本地 FAQ 规则匹配；如果配置阿里百炼环境变量，则优先调用大模型，失败时自动回退到规则问答。
 
@@ -151,3 +184,44 @@ curl -X POST "http://127.0.0.1:8000/qa/answer" \
 - 风险评估是规则引擎结果，不代表真实法律意见
 - 智能问答目前仍受限于本地知识库范围，主要覆盖欠薪、工伤、未签劳动合同三个场景
 - 当前版本重点服务演示，不包含 OCR、真实案件库和生产级鉴权
+
+## 常见问题
+
+### 1. `pip: command not found`
+
+原因：系统没有全局安装 `pip`，或当前环境未激活虚拟环境。
+
+处理方式：
+
+```bash
+sudo apt install -y python3-venv
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install -r requirements.txt
+```
+
+### 2. `streamlit: command not found`
+
+原因：`streamlit` 安装在虚拟环境里，但你直接执行了全局命令。
+
+处理方式：
+
+```bash
+source .venv/bin/activate
+python -m streamlit run demo/ui.py
+```
+
+### 3. 推荐启动顺序
+
+先启动后端：
+
+```bash
+python -m uvicorn app.api:app --reload
+```
+
+再打开另一个终端，激活同一个虚拟环境后启动前端：
+
+```bash
+source .venv/bin/activate
+python -m streamlit run demo/ui.py
+```
