@@ -1,0 +1,38 @@
+支持起诉申请书
+
+申请人：{{ worker_name }}
+被申请支持对象：{{ company_name }}
+
+申请事项：
+1. 请求对申请人因 {{ dispute_type }} 引发的维权事项提供支持起诉帮助；
+2. 请求协助审查证据材料并推动后续诉讼或仲裁衔接；
+3. 请求依法维护申请人的合法劳动权益。
+
+事实与理由：
+申请人反映：
+{{ dispute_summary }}
+
+截至 {{ today }}，申请人已掌握证据如下：
+{% for item in evidence_list %}
+- {{ item }}
+{% endfor %}
+
+平台规则引擎研判结果：
+- 风险等级：{{ risk_level }}
+- 证据分数：{{ evidence_score }}
+{% if missing_evidence %}
+- 当前缺失关键证据：{{ missing_evidence | join('、') }}
+{% endif %}
+
+建议优先推进事项：
+{% for item in recommended_actions %}
+- {{ item }}
+{% endfor %}
+
+申请人因自身取证和程序推进能力有限，现申请给予支持起诉帮助，请予审查。
+
+此致
+人民检察院
+
+申请人：{{ worker_name }}
+日期：{{ today }}

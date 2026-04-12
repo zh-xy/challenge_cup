@@ -1,0 +1,24 @@
+民事起诉状
+
+原告：{{ worker_name }}。
+被告：{{ company_name }}。
+
+诉讼请求：
+1. 请求判令被告就 {{ dispute_type }} 承担相应民事责任；
+2. 请求判令被告支付相关款项暂计 {{ amount }} 元；
+3. 请求判令本案诉讼费用由被告承担。
+
+事实与理由：
+原告自 {{ start_date }} 起在被告处从事 {{ job_title }} 工作。至 {{ end_date }}，双方因 {{ dispute_summary }} 发生争议。
+为证明主张，原告现提交如下材料：
+{% for item in evidence_list %}
+- {{ item }}
+{% endfor %}
+
+原告认为，被告行为已侵害其合法权益，故依法提起诉讼，请依法判决。
+
+此致
+人民法院
+
+具状人：{{ worker_name }}
+日期：{{ today }}

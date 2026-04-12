@@ -1,0 +1,87 @@
+[
+  {
+    "case_id": "A001",
+    "title": "工地欠薪三个月且未签合同",
+    "description": "张某在某建筑劳务公司工地做木工，老板欠我三个月工资，一共2万4，没签劳动合同，但是有微信聊天记录、考勤照片和工友证言。",
+    "facts": {
+      "worker_name": "张某",
+      "company_name": "某建筑劳务公司",
+      "amount": "24000",
+      "job_title": "木工",
+      "start_date": "2025-09-01",
+      "end_date": "2026-01-31",
+      "unpaid_duration_months": 3,
+      "has_contract": false
+    },
+    "provided_evidence": [
+      "身份证明",
+      "考勤记录或工作记录",
+      "聊天记录",
+      "工友证言",
+      "工作照片"
+    ]
+  },
+  {
+    "case_id": "B001",
+    "title": "施工现场受伤待申请工伤认定",
+    "description": "李某在某工程建设公司搬运材料时摔伤骨折，已经住院治疗，目前只有事故经过说明、医院诊断材料、现场照片和医疗费票据，还没有工伤认定材料。",
+    "facts": {
+      "worker_name": "李某",
+      "company_name": "某工程建设公司",
+      "amount": "36000",
+      "job_title": "搬运工",
+      "start_date": "2026-02-10",
+      "end_date": "2026-03-18",
+      "has_contract": false
+    },
+    "provided_evidence": [
+      "身份证明",
+      "事故经过说明",
+      "医院诊断材料",
+      "现场照片",
+      "医疗费票据"
+    ]
+  },
+  {
+    "case_id": "C001",
+    "title": "未签劳动合同主张双倍工资",
+    "description": "王某在一家加工厂上班8个月，一直没签合同，但每个月通过微信转账发工资，有考勤截图、聊天记录和工牌照片，现在准备申请双倍工资。",
+    "facts": {
+      "worker_name": "王某",
+      "company_name": "某加工厂",
+      "amount": "18000",
+      "job_title": "普工",
+      "start_date": "2025-06-01",
+      "end_date": "2026-01-31",
+      "duration_months": 8,
+      "has_contract": false
+    },
+    "provided_evidence": [
+      "身份证明",
+      "入职时间证明",
+      "实际工作证明",
+      "工资支付记录",
+      "聊天记录",
+      "工牌照片"
+    ]
+  },
+  {
+    "case_id": "D001",
+    "title": "包工头跑路导致工资无法结算",
+    "description": "赵某在装修工地干活两个月，包工头跑路后一直不给结算工资，大约1万2，目前只有工友联系方式和部分工作照片，没有合同也没有工资流水。",
+    "facts": {
+      "worker_name": "赵某",
+      "company_name": "某装修项目部",
+      "amount": "12000",
+      "job_title": "瓦工",
+      "start_date": "2026-01-05",
+      "end_date": "2026-03-05",
+      "unpaid_duration_months": 2,
+      "has_contract": false
+    },
+    "provided_evidence": [
+      "工友证言",
+      "工作照片"
+    ]
+  }
+]
