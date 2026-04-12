@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import base64
 import json
 import sys
 from collections import Counter
@@ -21,6 +22,185 @@ TEMPLATE_LABELS = {
     "arbitration_application": "劳动仲裁申请书",
     "support_prosecution_application": "支持起诉申请书",
 }
+PERSISTED_STATE_KEYS = (
+    "case_title",
+    "case_description",
+    "evidence_text",
+    "facts_json",
+    "selected_template",
+    "analysis_report",
+    "generated_document",
+    "last_submission",
+    "sample_choice",
+)
+
+
+def render_global_styles() -> None:
+    st.markdown(
+        """
+        <style>
+        .stApp {
+            background:
+                radial-gradient(circle at top left, rgba(255, 214, 102, 0.18), transparent 28%),
+                linear-gradient(180deg, #f7f2e8 0%, #f3eee3 52%, #ece6d9 100%);
+            color: #1f1a17;
+        }
+        .block-container {
+            max-width: 1360px;
+            padding-top: 2rem;
+            padding-bottom: 2.5rem;
+        }
+        h1, h2, h3 {
+            color: #17120f;
+            letter-spacing: 0.02em;
+        }
+        h1 {
+            font-size: 3rem !important;
+            font-weight: 900 !important;
+        }
+        h2 {
+            font-size: 2rem !important;
+            font-weight: 850 !important;
+        }
+        h3 {
+            font-size: 1.4rem !important;
+            font-weight: 800 !important;
+        }
+        p, label, .stMarkdown, .stCaption, .stTextInput, .stTextArea, .stSelectbox, .stSlider {
+            font-size: 1.05rem !important;
+        }
+        [data-testid="stMetricValue"] {
+            font-size: 2rem !important;
+            font-weight: 900 !important;
+            color: #9f2d16;
+        }
+        [data-testid="stMetricLabel"] {
+            font-size: 1rem !important;
+            font-weight: 700 !important;
+        }
+        [data-testid="stSidebar"] {
+            background: linear-gradient(180deg, #17120f 0%, #2a2019 100%);
+        }
+        [data-testid="stSidebar"] * {
+            color: #f8f1e6 !important;
+        }
+        .hero-panel {
+            background: linear-gradient(135deg, #fffaf1 0%, #f2e3cb 100%);
+            border: 1px solid rgba(110, 74, 37, 0.14);
+            border-radius: 24px;
+            padding: 1.8rem 2rem;
+            box-shadow: 0 18px 40px rgba(82, 58, 34, 0.08);
+            margin-bottom: 1.2rem;
+        }
+        .hero-kicker {
+            display: inline-block;
+            font-size: 0.95rem;
+            font-weight: 800;
+            color: #9f2d16;
+            background: rgba(159, 45, 22, 0.1);
+            border-radius: 999px;
+            padding: 0.35rem 0.75rem;
+            margin-bottom: 0.9rem;
+        }
+        .hero-title {
+            font-size: 2.8rem;
+            font-weight: 900;
+            line-height: 1.12;
+            margin: 0 0 0.6rem 0;
+        }
+        .hero-subtitle {
+            font-size: 1.16rem;
+            line-height: 1.7;
+            font-weight: 600;
+            margin: 0;
+            color: #4b3b30;
+        }
+        .section-card {
+            background: rgba(255, 250, 242, 0.92);
+            border: 1px solid rgba(123, 93, 65, 0.14);
+            border-radius: 22px;
+            padding: 1.35rem 1.2rem 1.1rem 1.2rem;
+            box-shadow: 0 10px 28px rgba(72, 53, 34, 0.06);
+            margin-bottom: 1rem;
+        }
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 900;
+            margin-bottom: 0.3rem;
+            color: #17120f;
+        }
+        .section-copy {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #5d4b3d;
+            margin-bottom: 0.8rem;
+        }
+        .highlight-chip {
+            display: inline-block;
+            margin: 0.15rem 0.45rem 0.15rem 0;
+            padding: 0.36rem 0.75rem;
+            border-radius: 999px;
+            background: #1f1a17;
+            color: #fff7eb;
+            font-size: 0.92rem;
+            font-weight: 800;
+        }
+        .stButton > button, .stDownloadButton > button {
+            min-height: 3rem;
+            border-radius: 14px;
+            font-size: 1.02rem;
+            font-weight: 800;
+            border: 1px solid #cdb79d;
+            background: #fff9f1;
+            color: #221a14;
+            box-shadow: none;
+        }
+        .stButton > button[kind="primary"] {
+            background: linear-gradient(135deg, #ad341d 0%, #cf5834 100%);
+            color: #fff7f2;
+            border: none;
+        }
+        .stTextInput input, .stTextArea textarea, .stSelectbox div[data-baseweb="select"] > div {
+            border-radius: 14px !important;
+            background: rgba(255, 252, 247, 0.95) !important;
+            font-size: 1.08rem !important;
+        }
+        .stExpander {
+            border-radius: 16px !important;
+            border: 1px solid rgba(123, 93, 65, 0.16) !important;
+            background: rgba(250, 243, 231, 0.8) !important;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
+
+
+def render_page_hero(title: str, subtitle: str, tags: list[str]) -> None:
+    tags_html = "".join(f'<span class="highlight-chip">{tag}</span>' for tag in tags)
+    st.markdown(
+        f"""
+        <section class="hero-panel">
+            <div class="hero-kicker">展示页面升级</div>
+            <div class="hero-title">{title}</div>
+            <p class="hero-subtitle">{subtitle}</p>
+            <div style="margin-top: 0.9rem;">{tags_html}</div>
+        </section>
+        """,
+        unsafe_allow_html=True,
+    )
+
+
+def section_intro(title: str, copy: str) -> None:
+    st.markdown(
+        f"""
+        <div class="section-card">
+            <div class="section-title">{title}</div>
+            <div class="section-copy">{copy}</div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
 
 def init_state() -> None:
@@ -37,6 +217,34 @@ def init_state() -> None:
     }
     for key, value in defaults.items():
         st.session_state.setdefault(key, value)
+
+
+def restore_state_from_query_params() -> None:
+    encoded_state = st.query_params.get("state")
+    if not encoded_state:
+        return
+
+    try:
+        payload = base64.urlsafe_b64decode(encoded_state.encode("utf-8")).decode("utf-8")
+        restored_state = json.loads(payload)
+    except (ValueError, json.JSONDecodeError):
+        st.query_params.pop("state", None)
+        return
+
+    if not isinstance(restored_state, dict):
+        st.query_params.pop("state", None)
+        return
+
+    for key in PERSISTED_STATE_KEYS:
+        if key in restored_state and key not in st.session_state:
+            st.session_state[key] = restored_state[key]
+
+
+def persist_state_to_query_params() -> None:
+    state_payload = {key: st.session_state.get(key) for key in PERSISTED_STATE_KEYS}
+    serialized = json.dumps(state_payload, ensure_ascii=False, separators=(",", ":"))
+    encoded_state = base64.urlsafe_b64encode(serialized.encode("utf-8")).decode("utf-8")
+    st.query_params["state"] = encoded_state
 
 
 def load_sample_into_state(sample: dict[str, Any]) -> None:
@@ -94,7 +302,7 @@ def build_case_rows(cases: list[dict[str, Any]]) -> list[dict[str, Any]]:
 def render_sidebar() -> str:
     st.sidebar.title("产品门面")
     view = st.sidebar.radio("视图切换", options=[VIEW_USER, VIEW_ADMIN])
-    st.sidebar.caption("页面直接调用本地 DataProcessor、DocumentGenerator、CaseStore。")
+    st.sidebar.caption("展示页面直接调用本地核心模块，适合演示与答辩。")
 
     sample_cases = case_store.list_samples()
     sample_options = {"手动输入": None}
@@ -113,23 +321,27 @@ def render_sidebar() -> str:
 
 
 def render_user_view() -> None:
-    st.subheader("农民工维权入口")
-    st.caption("输入案情后直接触发规则引擎分析、结构化抽取和文书生成。")
+    render_page_hero(
+        "农民工维权入口",
+        "操作保持简洁，重点信息放大显示。输入案情后即可完成分析、文书生成与后台提交。",
+        ["大字高亮", "一步式操作", "按钮清晰"],
+    )
 
     left_col, right_col = st.columns([1.1, 1])
 
     with left_col:
+        section_intro("填写案件信息", "保留核心输入项，减少干扰，先说清案情再执行操作。")
         st.text_input("案件标题（可选）", key="case_title", placeholder="例如：工地欠薪三个月")
         st.text_area(
             "案情描述",
             key="case_description",
-            height=240,
+            height=280,
             placeholder="请输入完整案情，例如：老板拖欠我三个月工资，一共两万四，有微信聊天记录和考勤照片。",
         )
         st.text_area(
             "已有证据（每行一项，可选）",
             key="evidence_text",
-            height=140,
+            height=150,
             placeholder="身份证明\n聊天记录\n考勤记录或工作记录",
         )
         with st.expander("补充事实（JSON，可选）"):
@@ -184,6 +396,7 @@ def render_user_view() -> None:
     last_submission = st.session_state.get("last_submission")
 
     with right_col:
+        section_intro("结果展示区", "分析结论、重点指标和文书预览统一放在右侧，便于答辩时快速说明。")
         if last_submission:
             st.success(
                 f"案件已进入检察后台：{last_submission['submission_id']} | "
@@ -252,8 +465,11 @@ def render_user_view() -> None:
 
 
 def render_admin_view() -> None:
-    st.subheader("检察院决策后台")
-    st.caption("基于 CaseStore 的内存案件池做汇总、筛选和风险分布展示。")
+    render_page_hero(
+        "检察院决策后台",
+        "采用更醒目的数据指标和更克制的页面结构，便于快速查看重点案件与风险分布。",
+        ["数据更聚焦", "高亮指标", "简洁筛选"],
+    )
 
     all_cases = case_store.get_all_cases()
     rows = build_case_rows(all_cases)
@@ -262,6 +478,7 @@ def render_admin_view() -> None:
         st.info("当前还没有提交案件。")
         return
 
+    section_intro("案件概览", "保留关键筛选和统计信息，减少页面装饰性干扰。")
     threshold = st.slider("证据分数阈值（展示 > 当前值的重点案件）", min_value=0, max_value=100, value=80)
     filtered_rows = [row for row in rows if row["证据分数"] > threshold]
 
@@ -290,16 +507,19 @@ def render_admin_view() -> None:
 
 def main() -> None:
     st.set_page_config(page_title="农民工权益保障智能平台", layout="wide")
+    restore_state_from_query_params()
     init_state()
+    render_global_styles()
 
     st.title("农民工权益保障智能平台")
-    st.caption("面向队友和评委演示的 Streamlit 门面，直接联动本地后端核心模块。")
+    st.caption("页面风格已调整为简洁、大字、高亮重点，更适合演示场景。")
 
     view = render_sidebar()
     if view == VIEW_USER:
         render_user_view()
     else:
         render_admin_view()
+    persist_state_to_query_params()
 
 
 if __name__ == "__main__":
