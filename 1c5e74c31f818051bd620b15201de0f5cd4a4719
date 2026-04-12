@@ -1,0 +1,225 @@
+README.md
+  6536ec80e4a09cd2 49,51-81,84-85,88,91,99,102,105,187-227
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.2.5",
+  "base_commit_sha": "1c5e74c31f818051bd620b15201de0f5cd4a4719",
+  "prompts": {
+    "6536ec80e4a09cd2": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019d81e2-4bcb-7de0-a168-5a0af9d9da2c",
+        "model": "gpt-5.4"
+      },
+      "human_author": "zhxy",
+      "messages": [
+        {
+          "type": "user",
+          "text": "<environment_context>\n  <cwd>/home/zhxy_ai/challenge_cup</cwd>\n  <shell>bash</shell>\n  <current_date>2026-04-12</current_date>\n  <timezone>Asia/Shanghai</timezone>\n</environment_context>",
+          "timestamp": "2026-04-12T13:30:07.534Z"
+        },
+        {
+          "type": "user",
+          "text": "zhxy_ai@LAPTOP-C8BMQQTA:~/challenge_cup$ streamlit run demo/ui.py\nstreamlit: command not found\nzhxy_ai@LAPTOP-C8BMQQTA:~/challenge_cup$ pip install -r requirements.txt\nCommand 'pip' not found, but can be installed with:\nsudo apt install python3-pip\n\n每次都报错，readme里写的有问题，修改",
+          "timestamp": "2026-04-12T13:30:07.540Z"
+        },
+        {
+          "type": "assistant",
+          "text": "我会先检查仓库里的 `README`、依赖文件和启动脚本，确认当前项目实际需要的 Python/安装方式，再直接把文档改成可执行的步骤。",
+          "timestamp": "2026-04-12T13:30:13.074Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "exec_command",
+          "input": {
+            "cmd": "pwd",
+            "max_output_tokens": 200,
+            "workdir": "/home/zhxy_ai/challenge_cup"
+          },
+          "timestamp": "2026-04-12T13:30:13.076Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "exec_command",
+          "input": {
+            "cmd": "rg --files -g 'README*' -g 'requirements*.txt' -g 'pyproject.toml' -g 'demo/**' -g '*.py'",
+            "max_output_tokens": 4000,
+            "workdir": "/home/zhxy_ai/challenge_cup"
+          },
+          "timestamp": "2026-04-12T13:30:13.077Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "exec_command",
+          "input": {
+            "cmd": "git status --short",
+            "max_output_tokens": 200,
+            "workdir": "/home/zhxy_ai/challenge_cup"
+          },
+          "timestamp": "2026-04-12T13:30:13.103Z"
+        },
+        {
+          "type": "assistant",
+          "text": "我已经确认仓库结构比较简单，下一步读取 `README.md`、`requirements.txt` 和 `demo/ui.py`，核对文档里的安装/启动命令是否和代码一致。",
+          "timestamp": "2026-04-12T13:30:18.623Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "exec_command",
+          "input": {
+            "cmd": "sed -n '1,240p' README.md",
+            "max_output_tokens": 4000,
+            "workdir": "/home/zhxy_ai/challenge_cup"
+          },
+          "timestamp": "2026-04-12T13:30:18.625Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "exec_command",
+          "input": {
+            "cmd": "sed -n '1,240p' requirements.txt",
+            "max_output_tokens": 2000,
+            "workdir": "/home/zhxy_ai/challenge_cup"
+          },
+          "timestamp": "2026-04-12T13:30:18.638Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "exec_command",
+          "input": {
+            "cmd": "sed -n '1,240p' demo/ui.py",
+            "max_output_tokens": 4000,
+            "workdir": "/home/zhxy_ai/challenge_cup"
+          },
+          "timestamp": "2026-04-12T13:30:18.708Z"
+        },
+        {
+          "type": "assistant",
+          "text": "问题已经比较明确：文档默认用了系统里常见但并不总是存在的 `pip` 和 `streamlit` 可执行命令。我要确认当前环境里可用的是不是 `python3`，然后把 README 改成更稳妥的 `python3 -m ...` 方式，并补上虚拟环境步骤。",
+          "timestamp": "2026-04-12T13:30:26.866Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "exec_command",
+          "input": {
+            "cmd": "python3 --version",
+            "max_output_tokens": 200,
+            "workdir": "/home/zhxy_ai/challenge_cup"
+          },
+          "timestamp": "2026-04-12T13:30:26.868Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "exec_command",
+          "input": {
+            "cmd": "python3 -m pip --version",
+            "max_output_tokens": 200,
+            "workdir": "/home/zhxy_ai/challenge_cup"
+          },
+          "timestamp": "2026-04-12T13:30:26.882Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "exec_command",
+          "input": {
+            "cmd": "python3 -m streamlit --version",
+            "max_output_tokens": 200,
+            "workdir": "/home/zhxy_ai/challenge_cup"
+          },
+          "timestamp": "2026-04-12T13:30:26.884Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "exec_command",
+          "input": {
+            "cmd": "python3 -m uvicorn --version",
+            "max_output_tokens": 200,
+            "workdir": "/home/zhxy_ai/challenge_cup"
+          },
+          "timestamp": "2026-04-12T13:30:26.891Z"
+        },
+        {
+          "type": "assistant",
+          "text": "我确认了环境现状：只有 `python3`，但系统没有 `pip`、`streamlit`、`uvicorn` 模块，所以 README 现在的命令在这台机器上确实会失败。接下来我会把文档改成 Ubuntu/WSL 可直接照做的安装流程，并说明为什么不能直接运行现在那两条命令。",
+          "timestamp": "2026-04-12T13:30:34.816Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "exec_command",
+          "input": {
+            "cmd": "python3 -m venv --help",
+            "max_output_tokens": 300,
+            "workdir": "/home/zhxy_ai/challenge_cup"
+          },
+          "timestamp": "2026-04-12T13:30:34.816Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "exec_command",
+          "input": {
+            "cmd": "sed -n '1,220p' app/api.py",
+            "max_output_tokens": 3000,
+            "workdir": "/home/zhxy_ai/challenge_cup"
+          },
+          "timestamp": "2026-04-12T13:30:34.819Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "exec_command",
+          "input": {
+            "cmd": "sed -n '1,220p' scripts/demo_cli.py",
+            "max_output_tokens": 2000,
+            "workdir": "/home/zhxy_ai/challenge_cup"
+          },
+          "timestamp": "2026-04-12T13:30:34.820Z"
+        },
+        {
+          "type": "assistant",
+          "text": "我准备只改文档，不动业务代码。修改点会集中在 `README.md` 的“快速启动”：用 `python3 -m venv`、`python -m pip`、`python -m uvicorn`、`python -m streamlit` 替换现在依赖全局命令的写法，并补一个 Ubuntu/WSL 的缺失依赖说明。",
+          "timestamp": "2026-04-12T13:30:42.368Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "apply_patch",
+          "input": "*** Begin Patch\n*** Update File: /home/zhxy_ai/challenge_cup/README.md\n@@\n-## 快速启动\n-\n-### 1. 安装依赖\n-\n-```bash\n-pip install -r requirements.txt\n-```\n-\n-### 2. 启动 FastAPI\n-\n-```bash\n-uvicorn app.api:app --reload\n-```\n+## 快速启动\n+\n+### 0. 环境要求\n+\n+- 推荐使用 Python 3.10 及以上版本\n+- 推荐在 Linux / Ubuntu / WSL 中使用 `python3`\n+- 不要直接依赖系统里的 `pip`、`uvicorn`、`streamlit` 命令是否已全局安装；本项目建议统一通过 `python -m ...` 方式启动\n+\n+如果你在 Ubuntu / WSL 中看到下面这类报错：\n+\n+- `pip: command not found`\n+- `streamlit: command not found`\n+\n+先安装 Python 虚拟环境支持：\n+\n+```bash\n+sudo apt update\n+sudo apt install -y python3-venv\n+```\n+\n+### 1. 创建虚拟环境\n+\n+```bash\n+python3 -m venv .venv\n+```\n+\n+激活虚拟环境：\n+\n+```bash\n+source .venv/bin/activate\n+```\n+\n+激活后，命令行前面通常会出现 `(.venv)`。\n+\n+### 2. 安装依赖\n+\n+```bash\n+python -m pip install --upgrade pip\n+python -m pip install -r requirements.txt\n+```\n+\n+### 3. 启动 FastAPI\n+\n+```bash\n+python -m uvicorn app.api:app --reload\n+```\n@@\n-### 3. 启动 Streamlit 演示页\n-\n-```bash\n-streamlit run demo/ui.py\n-```\n-\n-### 4. 可选：接入阿里百炼智能问答\n+### 4. 启动 Streamlit 演示页\n+\n+```bash\n+python -m streamlit run demo/ui.py\n+```\n+\n+### 5. 可选：接入阿里百炼智能问答\n@@\n ## 说明\n \n - 数据持久化方式为内存存储，重启服务后会恢复为内置演示数据\n - 风险评估是规则引擎结果，不代表真实法律意见\n - 智能问答目前仍受限于本地知识库范围，主要覆盖欠薪、工伤、未签劳动合同三个场景\n - 当前版本重点服务演示，不包含 OCR、真实案件库和生产级鉴权\n+\n+## 常见问题\n+\n+### 1. `pip: command not found`\n+\n+原因：系统没有全局安装 `pip`，或当前环境未激活虚拟环境。\n+\n+处理方式：\n+\n+```bash\n+sudo apt install -y python3-venv\n+python3 -m venv .venv\n+source .venv/bin/activate\n+python -m pip install -r requirements.txt\n+```\n+\n+### 2. `streamlit: command not found`\n+\n+原因：`streamlit` 安装在虚拟环境里，但你直接执行了全局命令。\n+\n+处理方式：\n+\n+```bash\n+source .venv/bin/activate\n+python -m streamlit run demo/ui.py\n+```\n+\n+### 3. 推荐启动顺序\n+\n+先启动后端：\n+\n+```bash\n+python -m uvicorn app.api:app --reload\n+```\n+\n+再打开另一个终端，激活同一个虚拟环境后启动前端：\n+\n+```bash\n+source .venv/bin/activate\n+python -m streamlit run demo/ui.py\n+```\n*** End Patch\n",
+          "timestamp": "2026-04-12T13:30:58.170Z"
+        },
+        {
+          "type": "assistant",
+          "text": "文档已经改完。我再快速复核一遍关键段落，确保启动步骤前后一致，没有把用户带回原来的错误路径。",
+          "timestamp": "2026-04-12T13:31:04.451Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "exec_command",
+          "input": {
+            "cmd": "sed -n '1,260p' README.md",
+            "max_output_tokens": 5000,
+            "workdir": "/home/zhxy_ai/challenge_cup"
+          },
+          "timestamp": "2026-04-12T13:31:04.451Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "exec_command",
+          "input": {
+            "cmd": "git diff -- README.md",
+            "max_output_tokens": 4000,
+            "workdir": "/home/zhxy_ai/challenge_cup"
+          },
+          "timestamp": "2026-04-12T13:31:04.451Z"
+        },
+        {
+          "type": "assistant",
+          "text": "已把文档改掉，重点修正在 [README.md](/home/zhxy_ai/challenge_cup/README.md)：\n\n原来 README 直接写 `pip install -r requirements.txt` 和 `streamlit run demo/ui.py`，这在你当前这类 Ubuntu/WSL 环境里不成立。实际我本地核对到的情况是：`python3` 存在，但 `pip`、`uvicorn`、`streamlit` 都不是系统全局命令，所以文档必须改成先建虚拟环境，再用 `python -m ...` 启动。\n\n现在 README 已改为这套流程：\n```bash\nsudo apt update\nsudo apt install -y python3-venv\npython3 -m venv .venv\nsource .venv/bin/activate\npython -m pip install --upgrade pip\npython -m pip install -r requirements.txt\npython -m uvicorn app.api:app --reload\npython -m streamlit run demo/ui.py\n```\n\n我还补了“常见问题”一节，专门解释 `pip: command not found` 和 `streamlit: command not found`。这次只改了文档，没有动业务代码。未实际安装依赖验证，因为当前环境里还没装包。",
+          "timestamp": "2026-04-12T13:31:12.080Z"
+        }
+      ],
+      "total_additions": 81,
+      "total_deletions": 7,
+      "accepted_lines": 81,
+      "overriden_lines": 0
+    }
+  }
+}
