@@ -1,0 +1,34 @@
+民事起诉状
+
+原告：{{ worker_name }}，{{ worker_gender }}，{{ worker_birth_date }}出生，{{ worker_ethnicity }}，身份证号码：{{ worker_id_number }}，住{{ worker_address }}，联系电话：{{ worker_phone }}。
+被告一：{{ contractor_name }}，统一社会信用代码：{{ contractor_credit_code }}，住所地{{ contractor_address }}。
+法定代表人：{{ contractor_legal_rep }}，联系电话：{{ contractor_phone }}。
+被告二：{{ direct_employer_name }}，{{ direct_employer_gender }}，{{ direct_employer_birth_date }}出生，{{ direct_employer_ethnicity }}，身份证号码：{{ direct_employer_id_number }}，住{{ direct_employer_address }}，联系电话：{{ direct_employer_phone }}。
+被告三：{{ subcontractor_name }}，统一社会信用代码：{{ subcontractor_credit_code }}，住所地{{ subcontractor_address }}。
+法定代表人：{{ subcontractor_legal_rep }}，联系电话：{{ subcontractor_phone }}。
+被告四：{{ guarantor_name }}，统一社会信用代码：{{ guarantor_credit_code }}，住所地{{ guarantor_address }}。
+法定代表人：{{ guarantor_legal_rep }}，联系电话：{{ guarantor_phone }}。
+
+案由：劳务合同纠纷
+
+诉讼请求
+1. 请求法院判令各被告向原告支付拖欠的劳务报酬人民币{{ claim_amount }}元（大写：{{ claim_amount_cn }}）；
+2. 请求法院判令各被告承担本案诉讼费用。
+
+事实与理由
+{{ work_start_date }}，{{ worker_name }}受雇于被告{{ direct_employer_name }}，在{{ project_name }}从事劳务工作。案涉工程项目的发包方系被告{{ contractor_name }}、承包方系被告{{ subcontractor_name }}，{{ guarantor_name }}为发包方的担保方。{{ direct_employer_name }}系{{ subcontractor_name }}的实际控制人或直接雇佣人。
+
+施工期间，{{ worker_name }}依约完成全部工作任务，共计工作{{ employment_days }}。双方约定劳务费标准为人民币{{ wage_rate }}，原告应得劳务报酬合计人民币{{ wage_calculation }}。然而，被告方尚有人民币{{ claim_amount }}元（大写：{{ claim_amount_cn }}）至今未予支付。
+
+原告认为，被告{{ direct_employer_name }}与被告{{ subcontractor_name }}系案涉工程承包方亦系原告直接雇佣人，被告{{ contractor_name }}系案涉工程发包人，根据《保障农民工工资支付条例》的相关规定，应当承担相应责任。为证明上述主张，原告现提交证据如下：
+{% for item in evidence_list %}
+- {{ item }}
+{% endfor %}
+
+故诉至法院，望判如所请。
+
+此致
+{{ court_name }}
+
+具状人：{{ worker_name }}
+{{ today }}
