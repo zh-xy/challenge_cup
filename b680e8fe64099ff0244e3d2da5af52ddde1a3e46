@@ -1,0 +1,1640 @@
+app/application.py
+  91bf602fbda717aa 1-30
+demo/config.py
+  91bf602fbda717aa 1-87
+app/service.py
+  91bf602fbda717aa 5,9,17,31,45,49,53,57,61,76,94,103-104,108
+demo/state.py
+  91bf602fbda717aa 1-286
+core/models.py
+  91bf602fbda717aa 3,7-32,34-45,47-56,58-145
+demo/api_client.py
+  91bf602fbda717aa 4,36-37
+demo/backend.py
+  91bf602fbda717aa 1-171
+app/case_store.py
+  91bf602fbda717aa 8,15,23,48-63,65,83-102,104,134-140,157-161,167-171,173-178,180,183-185,187-188,191-193
+app/data_processor.py
+  91bf602fbda717aa 5,7,11-18,20-23,30-42
+app/case_analysis.py
+  91bf602fbda717aa 1-334
+app/document_generator.py
+  91bf602fbda717aa 9,107,114-116,118,122,129,146,164,169-176
+demo/ui.py
+  e73ed84456bc5292 688-696,698-711,713-716,718-719,721-723,726-746
+  74a9eafb8efd123d 130,408,531,543,548,664,1006
+  91bf602fbda717aa 9-28
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.0",
+  "base_commit_sha": "b680e8fe64099ff0244e3d2da5af52ddde1a3e46",
+  "prompts": {
+    "74a9eafb8efd123d": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019d9af3-4378-72a3-bfa6-69082bcdafe0",
+        "model": "gpt-5.4"
+      },
+      "human_author": "zhxy",
+      "messages": [
+        {
+          "type": "user",
+          "text": "<environment_context>\n  <cwd>/home/zhxy_ai/challenge_cup</cwd>\n  <shell>bash</shell>\n  <current_date>2026-04-17</current_date>\n  <timezone>Asia/Shanghai</timezone>\n</environment_context>",
+          "timestamp": "2026-04-17T10:19:21.426Z"
+        },
+        {
+          "type": "user",
+          "text": "删去网页上“答辩模式”等和网页功能无关的内容，另外自动填入示例信息",
+          "timestamp": "2026-04-17T10:19:21.428Z"
+        },
+        {
+          "type": "assistant",
+          "text": "我会先检查这个前端页面的结构，定位“答辩模式”等无关文案和表单初始值，然后直接改页面实现并做一次本地验证。",
+          "timestamp": "2026-04-17T10:19:27.195Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "exec_command",
+          "input": {
+            "cmd": "rg -n \"答辩模式|示例|demo|mock|模式\" .",
+            "max_output_tokens": 4000,
+            "workdir": "/home/zhxy_ai/challenge_cup",
+            "yield_time_ms": 1000
+          },
+          "timestamp": "2026-04-17T10:19:27.196Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "exec_command",
+          "input": {
+            "cmd": "rg --files .",
+            "max_output_tokens": 4000,
+            "workdir": "/home/zhxy_ai/challenge_cup",
+            "yield_time_ms": 1000
+          },
+          "timestamp": "2026-04-17T10:19:27.209Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "exec_command",
+          "input": {
+            "cmd": "pwd",
+            "max_output_tokens": 1000,
+            "workdir": "/home/zhxy_ai/challenge_cup",
+            "yield_time_ms": 1000
+          },
+          "timestamp": "2026-04-17T10:19:27.211Z"
+        },
+        {
+          "type": "assistant",
+          "text": "我已经定位到主要页面在 `demo/ui.py`，无关内容来自顶部横幅和快捷示例区。接下来我会读这几个渲染函数和表单默认值，直接把页面改成业务表单优先，并让页面打开时自动带入示例信息。",
+          "timestamp": "2026-04-17T10:19:34.472Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "exec_command",
+          "input": {
+            "cmd": "sed -n '430,900p' demo/ui.py",
+            "max_output_tokens": 7000,
+            "workdir": "/home/zhxy_ai/challenge_cup",
+            "yield_time_ms": 1000
+          },
+          "timestamp": "2026-04-17T10:19:34.473Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "exec_command",
+          "input": {
+            "cmd": "sed -n '1000,1320p' demo/ui.py",
+            "max_output_tokens": 7000,
+            "workdir": "/home/zhxy_ai/challenge_cup",
+            "yield_time_ms": 1000
+          },
+          "timestamp": "2026-04-17T10:19:34.491Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "exec_command",
+          "input": {
+            "cmd": "sed -n '1,220p' demo/ui.py",
+            "max_output_tokens": 5000,
+            "workdir": "/home/zhxy_ai/challenge_cup",
+            "yield_time_ms": 1000
+          },
+          "timestamp": "2026-04-17T10:19:34.499Z"
+        },
+        {
+          "type": "assistant",
+          "text": "我已经确认用户页里“答辩展示模式”“推荐演示案例”“答辩提示”等都是展示性文案，不影响业务流程；另外当前示例信息只会在侧栏手动点击后载入，还不是自动填充。现在我直接改 `demo/ui.py`：去掉这些展示块，只保留业务表单和结果区，并在首次进入页面时自动载入一个示例案件。",
+          "timestamp": "2026-04-17T10:19:42.594Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "exec_command",
+          "input": {
+            "cmd": "rg -n \"def main\\(|set_page_config|restore_state_from_query_params|persist_state_to_query_params|render_user_view\\(|render_sidebar\\(\" demo/ui.py",
+            "max_output_tokens": 4000,
+            "workdir": "/home/zhxy_ai/challenge_cup",
+            "yield_time_ms": 1000
+          },
+          "timestamp": "2026-04-17T10:19:42.598Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "exec_command",
+          "input": {
+            "cmd": "sed -n '1320,1460p' demo/ui.py",
+            "max_output_tokens": 4000,
+            "workdir": "/home/zhxy_ai/challenge_cup",
+            "yield_time_ms": 1000
+          },
+          "timestamp": "2026-04-17T10:19:42.608Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "exec_command",
+          "input": {
+            "cmd": "sed -n '1520,1565p' demo/ui.py",
+            "max_output_tokens": 2000,
+            "workdir": "/home/zhxy_ai/challenge_cup",
+            "yield_time_ms": 1000
+          },
+          "timestamp": "2026-04-17T10:19:46.363Z"
+        },
+        {
+          "type": "assistant",
+          "text": "我准备同时处理两件事：一是把页面里的展示性横幅、答辩提示、推荐演示案例和侧栏演示载入区删掉；二是补一个“首次进入自动填充示例案件”的初始化逻辑，避免还要手动操作。为了让自动填充稳定，我会优先取后端样例，取不到再回退到本地 `data/sample_cases.json`。",
+          "timestamp": "2026-04-17T10:19:55.894Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "exec_command",
+          "input": {
+            "cmd": "sed -n '1,220p' data/sample_cases.json",
+            "max_output_tokens": 4000,
+            "workdir": "/home/zhxy_ai/challenge_cup",
+            "yield_time_ms": 1000
+          },
+          "timestamp": "2026-04-17T10:19:55.912Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "exec_command",
+          "input": {
+            "cmd": "sed -n '220,430p' demo/ui.py",
+            "max_output_tokens": 4000,
+            "workdir": "/home/zhxy_ai/challenge_cup",
+            "yield_time_ms": 1000
+          },
+          "timestamp": "2026-04-17T10:19:55.939Z"
+        },
+        {
+          "type": "assistant",
+          "text": "我现在开始改文件，范围集中在 `demo/ui.py`：删除展示性文案调用、收缩侧栏、补充示例自动载入函数，并顺手把页面标题说明改成纯功能描述。改完我会做一次语法和关键路径检查。",
+          "timestamp": "2026-04-17T10:20:03.720Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "apply_patch",
+          "input": "*** Begin Patch\n*** Update File: /home/zhxy_ai/challenge_cup/demo/ui.py\n@@\n def render_demo_banner(title: str, copy: str) -> None:\n@@\n def render_emphasis(text: str) -> None:\n     st.markdown(f'<div class=\"demo-emphasis\">{text}</div>', unsafe_allow_html=True)\n \n \n+def get_sample_cases() -> list[dict[str, Any]]:\n+    sample_cases = safe_get(\"/cases/samples\", {\"items\": []}).get(\"items\", [])\n+    if sample_cases:\n+        return sample_cases\n+\n+    sample_path = PROJECT_ROOT / \"data\" / \"sample_cases.json\"\n+    try:\n+        with sample_path.open(\"r\", encoding=\"utf-8\") as handle:\n+            payload = json.load(handle)\n+    except (OSError, json.JSONDecodeError):\n+        return []\n+    return payload if isinstance(payload, list) else []\n+\n+\n def init_state() -> None:\n     defaults = {\n@@\n         \"patch_wage_rate\": \"\",\n         \"patch_wage_calculation\": \"\",\n         \"patch_court_name\": \"\",\n         \"patch_procuratorate_name\": \"\",\n+        \"sample_prefilled\": False,\n     }\n     for key, value in defaults.items():\n         st.session_state.setdefault(key, value)\n@@\n def load_sample_into_state(sample: dict[str, Any]) -> None:\n@@\n     st.session_state[\"required_evidence_selected\"] = [item for item in sample.get(\"provided_evidence\", []) if item in REQUIRED_EVIDENCE_OPTIONS]\n     st.session_state[\"practical_evidence_selected\"] = [item for item in sample.get(\"provided_evidence\", []) if item in PRACTICAL_EVIDENCE_OPTIONS]\n     st.session_state[\"analysis_report\"] = None\n     st.session_state[\"generated_document\"] = None\n     st.session_state[\"last_submission\"] = None\n+    st.session_state[\"sample_prefilled\"] = True\n+\n+\n+def auto_prefill_sample_case() -> None:\n+    if st.session_state.get(\"sample_prefilled\"):\n+        return\n+    if any(\n+        st.session_state.get(key, \"\").strip()\n+        for key in (\"worker_name\", \"worker_phone\", \"employer_name\", \"case_description\")\n+    ):\n+        st.session_state[\"sample_prefilled\"] = True\n+        return\n+\n+    sample_cases = get_sample_cases()\n+    if not sample_cases:\n+        st.session_state[\"sample_prefilled\"] = True\n+        return\n+\n+    load_sample_into_state(sample_cases[0])\n+    st.session_state[\"sample_choice\"] = f'{sample_cases[0].get(\"case_id\", \"\")} | {sample_cases[0].get(\"title\", \"\")}'.strip(\" |\")\n@@\n def render_quick_demo_cases() -> None:\n-    sample_cases = safe_get(\"/cases/samples\", {\"items\": []}).get(\"items\", [])\n+    sample_cases = get_sample_cases()\n@@\n def render_sidebar() -> str:\n-    st.sidebar.title(\"产品门面\")\n+    st.sidebar.title(\"系统导航\")\n     view = st.sidebar.radio(\"视图切换\", options=[VIEW_USER, VIEW_ADMIN])\n-    st.sidebar.caption(\"展示页仅通过后端 API 获取结果，不再直接调用本地核心模块。\")\n     st.sidebar.text_input(\"后端地址\", key=\"api_base_url\")\n-\n-    sample_cases = safe_get(\"/cases/samples\", {\"items\": []}).get(\"items\", [])\n-    sample_options = {\"手动输入\": None}\n-    sample_options.update({f'{item[\"case_id\"]} | {item[\"title\"]}': item for item in sample_cases})\n-\n-    st.sidebar.divider()\n-    st.sidebar.subheader(\"演示案例\")\n-    selected_label = st.sidebar.selectbox(\"快速载入样例\", options=list(sample_options.keys()), key=\"sample_choice\")\n-    if st.sidebar.button(\"载入案例\", use_container_width=True) and sample_options[selected_label]:\n-        load_sample_into_state(sample_options[selected_label])\n-        st.sidebar.success(\"样例已载入输入区。\")\n \n     st.sidebar.divider()\n     dashboard = safe_get(\"/prosecutor/dashboard\", {\"total_cases\": 0, \"high_evidence_cases\": 0})\n@@\n def render_user_view() -> None:\n-    render_demo_banner(\n-        \"答辩展示模式\",\n-        \"当前页面已与核心算法模块解耦，前端只负责展示与交互，分析结果统一由后端接口返回，更适合现场演示、系统分层讲解与架构答辩。\",\n-    )\n-    render_page_hero(\n-        \"农民工维权入口\",\n-        \"操作保持简洁，重点信息放大显示。输入案情后即可通过标准接口完成分析、文书生成与后台提交。\",\n-        [\"大字高亮\", \"接口解耦\", \"按钮清晰\"],\n-    )\n-    render_emphasis(\"答辩讲解可直接强调：展示层不再直连本地核心模块，系统边界更清晰。\")\n-    render_quick_demo_cases()\n+    auto_prefill_sample_case()\n \n     left_col, right_col = st.columns([1.1, 1])\n \n     with left_col:\n-        section_intro(\"填写案件信息\", \"前端按个人信息、欠薪线索、证据情况分段采集，降低填报门槛，也方便检察院后台直接研判。\")\n+        section_intro(\"填写案件信息\", \"页面已自动填入一组示例信息，可直接修改、分析、生成文书或提交后台。\")\n         st.text_input(\"案件标题（可选）\", key=\"case_title\", placeholder=\"例如：工地欠薪三个月\")\n@@\n     with right_col:\n-        section_intro(\"结果展示区\", \"分析结论、重点指标和文书预览统一放在右侧，便于答辩时快速说明。\")\n+        section_intro(\"结果展示区\", \"这里展示案件分析、证据情况、建议动作和文书预览。\")\n@@\n def render_admin_view() -> None:\n-    render_demo_banner(\n-        \"检察后台展示模式\",\n-        \"后台页只读取聚合后的接口结果，适合在答辩时说明系统已经具备前后端分层、接口复用和后续部署扩展能力。\",\n-    )\n-    render_page_hero(\n-        \"检察院决策后台\",\n-        \"采用更醒目的数据指标和更克制的页面结构，便于快速查看重点案件与风险分布。\",\n-        [\"数据更聚焦\", \"高亮指标\", \"前后端分层\"],\n-    )\n-    render_emphasis(\"答辩提示：当前后台展示只依赖 API 聚合数据，不依赖页面本地业务逻辑。\")\n-\n     dashboard = safe_get(\"/prosecutor/dashboard\", {\"items\": []})\n     rows = build_case_rows(dashboard.get(\"items\", []))\n@@\n def main() -> None:\n     st.set_page_config(page_title=\"农民工权益保障智能平台\", layout=\"wide\")\n     restore_state_from_query_params()\n     init_state()\n     render_global_styles()\n \n     st.title(\"农民工权益保障智能平台\")\n-    st.caption(\"页面风格已调整为简洁、大字、高亮重点，并已改为通过后端 API 驱动展示。\")\n+    st.caption(\"提供案件信息填写、智能分析、文书生成、后台提交和案件查询功能。\")\n*** End Patch\n",
+          "timestamp": "2026-04-17T10:20:33.161Z"
+        },
+        {
+          "type": "assistant",
+          "text": "代码已经改完。现在做两步验证：先查页面里还剩哪些“答辩/演示”类文案，再跑一次 Python 语法检查，确认这次修改没有把 Streamlit 页面打坏。",
+          "timestamp": "2026-04-17T10:20:44.654Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "exec_command",
+          "input": {
+            "cmd": "rg -n \"答辩|演示案例|展示模式|答辩提示|产品门面\" demo/ui.py",
+            "max_output_tokens": 4000,
+            "workdir": "/home/zhxy_ai/challenge_cup",
+            "yield_time_ms": 1000
+          },
+          "timestamp": "2026-04-17T10:20:44.657Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "exec_command",
+          "input": {
+            "cmd": "python -m py_compile demo/ui.py",
+            "max_output_tokens": 2000,
+            "workdir": "/home/zhxy_ai/challenge_cup",
+            "yield_time_ms": 1000
+          },
+          "timestamp": "2026-04-17T10:20:44.662Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "exec_command",
+          "input": {
+            "cmd": "git diff -- demo/ui.py",
+            "max_output_tokens": 8000,
+            "workdir": "/home/zhxy_ai/challenge_cup",
+            "yield_time_ms": 1000
+          },
+          "timestamp": "2026-04-17T10:20:44.663Z"
+        },
+        {
+          "type": "assistant",
+          "text": "语法是通过的，但我又查到两处残留：一个是法律咨询区文案里还提了“答辩”，另一个是之前的快捷演示函数还留在代码里，虽然已经不再显示。 我会再做一次清理，把这些残留一起收掉，避免页面和代码里继续带着展示性痕迹。",
+          "timestamp": "2026-04-17T10:20:52.981Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "exec_command",
+          "input": {
+            "cmd": "sed -n '850,910p' demo/ui.py",
+            "max_output_tokens": 3000,
+            "workdir": "/home/zhxy_ai/challenge_cup",
+            "yield_time_ms": 1000
+          },
+          "timestamp": "2026-04-17T10:20:53.033Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "exec_command",
+          "input": {
+            "cmd": "sed -n '1170,1235p' demo/ui.py",
+            "max_output_tokens": 3000,
+            "workdir": "/home/zhxy_ai/challenge_cup",
+            "yield_time_ms": 1000
+          },
+          "timestamp": "2026-04-17T10:20:53.039Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "apply_patch",
+          "input": "*** Begin Patch\n*** Update File: /home/zhxy_ai/challenge_cup/demo/ui.py\n@@\n-def render_quick_demo_cases() -> None:\n-    sample_cases = get_sample_cases()\n-    if not sample_cases:\n-        return\n-\n-    section_intro(\"推荐演示案例\", \"答辩时建议先载入一个典型案例，再直接点击“一键分析”或“生成文书”，核心能力会更集中地展示出来。\")\n-    featured_cases = sample_cases[:3]\n-    columns = st.columns(len(featured_cases))\n-    for column, sample in zip(columns, featured_cases):\n-        with column:\n-            st.markdown(\n-                f\"\"\"\n-                <div class=\"section-card\" style=\"height: 100%;\">\n-                    <div class=\"section-title\" style=\"font-size: 1.15rem;\">{sample[\"title\"]}</div>\n-                    <div class=\"section-copy\">{sample[\"description\"]}</div>\n-                </div>\n-                \"\"\",\n-                unsafe_allow_html=True,\n-            )\n-            if st.button(f'载入 {sample[\"case_id\"]}', key=f'quick_load_{sample[\"case_id\"]}', use_container_width=True):\n-                load_sample_into_state(sample)\n-                st.success(f'已载入示例：{sample[\"title\"]}')\n-\n-\n def render_qa_panel() -> None:\n-    section_intro(\"智能法律咨询\", \"围绕欠薪、未签合同、工伤等高频问题给出通俗化建议，便于答辩时展示平台的咨询能力。\")\n+    section_intro(\"智能法律咨询\", \"围绕欠薪、未签合同、工伤等高频问题给出通俗化建议。\")\n*** End Patch\n",
+          "timestamp": "2026-04-17T10:21:04.857Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "exec_command",
+          "input": {
+            "cmd": "rg -n \"答辩|演示案例|展示模式|答辩提示|产品门面\" demo/ui.py",
+            "max_output_tokens": 2000,
+            "workdir": "/home/zhxy_ai/challenge_cup",
+            "yield_time_ms": 1000
+          },
+          "timestamp": "2026-04-17T10:21:10.019Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "exec_command",
+          "input": {
+            "cmd": "python -m py_compile demo/ui.py",
+            "max_output_tokens": 2000,
+            "workdir": "/home/zhxy_ai/challenge_cup",
+            "yield_time_ms": 1000
+          },
+          "timestamp": "2026-04-17T10:21:10.027Z"
+        },
+        {
+          "type": "assistant",
+          "text": "页面里的用户可见残留已经清干净了，只剩下一条 CSS 注释里还写着“演示案例”。我把这类内部注释也顺手改掉，避免后续维护时混淆。",
+          "timestamp": "2026-04-17T10:21:15.622Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "apply_patch",
+          "input": "*** Begin Patch\n*** Update File: /home/zhxy_ai/challenge_cup/demo/ui.py\n@@\n-        /* 演示案例：下拉框、侧栏次要按钮等为浅底 → 黑字 */\n+        /* 侧栏下拉框、次要按钮等为浅底黑字 */\n*** End Patch\n",
+          "timestamp": "2026-04-17T10:21:17.079Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "exec_command",
+          "input": {
+            "cmd": "rg -n \"答辩|演示案例|展示模式|答辩提示|产品门面\" demo/ui.py",
+            "max_output_tokens": 1000,
+            "workdir": "/home/zhxy_ai/challenge_cup",
+            "yield_time_ms": 1000
+          },
+          "timestamp": "2026-04-17T10:21:22.033Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "exec_command",
+          "input": {
+            "cmd": "git diff -- demo/ui.py",
+            "max_output_tokens": 5000,
+            "workdir": "/home/zhxy_ai/challenge_cup",
+            "yield_time_ms": 1000
+          },
+          "timestamp": "2026-04-17T10:21:22.035Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "exec_command",
+          "input": {
+            "cmd": "nl -ba demo/ui.py | sed -n '450,640p'",
+            "max_output_tokens": 4000,
+            "workdir": "/home/zhxy_ai/challenge_cup",
+            "yield_time_ms": 1000
+          },
+          "timestamp": "2026-04-17T10:21:32.159Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "exec_command",
+          "input": {
+            "cmd": "nl -ba demo/ui.py | sed -n '1025,1185p'",
+            "max_output_tokens": 4000,
+            "workdir": "/home/zhxy_ai/challenge_cup",
+            "yield_time_ms": 1000
+          },
+          "timestamp": "2026-04-17T10:21:32.166Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "exec_command",
+          "input": {
+            "cmd": "nl -ba demo/ui.py | sed -n '1498,1515p'",
+            "max_output_tokens": 2000,
+            "workdir": "/home/zhxy_ai/challenge_cup",
+            "yield_time_ms": 1000
+          },
+          "timestamp": "2026-04-17T10:21:32.176Z"
+        },
+        {
+          "type": "assistant",
+          "text": "已按你的要求改了页面，主要在 [demo/ui.py](/home/zhxy_ai/challenge_cup/demo/ui.py)。\n\n删掉了用户可见的“答辩模式”“检察后台展示模式”“答辩提示”“推荐演示案例”“产品门面”等与实际功能无关的展示性内容，侧栏也简化成只保留导航、后端地址和后台指标。[demo/ui.py:1033](/home/zhxy_ai/challenge_cup/demo/ui.py#L1033) [demo/ui.py:1045](/home/zhxy_ai/challenge_cup/demo/ui.py#L1045) [demo/ui.py:1502](/home/zhxy_ai/challenge_cup/demo/ui.py#L1502)\n\n另外加了自动填充示例信息的逻辑：页面首次进入时会优先从后端样例接口读取，取不到就回退到本地 `data/sample_cases.json`，自动把第一条案例填进表单，不会覆盖你已经手动输入的内容。[demo/ui.py:459](/home/zhxy_ai/challenge_cup/demo/ui.py#L459) [demo/ui.py:571](/home/zhxy_ai/challenge_cup/demo/ui.py#L571) [demo/ui.py:593](/home/zhxy_ai/challenge_cup/demo/ui.py#L593)\n\n已做 `python -m py_compile demo/ui.py` 语法检查，通过。",
+          "timestamp": "2026-04-17T10:21:42.049Z"
+        }
+      ],
+      "total_additions": 43,
+      "total_deletions": 65,
+      "accepted_lines": 7,
+      "overriden_lines": 0
+    },
+    "91bf602fbda717aa": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019d9afd-1bc3-7511-9803-c491e14dd8a1",
+        "model": "gpt-5.4"
+      },
+      "human_author": "zhxy",
+      "messages": [
+        {
+          "type": "user",
+          "text": "<environment_context>\n  <cwd>/home/zhxy_ai/challenge_cup</cwd>\n  <shell>bash</shell>\n  <current_date>2026-04-17</current_date>\n  <timezone>Asia/Shanghai</timezone>\n</environment_context>",
+          "timestamp": "2026-04-17T10:29:38.626Z"
+        },
+        {
+          "type": "user",
+          "text": "就是现在demo不是需要接入一个api，我有一个codex的api key 可否使用",
+          "timestamp": "2026-04-17T10:29:38.629Z"
+        },
+        {
+          "type": "user",
+          "text": "<turn_aborted>\nThe user interrupted the previous turn on purpose. Any running unified exec processes may still be running in the background. If any tools/commands were aborted, they may have partially executed.\n</turn_aborted>",
+          "timestamp": "2026-04-17T10:29:56.855Z"
+        },
+        {
+          "type": "user",
+          "text": "就是现在demo不是需要接入一个api，我有一个codex的api key 可否使用",
+          "timestamp": "2026-04-17T11:06:23.239Z"
+        },
+        {
+          "type": "assistant",
+          "text": "我先看一下这个 demo 当前期待接什么 API、配置方式是什么，再判断你手里的 Codex key 能不能直接用。",
+          "timestamp": "2026-04-17T11:06:30.576Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "exec_command",
+          "input": {
+            "cmd": "pwd",
+            "max_output_tokens": 200,
+            "workdir": "/home/zhxy_ai/challenge_cup"
+          },
+          "timestamp": "2026-04-17T11:06:30.580Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "exec_command",
+          "input": {
+            "cmd": "rg -n \"api|OPENAI|key|token|base_url|endpoint|model\" -S .",
+            "max_output_tokens": 4000,
+            "workdir": "/home/zhxy_ai/challenge_cup"
+          },
+          "timestamp": "2026-04-17T11:06:30.584Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "exec_command",
+          "input": {
+            "cmd": "rg --files .",
+            "max_output_tokens": 2000,
+            "workdir": "/home/zhxy_ai/challenge_cup"
+          },
+          "timestamp": "2026-04-17T11:06:30.589Z"
+        },
+        {
+          "type": "assistant",
+          "text": "我已经确认到，当前 demo 不是直接接 “Codex 专用 API”，而是后端里已经写死成兼容 `chat/completions` 的 LLM 接口适配。我再看下它默认连的是哪家，以及改成 OpenAI 兼容要改多少。",
+          "timestamp": "2026-04-17T11:06:36.651Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "exec_command",
+          "input": {
+            "cmd": "sed -n '1,220p' app/llm_client.py",
+            "max_output_tokens": 2000,
+            "workdir": "/home/zhxy_ai/challenge_cup"
+          },
+          "timestamp": "2026-04-17T11:06:36.661Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "exec_command",
+          "input": {
+            "cmd": "sed -n '1,260p' app/qa_service.py",
+            "max_output_tokens": 3000,
+            "workdir": "/home/zhxy_ai/challenge_cup"
+          },
+          "timestamp": "2026-04-17T11:06:36.669Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "exec_command",
+          "input": {
+            "cmd": "sed -n '1,320p' README.md",
+            "max_output_tokens": 4000,
+            "workdir": "/home/zhxy_ai/challenge_cup"
+          },
+          "timestamp": "2026-04-17T11:06:36.693Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "web_search_call",
+          "input": {
+            "action": {
+              "queries": [
+                "site:platform.openai.com/docs Codex API key OpenAI Responses API models codex",
+                "site:platform.openai.com/docs OpenAI API keys codex model docs"
+              ],
+              "query": "site:platform.openai.com/docs Codex API key OpenAI Responses API models codex",
+              "type": "search"
+            },
+            "status": "completed",
+            "type": "web_search_call"
+          },
+          "timestamp": "2026-04-17T11:06:42.538Z"
+        },
+        {
+          "type": "assistant",
+          "text": "可以，但要分清楚你说的“Codex 的 API key”是哪一种。\n\n这个 demo 当前代码里接的是一个兼容 `chat/completions` 的接口，默认配置在 [app/llm_client.py](/home/zhxy_ai/challenge_cup/app/llm_client.py)：\n- 默认 `base_url` 是阿里百炼 `https://dashscope.aliyuncs.com/compatible-mode/v1`\n- 默认读环境变量 `DASHSCOPE_API_KEY`\n- 请求路径是 `/chat/completions`\n\n如果你手里的其实是 `OpenAI Platform` 的 API key，那么技术上可以用。OpenAI 官方文档说明：\n- OpenAI API 统一用标准 API key 做 Bearer 鉴权，不存在单独一种“Codex 专属 key”：https://platform.openai.com/docs/api-reference/introduction/installation\n- Codex 模型也可走 API，且支持 `v1/chat/completions`：https://platform.openai.com/docs/models/gpt-5.2-codex\n\n但如果你说的是：\n- ChatGPT/Codex 网页版权限\n- 只是 Plus/Pro 订阅\n- 不是 OpenAI Platform 后台创建的 API key\n\n那就不能直接给这个 demo 当后端接口 key 用。\n\n你这个项目里，最小改法有两种：\n\n1. 不改代码，直接覆盖环境变量\n```bash\nexport DASHSCOPE_API_KEY=\"你的_OPENAI_API_KEY\"\nexport DASHSCOPE_BASE_URL=\"https://api.openai.com/v1\"\nexport DASHSCOPE_MODEL=\"gpt-5.2-codex\"\n```\n\n2. 更规范一点，把 [app/llm_client.py](/home/zhxy_ai/challenge_cup/app/llm_client.py) 改成同时支持 `OPENAI_API_KEY`\n\n不过我建议你这个法律问答 demo 不一定用 `codex` 模型。`codex` 更偏代码任务；如果只是做问答/结构化 JSON 输出，通常更适合换成通用模型。\n\n如果你要，我可以直接帮你把这个 demo 改成同时支持 OpenAI key，并给你配一套可启动的 `.env`/环境变量方案。",
+          "timestamp": "2026-04-17T11:06:55.632Z"
+        },
+        {
+          "type": "user",
+          "text": "检查当前代码架构",
+          "timestamp": "2026-04-17T11:08:21.002Z"
+        },
+        {
+          "type": "assistant",
+          "text": "我先把后端、前端演示页和数据流主路径梳理出来，再按代码审查的方式看架构上的耦合点、扩展点和明显风险。",
+          "timestamp": "2026-04-17T11:08:24.512Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "update_plan",
+          "input": {
+            "plan": [
+              {
+                "status": "in_progress",
+                "step": "梳理项目目录与主数据流"
+              },
+              {
+                "status": "pending",
+                "step": "检查核心模块职责与耦合"
+              },
+              {
+                "status": "pending",
+                "step": "给出架构评审结论与风险点"
+              }
+            ]
+          },
+          "timestamp": "2026-04-17T11:08:25.650Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "exec_command",
+          "input": {
+            "cmd": "find . -maxdepth 2 -type f | sort",
+            "max_output_tokens": 4000,
+            "workdir": "/home/zhxy_ai/challenge_cup"
+          },
+          "timestamp": "2026-04-17T11:08:40.748Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "exec_command",
+          "input": {
+            "cmd": "sed -n '1,260p' app/api.py",
+            "max_output_tokens": 4000,
+            "workdir": "/home/zhxy_ai/challenge_cup"
+          },
+          "timestamp": "2026-04-17T11:08:40.753Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "exec_command",
+          "input": {
+            "cmd": "sed -n '1,260p' app/service.py",
+            "max_output_tokens": 3000,
+            "workdir": "/home/zhxy_ai/challenge_cup"
+          },
+          "timestamp": "2026-04-17T11:08:40.758Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "exec_command",
+          "input": {
+            "cmd": "sed -n '1,260p' core/knowledge_base.py",
+            "max_output_tokens": 3000,
+            "workdir": "/home/zhxy_ai/challenge_cup"
+          },
+          "timestamp": "2026-04-17T11:08:40.762Z"
+        },
+        {
+          "type": "assistant",
+          "text": "主干已经看清了：`api.py` 只做路由，`service.py` 当薄服务层，实际业务集中在 `DataProcessor`、`CaseStore`、`DocumentGenerator`、`qa_service`。我接着检查这些核心模块内部是不是职责清晰，还是把流程和规则都揉在一起了。",
+          "timestamp": "2026-04-17T11:08:50.886Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "exec_command",
+          "input": {
+            "cmd": "sed -n '1,340p' app/data_processor.py",
+            "max_output_tokens": 5000,
+            "workdir": "/home/zhxy_ai/challenge_cup"
+          },
+          "timestamp": "2026-04-17T11:08:50.889Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "exec_command",
+          "input": {
+            "cmd": "sed -n '1,360p' app/case_store.py",
+            "max_output_tokens": 5000,
+            "workdir": "/home/zhxy_ai/challenge_cup"
+          },
+          "timestamp": "2026-04-17T11:08:50.895Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "exec_command",
+          "input": {
+            "cmd": "sed -n '1,320p' app/document_generator.py",
+            "max_output_tokens": 5000,
+            "workdir": "/home/zhxy_ai/challenge_cup"
+          },
+          "timestamp": "2026-04-17T11:08:50.898Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "exec_command",
+          "input": {
+            "cmd": "sed -n '1,260p' app/decision_engine.py",
+            "max_output_tokens": 3000,
+            "workdir": "/home/zhxy_ai/challenge_cup"
+          },
+          "timestamp": "2026-04-17T11:08:50.903Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "exec_command",
+          "input": {
+            "cmd": "sed -n '1,260p' app/evidence_checker.py",
+            "max_output_tokens": 3000,
+            "workdir": "/home/zhxy_ai/challenge_cup"
+          },
+          "timestamp": "2026-04-17T11:08:50.907Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "exec_command",
+          "input": {
+            "cmd": "sed -n '1,220p' core/models.py",
+            "max_output_tokens": 2000,
+            "workdir": "/home/zhxy_ai/challenge_cup"
+          },
+          "timestamp": "2026-04-17T11:08:50.911Z"
+        },
+        {
+          "type": "assistant",
+          "text": "后端里有个明显特征：接口层很薄，但业务对象目前基本都是“字典驱动”，类型边界比较弱。我再补看一下 Streamlit 前端和状态管理，这样能判断整个 demo 是模块化还是只是单体拼装。",
+          "timestamp": "2026-04-17T11:09:02.082Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "exec_command",
+          "input": {
+            "cmd": "sed -n '1,260p' demo/ui.py",
+            "max_output_tokens": 5000,
+            "workdir": "/home/zhxy_ai/challenge_cup"
+          },
+          "timestamp": "2026-04-17T11:09:02.109Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "exec_command",
+          "input": {
+            "cmd": "sed -n '260,620p' demo/ui.py",
+            "max_output_tokens": 5000,
+            "workdir": "/home/zhxy_ai/challenge_cup"
+          },
+          "timestamp": "2026-04-17T11:09:02.112Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "exec_command",
+          "input": {
+            "cmd": "sed -n '620,980p' demo/ui.py",
+            "max_output_tokens": 5000,
+            "workdir": "/home/zhxy_ai/challenge_cup"
+          },
+          "timestamp": "2026-04-17T11:09:02.115Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "exec_command",
+          "input": {
+            "cmd": "sed -n '980,1500p' demo/ui.py",
+            "max_output_tokens": 6000,
+            "workdir": "/home/zhxy_ai/challenge_cup"
+          },
+          "timestamp": "2026-04-17T11:09:02.118Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "exec_command",
+          "input": {
+            "cmd": "sed -n '1,220p' demo/api_client.py",
+            "max_output_tokens": 2000,
+            "workdir": "/home/zhxy_ai/challenge_cup"
+          },
+          "timestamp": "2026-04-17T11:09:02.122Z"
+        },
+        {
+          "type": "assistant",
+          "text": "架构脉络已经够了。我再补几处精确行号，然后直接按“review”格式给你结论，重点放在结构性问题和后续演进风险。",
+          "timestamp": "2026-04-17T11:09:13.095Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "exec_command",
+          "input": {
+            "cmd": "nl -ba app/service.py | sed -n '1,220p'",
+            "max_output_tokens": 2500,
+            "workdir": "/home/zhxy_ai/challenge_cup"
+          },
+          "timestamp": "2026-04-17T11:09:13.099Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "exec_command",
+          "input": {
+            "cmd": "nl -ba app/case_store.py | sed -n '1,260p'",
+            "max_output_tokens": 4000,
+            "workdir": "/home/zhxy_ai/challenge_cup"
+          },
+          "timestamp": "2026-04-17T11:09:13.102Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "exec_command",
+          "input": {
+            "cmd": "nl -ba app/data_processor.py | sed -n '1,320p'",
+            "max_output_tokens": 5000,
+            "workdir": "/home/zhxy_ai/challenge_cup"
+          },
+          "timestamp": "2026-04-17T11:09:13.106Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "exec_command",
+          "input": {
+            "cmd": "nl -ba app/document_generator.py | sed -n '1,320p'",
+            "max_output_tokens": 5000,
+            "workdir": "/home/zhxy_ai/challenge_cup"
+          },
+          "timestamp": "2026-04-17T11:09:13.108Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "exec_command",
+          "input": {
+            "cmd": "nl -ba demo/ui.py | sed -n '1,260p'",
+            "max_output_tokens": 4000,
+            "workdir": "/home/zhxy_ai/challenge_cup"
+          },
+          "timestamp": "2026-04-17T11:09:13.116Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "exec_command",
+          "input": {
+            "cmd": "nl -ba demo/ui.py | sed -n '260,620p'",
+            "max_output_tokens": 5000,
+            "workdir": "/home/zhxy_ai/challenge_cup"
+          },
+          "timestamp": "2026-04-17T11:09:13.121Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "exec_command",
+          "input": {
+            "cmd": "nl -ba demo/ui.py | sed -n '620,1160p'",
+            "max_output_tokens": 7000,
+            "workdir": "/home/zhxy_ai/challenge_cup"
+          },
+          "timestamp": "2026-04-17T11:09:13.128Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "update_plan",
+          "input": {
+            "plan": [
+              {
+                "status": "completed",
+                "step": "梳理项目目录与主数据流"
+              },
+              {
+                "status": "completed",
+                "step": "检查核心模块职责与耦合"
+              },
+              {
+                "status": "in_progress",
+                "step": "给出架构评审结论与风险点"
+              }
+            ]
+          },
+          "timestamp": "2026-04-17T11:09:19.586Z"
+        },
+        {
+          "type": "assistant",
+          "text": "**Findings**\n\n1. 高风险: 全局单例把应用状态、依赖和生命周期硬编码在模块导入期，后续几乎没法平滑扩展到多实例或测试隔离。[app/service.py](/home/zhxy_ai/challenge_cup/app/service.py#L13) 在 import 时直接创建 `KnowledgeBase`、`DataProcessor`、`CaseStore`、`LLMClient`，而 [app/case_store.py](/home/zhxy_ai/challenge_cup/app/case_store.py#L14) 又把案件存在进程内 `_cases`。这对 demo 可以，但一旦加持久化、并发 worker、集成测试、按环境切换依赖，都会遇到初始化顺序、状态污染、实例不可替换的问题。\n\n2. 高风险: 核心业务模型几乎完全靠 `dict[str, Any]` 传递，接口层和领域层之间没有稳定契约，重构成本会快速上升。[app/api.py](/home/zhxy_ai/challenge_cup/app/api.py) 入口请求用了 Pydantic，但进入服务层后马上退化成裸字典；[app/data_processor.py](/home/zhxy_ai/challenge_cup/app/data_processor.py#L56)、[app/case_store.py](/home/zhxy_ai/challenge_cup/app/case_store.py#L48)、[app/document_generator.py](/home/zhxy_ai/challenge_cup/app/document_generator.py#L103) 都在拼装大型字典。`core/models.py` 已经有 `AnalysisResult`，但实际上没接入主流程。这意味着字段名一改就会在多处静默失配，而不是在类型层及时失败。\n\n3. 中高风险: `DataProcessor` 同时承担文本抽取、证据归并、评分、风险判断、动作建议，职责过重，规则扩展会越来越脆。[app/data_processor.py](/home/zhxy_ai/challenge_cup/app/data_processor.py#L52) 这个类已经覆盖 extraction + rule engine + recommendation 三层逻辑。现在场景只有 3 类还撑得住；一旦加更多争议类型、地域规则、不同评分口径，就会变成难以测试和难以定位回归的大类。\n\n4. 中高风险: `DocumentGenerator` 把模板映射、字段要求、上下文默认值、金额格式化、缺失校验全部塞在一个类里，文书类型继续增长时会失控。[app/document_generator.py](/home/zhxy_ai/challenge_cup/app/document_generator.py#L11) 到 [app/document_generator.py](/home/zhxy_ai/challenge_cup/app/document_generator.py#L186) 基本是一个集中式配置加渲染器。现在已有大量 `facts.get(...)` 默认值和模板专属字段，一旦文书继续加种类，很容易出现字段复用错误或模板间语义串线。\n\n5. 中风险: Streamlit 前端是明显的“大文件单体页”，UI、状态、API 编排、数据映射、展示逻辑全部耦合在一起。[demo/ui.py](/home/zhxy_ai/challenge_cup/demo/ui.py#L33) 的超长 `session_state` 键列表、[demo/ui.py](/home/zhxy_ai/challenge_cup/demo/ui.py#L622) 的 payload 拼装、[demo/ui.py](/home/zhxy_ai/challenge_cup/demo/ui.py#L1045) 起的大段页面渲染，都说明这不是组件化结构。当前适合答辩 demo，但后续要加页面、角色、校验、权限时，维护成本会迅速放大。\n\n6. 中风险: 规则与配置分层不一致，部分规则在 JSON，部分规则硬编码在 Python，导致修改入口分散。[core/knowledge_base.py](/home/zhxy_ai/challenge_cup/core/knowledge_base.py#L15) 已经加载 `laws.json`、`evidence_rules.json`、`faq.json`，但 [app/data_processor.py](/home/zhxy_ai/challenge_cup/app/data_processor.py#L9) 的 `CASE_KEYWORDS`、`EVIDENCE_HINTS`、风险分公式仍写死在代码里，前端的证据选项也单独写在 [demo/ui.py](/home/zhxy_ai/challenge_cup/demo/ui.py#L23)。这会造成业务规则改一次，需要同时改多层。\n\n7. 中风险: API 分层目前是“薄 controller + 薄 service + 厚 util-like domain”，表面分层，实际没有清晰 application service 边界。[app/api.py](/home/zhxy_ai/challenge_cup/app/api.py) 很干净，但 [app/service.py](/home/zhxy_ai/challenge_cup/app/service.py#L20) 基本只是转发，不承担编排、事务、依赖注入或权限边界。这个层在当前结构里价值有限，后续容易演化成重复传参层。\n\n**结论**\n\n当前代码架构对“挑战杯演示原型”是成立的，优点是上手快、依赖少、链路直观：`FastAPI API -> service -> processor/store/generator -> Streamlit demo`。如果目标只是答辩展示、功能跑通、可离线演示，这套结构没有根本性问题。\n\n但它本质上是“单进程、单体、字典驱动”的 demo 架构，不是可持续扩展的业务架构。最大瓶颈不是某个函数写得乱，而是领域模型缺失、依赖创建方式固定、前后端规则重复、核心模块职责过重。\n\n**建议**\n\n1. 先补领域模型。把 `CaseReport`、`StructuredCaseData`、`RiskAssessment`、`SubmissionRecord` 这些对象变成 dataclass 或 Pydantic model，至少替掉主流程里的大字典。\n2. 把 `DataProcessor` 拆成 `Extractor`、`EvidenceEvaluator`、`RiskScorer`、`ActionRecommender` 四段，规则可以继续简单，但职责要分开。\n3. 把 `CaseStore` 抽象成 repository 接口，哪怕先保留 in-memory 实现，也别把状态管理和业务编排绑死。\n4. 把 `DocumentGenerator` 的模板定义、字段需求、上下文映射拆成配置层和渲染层。\n5. 把 [demo/ui.py](/home/zhxy_ai/challenge_cup/demo/ui.py) 至少拆成 `state.py`、`api.py`、`user_view.py`、`admin_view.py`，否则后续每次改动都会相互影响。\n\n**残余风险**\n\n我这次是架构审查，不是运行验证；没有补测试，也没验证真实并发、真实多用户、真实部署下的行为。整体判断基于代码结构本身，不基于运行时压测结果。",
+          "timestamp": "2026-04-17T11:09:49.761Z"
+        },
+        {
+          "type": "user",
+          "text": "根据建议修改",
+          "timestamp": "2026-04-17T11:10:35.682Z"
+        },
+        {
+          "type": "assistant",
+          "text": "我按“先稳住后端架构骨架，再减轻前端耦合”的顺序改。第一步会先引入明确的数据模型和可注入的应用容器，把当前最重的耦合点拆开。",
+          "timestamp": "2026-04-17T11:10:46.612Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "update_plan",
+          "input": {
+            "explanation": "先做对主链路影响最大的结构性调整：类型模型、依赖容器、处理器拆分；然后再把 Streamlit 按职责拆文件。",
+            "plan": [
+              {
+                "status": "in_progress",
+                "step": "引入核心领域模型并替换主流程裸字典传递"
+              },
+              {
+                "status": "pending",
+                "step": "重构后端依赖创建与处理器职责拆分"
+              },
+              {
+                "status": "pending",
+                "step": "拆分 Streamlit 页面与状态/API 编排"
+              },
+              {
+                "status": "pending",
+                "step": "运行基础验证并汇总变更"
+              }
+            ]
+          },
+          "timestamp": "2026-04-17T11:10:49.040Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "exec_command",
+          "input": {
+            "cmd": "nl -ba app/data_processor.py | sed -n '320,420p'",
+            "max_output_tokens": 2500,
+            "workdir": "/home/zhxy_ai/challenge_cup"
+          },
+          "timestamp": "2026-04-17T11:10:55.404Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "exec_command",
+          "input": {
+            "cmd": "tail -n 80 demo/ui.py",
+            "max_output_tokens": 3000,
+            "workdir": "/home/zhxy_ai/challenge_cup"
+          },
+          "timestamp": "2026-04-17T11:10:55.466Z"
+        },
+        {
+          "type": "assistant",
+          "text": "后端会先落成一个更清晰的“领域模型 + 应用容器 + 处理器编排”骨架，接口保持兼容；随后再把 Streamlit 至少拆成状态/API/视图入口三层，避免继续把所有逻辑压在一个文件里。",
+          "timestamp": "2026-04-17T11:11:11.722Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "apply_patch",
+          "input": "*** Begin Patch\n*** Delete File: /home/zhxy_ai/challenge_cup/core/models.py\n*** End Patch\n",
+          "timestamp": "2026-04-17T11:11:13.092Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "apply_patch",
+          "input": "*** Begin Patch\n*** Add File: /home/zhxy_ai/challenge_cup/core/models.py\n+from __future__ import annotations\n+\n+from dataclasses import asdict, dataclass, field\n+from typing import Any\n+\n+\n+def _clean_dict(data: dict[str, Any]) -> dict[str, Any]:\n+    return {key: value for key, value in data.items() if value is not None}\n+\n+\n+@dataclass(slots=True)\n+class StructuredCaseData:\n+    worker_name: str\n+    employer_name: str\n+    issue_type: str\n+    amount_claimed: int | None\n+    unpaid_duration_months: int | None\n+    has_contract: bool | None\n+    injury_occurred: bool\n+    raw_text: str\n+    evidence_items: list[str]\n+    facts: dict[str, Any] = field(default_factory=dict)\n+    extraction_notes: list[str] = field(default_factory=list)\n+\n+    def to_dict(self) -> dict[str, Any]:\n+        return asdict(self)\n+\n+\n+@dataclass(slots=True)\n+class RiskAssessment:\n+    level: str\n+    score: int\n+    evidence_score: int\n+    priority_for_prosecutor: bool\n+    priority_label: str\n+    reasons: list[str]\n+\n+    def to_dict(self) -> dict[str, Any]:\n+        return asdict(self)\n+\n+\n+@dataclass(slots=True)\n+class EvidenceSummary:\n+    present_required: list[str]\n+    missing_required: list[str]\n+    optional_evidence: list[str]\n+\n+    def to_dict(self) -> dict[str, Any]:\n+        return asdict(self)\n+\n+\n+@dataclass(slots=True)\n+class CaseReport:\n+    structured_data: StructuredCaseData\n+    risk_assessment: RiskAssessment\n+    recommended_actions: list[str]\n+    legal_basis: list[dict[str, str]]\n+    evidence: EvidenceSummary\n+\n+    def to_dict(self) -> dict[str, Any]:\n+        return {\n+            \"structured_data\": self.structured_data.to_dict(),\n+            \"risk_assessment\": self.risk_assessment.to_dict(),\n+            \"recommended_actions\": list(self.recommended_actions),\n+            \"legal_basis\": [dict(item) for item in self.legal_basis],\n+            \"evidence\": self.evidence.to_dict(),\n+        }\n+\n+\n+@dataclass(slots=True)\n+class FeedbackMessage:\n+    sent_at: str\n+    sender: str\n+    message: str\n+\n+    def to_dict(self) -> dict[str, str]:\n+        return asdict(self)\n+\n+\n+@dataclass(slots=True)\n+class CaseRecord:\n+    submission_id: str\n+    title: str\n+    source: str\n+    submitted_at: str\n+    updated_at: str\n+    description: str\n+    report: CaseReport\n+    facts: dict[str, Any] = field(default_factory=dict)\n+    user_profile: dict[str, Any] = field(default_factory=dict)\n+    dispute_profile: dict[str, Any] = field(default_factory=dict)\n+    evidence_catalog: dict[str, list[str]] = field(default_factory=dict)\n+    case_status: str = \"已受理，待检察评估\"\n+    mediation_priority: str = \"待评估\"\n+    prosecution_necessity: str = \"待评估\"\n+    relief_checks: dict[str, bool] = field(\n+        default_factory=lambda: {\n+            \"labor_complaint\": False,\n+            \"labor_arbitration\": False,\n+            \"legal_aid\": False,\n+            \"union_or_street_help\": False,\n+        }\n+    )\n+    relief_note: str = \"\"\n+    mediation_case_type: str = \"\"\n+    prosecution_case_type: str = \"\"\n+    prosecutor_note: str = \"\"\n+    feedback_messages: list[FeedbackMessage] = field(default_factory=list)\n+    source_case_id: str | None = None\n+\n+    @property\n+    def provided_evidence(self) -> list[str]:\n+        return list(self.report.structured_data.evidence_items)\n+\n+    def to_dict(self) -> dict[str, Any]:\n+        return _clean_dict(\n+            {\n+                \"submission_id\": self.submission_id,\n+                \"source_case_id\": self.source_case_id,\n+                \"title\": self.title,\n+                \"source\": self.source,\n+                \"submitted_at\": self.submitted_at,\n+                \"updated_at\": self.updated_at,\n+                \"description\": self.description,\n+                \"provided_evidence\": self.provided_evidence,\n+                \"facts\": dict(self.facts),\n+                \"user_profile\": dict(self.user_profile),\n+                \"dispute_profile\": dict(self.dispute_profile),\n+                \"evidence_catalog\": {key: list(value) for key, value in self.evidence_catalog.items()},\n+                \"case_status\": self.case_status,\n+                \"mediation_priority\": self.mediation_priority,\n+                \"prosecution_necessity\": self.prosecution_necessity,\n+                \"relief_checks\": dict(self.relief_checks),\n+                \"relief_note\": self.relief_note,\n+                \"mediation_case_type\": self.mediation_case_type,\n+                \"prosecution_case_type\": self.prosecution_case_type,\n+                \"prosecutor_note\": self.prosecutor_note,\n+                \"feedback_messages\": [item.to_dict() for item in self.feedback_messages],\n+                \"structured_data\": self.report.structured_data.to_dict(),\n+                \"risk_assessment\": self.report.risk_assessment.to_dict(),\n+                \"recommended_actions\": list(self.report.recommended_actions),\n+                \"legal_basis\": [dict(item) for item in self.report.legal_basis],\n+                \"evidence\": self.report.evidence.to_dict(),\n+            }\n+        )\n*** End Patch\n",
+          "timestamp": "2026-04-17T11:11:39.198Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "apply_patch",
+          "input": "*** Begin Patch\n*** Add File: /home/zhxy_ai/challenge_cup/app/case_analysis.py\n+from __future__ import annotations\n+\n+import re\n+from typing import Any\n+\n+from core.knowledge_base import KnowledgeBase\n+from core.models import EvidenceSummary, RiskAssessment, StructuredCaseData\n+\n+\n+CASE_KEYWORDS = {\n+    \"欠薪\": [\"欠薪\", \"拖欠工资\", \"工资没发\", \"工资未发\", \"工资\", \"薪资\", \"报酬\", \"结算\"],\n+    \"工伤\": [\"工伤\", \"受伤\", \"骨折\", \"摔伤\", \"砸伤\", \"事故\", \"住院\", \"治疗\", \"赔偿\"],\n+    \"未签劳动合同\": [\"未签合同\", \"没签合同\", \"没有合同\", \"双倍工资\", \"劳动关系\", \"确认劳动关系\"],\n+}\n+\n+EVIDENCE_HINTS = {\n+    \"身份证明\": [\"身份证\"],\n+    \"劳动合同或用工证明\": [\"劳动合同\", \"合同\", \"用工证明\", \"工牌\", \"工作证\"],\n+    \"工资约定证明\": [\"工资标准\", \"工资约定\", \"口头约定\", \"单价\"],\n+    \"考勤记录或工作记录\": [\"考勤\", \"打卡\", \"工作记录\", \"施工记录\"],\n+    \"工资流水或欠薪记录\": [\"工资流水\", \"银行流水\", \"转账记录\", \"欠条\", \"欠薪记录\"],\n+    \"聊天记录\": [\"微信\", \"聊天记录\", \"语音记录\"],\n+    \"工友证言\": [\"工友证言\", \"同事证明\", \"证人\"],\n+    \"工作照片\": [\"工作照片\", \"现场照片\", \"工地照片\"],\n+    \"事故经过说明\": [\"事故说明\", \"事故经过\"],\n+    \"医院诊断材料\": [\"诊断证明\", \"住院\", \"病历\", \"医院材料\", \"诊断\"],\n+    \"工伤认定材料\": [\"工伤认定\", \"认定申请\"],\n+    \"医疗费票据\": [\"票据\", \"发票\", \"医疗费\"],\n+    \"入职时间证明\": [\"入职\", \"到岗\", \"上班时间\"],\n+    \"实际工作证明\": [\"工作群\", \"工作安排\", \"岗位\", \"干活\"],\n+    \"工资支付记录\": [\"发工资\", \"微信转账\", \"工资支付\", \"工资流水\"],\n+    \"未签合同情况说明\": [\"未签合同\", \"没签合同\", \"没有合同\"],\n+    \"工牌照片\": [\"工牌\"],\n+    \"招聘记录\": [\"招聘\", \"招工\"],\n+}\n+\n+CHINESE_NUMERALS = {\n+    \"零\": 0,\n+    \"一\": 1,\n+    \"二\": 2,\n+    \"两\": 2,\n+    \"三\": 3,\n+    \"四\": 4,\n+    \"五\": 5,\n+    \"六\": 6,\n+    \"七\": 7,\n+    \"八\": 8,\n+    \"九\": 9,\n+    \"十\": 10,\n+}\n+\n+\n+class TextExtractor:\n+    def extract(\n+        self,\n+        raw_text: str,\n+        provided_evidence: list[str] | None = None,\n+        facts: dict[str, Any] | None = None,\n+    ) -> StructuredCaseData:\n+        text = raw_text.strip()\n+        facts = facts or {}\n+        evidence_items = self._merge_evidence(provided_evidence or [], text)\n+        worker_name = self._extract_worker_name(text, facts)\n+        employer_name = self._extract_employer_name(text, facts)\n+        issue_type = self._detect_issue_type(text)\n+        amount_claimed = self._extract_amount(text, facts)\n+        unpaid_duration = self._extract_duration_months(text, facts)\n+        has_contract = self._extract_contract_status(text, facts)\n+        injury_occurred = issue_type == \"工伤\" or any(keyword in text for keyword in [\"受伤\", \"骨折\", \"住院\", \"摔伤\"])\n+        notes: list[str] = []\n+\n+        if worker_name == \"未提供\":\n+            notes.append(\"未从文本中识别到劳动者姓名，已使用默认值。\")\n+        if employer_name == \"未提供\":\n+            notes.append(\"未从文本中识别到用工主体，建议补充公司或包工头名称。\")\n+        if amount_claimed is None:\n+            notes.append(\"未识别到明确金额，建议补充欠薪或赔偿金额。\")\n+        if unpaid_duration is None and issue_type == \"欠薪\":\n+            notes.append(\"未识别到欠薪时长，建议补充拖欠月份。\")\n+\n+        return StructuredCaseData(\n+            worker_name=worker_name,\n+            employer_name=employer_name,\n+            issue_type=issue_type,\n+            amount_claimed=amount_claimed,\n+            unpaid_duration_months=unpaid_duration,\n+            has_contract=has_contract,\n+            injury_occurred=injury_occurred,\n+            raw_text=text,\n+            evidence_items=evidence_items,\n+            facts=facts,\n+            extraction_notes=notes,\n+        )\n+\n+    def _merge_evidence(self, provided_evidence: list[str], raw_text: str) -> list[str]:\n+        evidence_items = list(dict.fromkeys(item.strip() for item in provided_evidence if item.strip()))\n+        normalized = raw_text.strip()\n+        for canonical, hints in EVIDENCE_HINTS.items():\n+            if canonical in evidence_items:\n+                continue\n+            if any(hint in normalized for hint in hints):\n+                evidence_items.append(canonical)\n+        return evidence_items\n+\n+    def _detect_issue_type(self, text: str) -> str:\n+        ranked = [\n+            (issue_type, sum(1 for keyword in keywords if keyword in text))\n+            for issue_type, keywords in CASE_KEYWORDS.items()\n+        ]\n+        ranked.sort(key=lambda item: item[1], reverse=True)\n+        return ranked[0][0] if ranked and ranked[0][1] > 0 else \"欠薪\"\n+\n+    def _extract_worker_name(self, text: str, facts: dict[str, Any]) -> str:\n+        if facts.get(\"worker_name\"):\n+            return str(facts[\"worker_name\"])\n+\n+        patterns = [\n+            r\"(?:我叫|本人叫)([\\u4e00-\\u9fa5]{2,4})\",\n+            r\"([\\u4e00-\\u9fa5]{1,3}某)\",\n+            r\"([\\u4e00-\\u9fa5]{2,4})(?:在|于|是)\",\n+        ]\n+        for pattern in patterns:\n+            match = re.search(pattern, text)\n+            if match:\n+                return match.group(1)\n+        return \"未提供\"\n+\n+    def _extract_employer_name(self, text: str, facts: dict[str, Any]) -> str:\n+        company_name = facts.get(\"company_name\") or facts.get(\"employer_name\")\n+        if company_name:\n+            return str(company_name)\n+\n+        patterns = [\n+            r\"在([\\u4e00-\\u9fa5A-Za-z0-9]{2,30}(?:公司|工厂|工地|项目部|劳务队))\",\n+            r\"([\\u4e00-\\u9fa5A-Za-z0-9]{2,30}(?:公司|工厂|工地|项目部|劳务队))\",\n+        ]\n+        for pattern in patterns:\n+            match = re.search(pattern, text)\n+            if match:\n+                return match.group(1)\n+        return \"未提供\"\n+\n+    def _extract_amount(self, text: str, facts: dict[str, Any]) -> int | None:\n+        fact_amount = facts.get(\"amount\") or facts.get(\"amount_claimed\")\n+        if fact_amount not in (None, \"\"):\n+            try:\n+                return int(str(fact_amount))\n+            except ValueError:\n+                pass\n+\n+        match = re.search(r\"(\\d+(?:\\.\\d+)?)\\s*万\", text)\n+        if match:\n+            return int(float(match.group(1)) * 10000)\n+\n+        match = re.search(r\"(\\d+(?:\\.\\d+)?)\\s*元\", text)\n+        if match:\n+            return int(float(match.group(1)))\n+\n+        chinese_match = re.search(r\"([一二两三四五六七八九十]+)\\s*万\", text)\n+        if chinese_match:\n+            return self._parse_chinese_number(chinese_match.group(1)) * 10000\n+        return None\n+\n+    def _extract_duration_months(self, text: str, facts: dict[str, Any]) -> int | None:\n+        fact_duration = facts.get(\"unpaid_duration_months\") or facts.get(\"duration_months\")\n+        if fact_duration not in (None, \"\"):\n+            try:\n+                return int(str(fact_duration))\n+            except ValueError:\n+                pass\n+\n+        match = re.search(r\"(\\d+)\\s*个?月\", text)\n+        if match:\n+            return int(match.group(1))\n+\n+        chinese_match = re.search(r\"([一二两三四五六七八九十]+)\\s*个?月\", text)\n+        if chinese_match:\n+            return self._parse_chinese_number(chinese_match.group(1))\n+        return None\n+\n+    def _extract_contract_status(self, text: str, facts: dict[str, Any]) -> bool | None:\n+        if \"has_contract\" in facts and facts[\"has_contract\"] is not None:\n+            return bool(facts[\"has_contract\"])\n+\n+        negative_keywords = [\"没签合同\", \"未签合同\", \"没有合同\", \"未订立劳动合同\"]\n+        positive_keywords = [\"签了合同\", \"签订合同\", \"劳动合同\"]\n+\n+        if any(keyword in text for keyword in negative_keywords):\n+            return False\n+        if any(keyword in text for keyword in positive_keywords):\n+            return True\n+        return None\n+\n+    def _parse_chinese_number(self, text: str) -> int:\n+        if not text:\n+            return 0\n+        if text == \"十\":\n+            return 10\n+        if \"十\" in text:\n+            left, _, right = text.partition(\"十\")\n+            tens = CHINESE_NUMERALS.get(left, 1) if left else 1\n+            ones = CHINESE_NUMERALS.get(right, 0) if right else 0\n+            return tens * 10 + ones\n+        return CHINESE_NUMERALS.get(text, 0)\n+\n+\n+class EvidenceAnalyzer:\n+    def __init__(self, kb: KnowledgeBase) -> None:\n+        self.kb = kb\n+\n+    def summarize(self, structured_data: StructuredCaseData) -> tuple[EvidenceSummary, int]:\n+        rules = self.kb.get_evidence_rule(structured_data.issue_type)\n+        required = rules[\"required\"]\n+        optional = rules[\"optional\"]\n+        evidence_items = structured_data.evidence_items\n+\n+        present_required = [item for item in required if item in evidence_items]\n+        missing_required = [item for item in required if item not in evidence_items]\n+        present_optional = [item for item in optional if item in evidence_items]\n+\n+        fact_completeness = 0\n+        if structured_data.worker_name != \"未提供\":\n+            fact_completeness += 1\n+        if structured_data.employer_name != \"未提供\":\n+            fact_completeness += 1\n+        if structured_data.amount_claimed is not None:\n+            fact_completeness += 1\n+        if structured_data.unpaid_duration_months is not None:\n+            fact_completeness += 1\n+\n+        required_ratio = len(present_required) / len(required) if required else 0\n+        optional_ratio = len(present_optional) / len(optional) if optional else 0\n+        fact_ratio = fact_completeness / 4\n+        evidence_score = round(min(100, required_ratio * 70 + optional_ratio * 15 + fact_ratio * 15))\n+\n+        return (\n+            EvidenceSummary(\n+                present_required=present_required,\n+                missing_required=missing_required,\n+                optional_evidence=optional,\n+            ),\n+            evidence_score,\n+        )\n+\n+\n+class RiskScorer:\n+    def score(self, structured_data: StructuredCaseData, evidence_summary: EvidenceSummary, evidence_score: int) -> RiskAssessment:\n+        risk_score = 55\n+        issue_type = structured_data.issue_type\n+\n+        if issue_type == \"欠薪\":\n+            if (structured_data.unpaid_duration_months or 0) >= 3:\n+                risk_score += 18\n+            if structured_data.has_contract is False:\n+                risk_score += 12\n+        elif issue_type == \"工伤\":\n+            if \"工伤认定材料\" in evidence_summary.missing_required:\n+                risk_score += 20\n+            if structured_data.has_contract is False:\n+                risk_score += 8\n+        elif issue_type == \"未签劳动合同\":\n+            if structured_data.has_contract is False:\n+                risk_score += 16\n+            if (structured_data.unpaid_duration_months or 0) >= 6:\n+                risk_score += 8\n+\n+        risk_score += min(20, len(evidence_summary.missing_required) * 5)\n+        risk_score -= round(evidence_score * 0.45)\n+        risk_score = max(5, min(100, risk_score))\n+\n+        if risk_score >= 70:\n+            risk_level = \"高风险\"\n+        elif risk_score >= 45:\n+            risk_level = \"中风险\"\n+        else:\n+            risk_level = \"低风险\"\n+\n+        reasons = [f\"当前识别的纠纷类型为“{issue_type}”，证据分数为 {evidence_score} 分。\"]\n+        if issue_type == \"欠薪\" and (structured_data.unpaid_duration_months or 0) >= 3:\n+            reasons.append(\"欠薪时长达到 3 个月及以上，属于需要尽快介入的情形。\")\n+        if structured_data.has_contract is False:\n+            reasons.append(\"文本显示未签劳动合同，劳动关系与用工主体证明难度会增加。\")\n+        if evidence_summary.missing_required:\n+            reasons.append(\n+                f\"仍缺少 {len(evidence_summary.missing_required)} 项关键证据：{'、'.join(evidence_summary.missing_required)}。\"\n+            )\n+        else:\n+            reasons.append(\"当前必备证据已基本齐备，可直接进入程序性维权阶段。\")\n+        reasons.append(f\"综合规则引擎判定该案为{risk_level}。\")\n+\n+        priority_for_prosecutor = evidence_score >= 75\n+        priority_label = \"高证据优先关注\" if priority_for_prosecutor else \"常规跟进\"\n+        return RiskAssessment(\n+            level=risk_level,\n+            score=risk_score,\n+            evidence_score=evidence_score,\n+            priority_for_prosecutor=priority_for_prosecutor,\n+            priority_label=priority_label,\n+            reasons=reasons,\n+        )\n+\n+\n+class ActionPlanner:\n+    def build(self, structured_data: StructuredCaseData, evidence_summary: EvidenceSummary, evidence_score: int) -> list[str]:\n+        issue_type = structured_data.issue_type\n+        actions: list[str] = []\n+\n+        if issue_type == \"欠薪\":\n+            actions.extend(\n+                [\n+                    \"优先整理工资标准、欠薪月份和实际工作天数，形成时间轴。\",\n+                    \"先申请劳动仲裁；如存在批量欠薪或执行困难，可同步准备检察支持起诉材料。\",\n+                ]\n+            )\n+        elif issue_type == \"工伤\":\n+            actions.extend(\n+                [\n+                    \"先补齐工伤认定申请材料，再主张工伤待遇或赔偿。\",\n+                    \"固定事故时间、地点、岗位和就医资料，避免事实链断裂。\",\n+                ]\n+            )\n+        else:\n+            actions.extend(\n+                [\n+                    \"重点固定入职时间、持续用工事实和工资支付记录。\",\n+                    \"可先通过劳动仲裁确认劳动关系，再主张双倍工资。\",\n+                ]\n+            )\n+\n+        if evidence_summary.missing_required:\n+            actions.append(f\"优先补齐：{'、'.join(evidence_summary.missing_required)}。\")\n+        if evidence_score >= 75:\n+            actions.append(\"证据基础较强，建议纳入检察院优先研判清单。\")\n+        return actions\n*** End Patch\n",
+          "timestamp": "2026-04-17T11:12:50.226Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "apply_patch",
+          "input": "*** Begin Patch\n*** Delete File: /home/zhxy_ai/challenge_cup/app/data_processor.py\n*** End Patch\n",
+          "timestamp": "2026-04-17T11:12:54.238Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "apply_patch",
+          "input": "*** Begin Patch\n*** Add File: /home/zhxy_ai/challenge_cup/app/data_processor.py\n+from __future__ import annotations\n+\n+from typing import Any\n+\n+from app.case_analysis import ActionPlanner, EvidenceAnalyzer, RiskScorer, TextExtractor\n+from core.knowledge_base import KnowledgeBase\n+from core.models import CaseReport\n+\n+\n+class DataProcessor:\n+    def __init__(\n+        self,\n+        kb: KnowledgeBase,\n+        extractor: TextExtractor | None = None,\n+        evidence_analyzer: EvidenceAnalyzer | None = None,\n+        risk_scorer: RiskScorer | None = None,\n+        action_planner: ActionPlanner | None = None,\n+    ) -> None:\n+        self.kb = kb\n+        self.extractor = extractor or TextExtractor()\n+        self.evidence_analyzer = evidence_analyzer or EvidenceAnalyzer(kb)\n+        self.risk_scorer = risk_scorer or RiskScorer()\n+        self.action_planner = action_planner or ActionPlanner()\n+\n+    def build_case_report(\n+        self,\n+        raw_text: str,\n+        provided_evidence: list[str] | None = None,\n+        facts: dict[str, Any] | None = None,\n+    ) -> CaseReport:\n+        structured = self.extractor.extract(raw_text, provided_evidence, facts)\n+        evidence_summary, evidence_score = self.evidence_analyzer.summarize(structured)\n+        risk_assessment = self.risk_scorer.score(structured, evidence_summary, evidence_score)\n+        recommended_actions = self.action_planner.build(structured, evidence_summary, evidence_score)\n+        legal_basis = self.kb.get_laws_for_scene(structured.issue_type)\n+        return CaseReport(\n+            structured_data=structured,\n+            risk_assessment=risk_assessment,\n+            recommended_actions=recommended_actions,\n+            legal_basis=legal_basis,\n+            evidence=evidence_summary,\n+        )\n*** End Patch\n",
+          "timestamp": "2026-04-17T11:13:08.696Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "apply_patch",
+          "input": "*** Begin Patch\n*** Update File: /home/zhxy_ai/challenge_cup/app/case_store.py\n@@\n from __future__ import annotations\n \n from datetime import datetime\n from typing import Any\n \n from app.data_processor import DataProcessor\n from core.knowledge_base import KnowledgeBase\n+from core.models import CaseRecord, FeedbackMessage\n@@\n class CaseStore:\n     def __init__(self, kb: KnowledgeBase, processor: DataProcessor) -> None:\n         self.kb = kb\n         self.processor = processor\n-        self._cases: list[dict[str, Any]] = []\n+        self._cases: list[CaseRecord] = []\n         self._counter = 1\n         self._seed_demo_cases()\n@@\n     def list_samples(self) -> list[dict[str, Any]]:\n         return self.kb.sample_cases\n \n     def list_submissions(self) -> list[dict[str, Any]]:\n-        return list(self._cases)\n+        return [case.to_dict() for case in self._cases]\n \n     def get_all_cases(self) -> list[dict[str, Any]]:\n         return self.list_submissions()\n@@\n-    ) -> dict[str, Any]:\n+    ) -> dict[str, Any]:\n         facts = facts or {}\n         user_profile = user_profile or {}\n         dispute_profile = dispute_profile or {}\n         evidence_catalog = evidence_catalog or {}\n         merged_evidence = self._merge_evidence_catalog(provided_evidence, evidence_catalog)\n         report = self.processor.build_case_report(description, merged_evidence, facts)\n         submission_id = f\"SUB-{self._counter:04d}\"\n         self._counter += 1\n+        now = datetime.now().isoformat(timespec=\"seconds\")\n \n-        record = {\n-            \"submission_id\": submission_id,\n-            \"source_case_id\": source_case_id,\n-            \"title\": title or self._build_title(report[\"structured_data\"]),\n-            \"source\": source,\n-            \"submitted_at\": datetime.now().isoformat(timespec=\"seconds\"),\n-            \"updated_at\": datetime.now().isoformat(timespec=\"seconds\"),\n-            \"description\": description,\n-            \"provided_evidence\": report[\"structured_data\"][\"evidence_items\"],\n-            \"facts\": facts,\n-            \"user_profile\": user_profile,\n-            \"dispute_profile\": dispute_profile,\n-            \"evidence_catalog\": evidence_catalog,\n-            \"case_status\": \"已受理，待检察评估\",\n-            \"mediation_priority\": \"待评估\",\n-            \"prosecution_necessity\": \"待评估\",\n-            \"relief_checks\": {\n-                \"labor_complaint\": False,\n-                \"labor_arbitration\": False,\n-                \"legal_aid\": False,\n-                \"union_or_street_help\": False,\n-            },\n-            \"relief_note\": \"\",\n-            \"mediation_case_type\": \"\",\n-            \"prosecution_case_type\": \"\",\n-            \"prosecutor_note\": \"\",\n-            \"feedback_messages\": [],\n-            \"structured_data\": report[\"structured_data\"],\n-            \"risk_assessment\": report[\"risk_assessment\"],\n-            \"recommended_actions\": report[\"recommended_actions\"],\n-            \"legal_basis\": report[\"legal_basis\"],\n-            \"evidence\": report[\"evidence\"],\n-        }\n+        record = CaseRecord(\n+            submission_id=submission_id,\n+            source_case_id=source_case_id,\n+            title=title or self._build_title(report.structured_data.to_dict()),\n+            source=source,\n+            submitted_at=now,\n+            updated_at=now,\n+            description=description,\n+            report=report,\n+            facts=facts,\n+            user_profile=user_profile,\n+            dispute_profile=dispute_profile,\n+            evidence_catalog=evidence_catalog,\n+        )\n         self._cases.append(record)\n-        return record\n+        return record.to_dict()\n@@\n     def dashboard(self) -> dict[str, Any]:\n         items = [\n             {\n-                \"submission_id\": case[\"submission_id\"],\n-                \"title\": case[\"title\"],\n-                \"worker_phone\": case[\"user_profile\"].get(\"phone\", \"\"),\n-                \"employment_sector\": case[\"dispute_profile\"].get(\"employment_sector\", \"未区分\"),\n-                \"worker_name\": case[\"structured_data\"][\"worker_name\"],\n-                \"employer_name\": case[\"structured_data\"][\"employer_name\"],\n-                \"issue_type\": case[\"structured_data\"][\"issue_type\"],\n-                \"amount_claimed\": case[\"structured_data\"][\"amount_claimed\"],\n-                \"evidence_score\": case[\"risk_assessment\"][\"evidence_score\"],\n-                \"risk_level\": case[\"risk_assessment\"][\"level\"],\n-                \"priority_label\": case[\"risk_assessment\"][\"priority_label\"],\n-                \"priority_for_prosecutor\": case[\"risk_assessment\"][\"priority_for_prosecutor\"],\n-                \"case_status\": case[\"case_status\"],\n-                \"mediation_priority\": case[\"mediation_priority\"],\n-                \"prosecution_necessity\": case[\"prosecution_necessity\"],\n-                \"mediation_case_type\": case[\"mediation_case_type\"],\n-                \"prosecution_case_type\": case[\"prosecution_case_type\"],\n-                \"submitted_at\": case[\"submitted_at\"],\n-                \"updated_at\": case[\"updated_at\"],\n-                \"recommended_action\": case[\"recommended_actions\"][0] if case[\"recommended_actions\"] else \"\",\n+                \"submission_id\": case.submission_id,\n+                \"title\": case.title,\n+                \"worker_phone\": case.user_profile.get(\"phone\", \"\"),\n+                \"employment_sector\": case.dispute_profile.get(\"employment_sector\", \"未区分\"),\n+                \"worker_name\": case.report.structured_data.worker_name,\n+                \"employer_name\": case.report.structured_data.employer_name,\n+                \"issue_type\": case.report.structured_data.issue_type,\n+                \"amount_claimed\": case.report.structured_data.amount_claimed,\n+                \"evidence_score\": case.report.risk_assessment.evidence_score,\n+                \"risk_level\": case.report.risk_assessment.level,\n+                \"priority_label\": case.report.risk_assessment.priority_label,\n+                \"priority_for_prosecutor\": case.report.risk_assessment.priority_for_prosecutor,\n+                \"case_status\": case.case_status,\n+                \"mediation_priority\": case.mediation_priority,\n+                \"prosecution_necessity\": case.prosecution_necessity,\n+                \"mediation_case_type\": case.mediation_case_type,\n+                \"prosecution_case_type\": case.prosecution_case_type,\n+                \"submitted_at\": case.submitted_at,\n+                \"updated_at\": case.updated_at,\n+                \"recommended_action\": case.report.recommended_actions[0] if case.report.recommended_actions else \"\",\n             }\n-            for case in sorted(self._cases, key=lambda item: item[\"submitted_at\"], reverse=True)\n+            for case in sorted(self._cases, key=lambda item: item.submitted_at, reverse=True)\n         ]\n@@\n     def _build_title(self, structured_data: dict[str, Any]) -> str:\n         worker_name = structured_data[\"worker_name\"]\n         issue_type = structured_data[\"issue_type\"]\n@@\n     def get_case(self, submission_id: str) -> dict[str, Any]:\n         for case in self._cases:\n-            if case[\"submission_id\"] == submission_id:\n-                return case\n+            if case.submission_id == submission_id:\n+                return case.to_dict()\n         raise KeyError(submission_id)\n+\n+    def _get_case_record(self, submission_id: str) -> CaseRecord:\n+        for case in self._cases:\n+            if case.submission_id == submission_id:\n+                return case\n+        raise KeyError(submission_id)\n@@\n-        case = self.get_case(submission_id)\n-        case[\"case_status\"] = case_status\n-        case[\"mediation_priority\"] = mediation_priority\n-        case[\"prosecution_necessity\"] = prosecution_necessity\n-        case[\"relief_checks\"] = {\n+        case = self._get_case_record(submission_id)\n+        case.case_status = case_status\n+        case.mediation_priority = mediation_priority\n+        case.prosecution_necessity = prosecution_necessity\n+        case.relief_checks = {\n             \"labor_complaint\": bool((relief_checks or {}).get(\"labor_complaint\")),\n             \"labor_arbitration\": bool((relief_checks or {}).get(\"labor_arbitration\")),\n             \"legal_aid\": bool((relief_checks or {}).get(\"legal_aid\")),\n             \"union_or_street_help\": bool((relief_checks or {}).get(\"union_or_street_help\")),\n         }\n-        case[\"relief_note\"] = relief_note.strip()\n-        case[\"mediation_case_type\"] = mediation_case_type.strip()\n-        case[\"prosecution_case_type\"] = prosecution_case_type.strip()\n-        case[\"prosecutor_note\"] = prosecutor_note.strip()\n-        case[\"updated_at\"] = datetime.now().isoformat(timespec=\"seconds\")\n+        case.relief_note = relief_note.strip()\n+        case.mediation_case_type = mediation_case_type.strip()\n+        case.prosecution_case_type = prosecution_case_type.strip()\n+        case.prosecutor_note = prosecutor_note.strip()\n+        case.updated_at = datetime.now().isoformat(timespec=\"seconds\")\n         if user_message.strip():\n-            case[\"feedback_messages\"].append(\n-                {\n-                    \"sent_at\": case[\"updated_at\"],\n-                    \"sender\": \"检察院端\",\n-                    \"message\": user_message.strip(),\n-                }\n+            case.feedback_messages.append(\n+                FeedbackMessage(\n+                    sent_at=case.updated_at,\n+                    sender=\"检察院端\",\n+                    message=user_message.strip(),\n+                )\n             )\n-        return case\n+        return case.to_dict()\n \n     def update_case_facts(self, submission_id: str, facts_patch: dict[str, Any]) -> dict[str, Any]:\n-        case = self.get_case(submission_id)\n-        merged_facts = {**case.get(\"facts\", {}), **{k: v for k, v in facts_patch.items() if str(v).strip()}}\n-        case[\"facts\"] = merged_facts\n+        case = self._get_case_record(submission_id)\n+        merged_facts = {**case.facts, **{k: v for k, v in facts_patch.items() if str(v).strip()}}\n+        case.facts = merged_facts\n         report = self.processor.build_case_report(\n-            case[\"description\"],\n-            case.get(\"provided_evidence\", []),\n+            case.description,\n+            case.provided_evidence,\n             merged_facts,\n         )\n-        case[\"structured_data\"] = report[\"structured_data\"]\n-        case[\"risk_assessment\"] = report[\"risk_assessment\"]\n-        case[\"recommended_actions\"] = report[\"recommended_actions\"]\n-        case[\"legal_basis\"] = report[\"legal_basis\"]\n-        case[\"evidence\"] = report[\"evidence\"]\n-        case[\"updated_at\"] = datetime.now().isoformat(timespec=\"seconds\")\n-        return case\n+        case.report = report\n+        case.updated_at = datetime.now().isoformat(timespec=\"seconds\")\n+        return case.to_dict()\n*** End Patch\n",
+          "timestamp": "2026-04-17T11:13:55.990Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "apply_patch",
+          "input": "*** Begin Patch\n*** Update File: /home/zhxy_ai/challenge_cup/app/document_generator.py\n@@\n from datetime import date\n from typing import Any\n \n from jinja2 import Environment, FileSystemLoader, select_autoescape\n \n from core.knowledge_base import TEMPLATE_DIR\n+from core.models import CaseReport\n@@\n     def generate(\n         self,\n         template_name: str,\n-        case_report: dict[str, Any],\n+        case_report: CaseReport,\n         facts: dict[str, Any] | None = None,\n     ) -> dict[str, Any]:\n         if template_name not in self.TEMPLATE_MAP:\n             raise ValueError(f\"Unsupported template: {template_name}\")\n \n         facts = facts or {}\n-        structured = case_report[\"structured_data\"]\n-        assessment = case_report[\"risk_assessment\"]\n-        evidence = case_report[\"evidence\"]\n+        structured = case_report.structured_data\n+        assessment = case_report.risk_assessment\n+        evidence = case_report.evidence\n         template = self.env.get_template(self.TEMPLATE_MAP[template_name])\n-        amount = facts.get(\"amount\") or structured[\"amount_claimed\"] or \"待核定\"\n+        amount = facts.get(\"amount\") or structured.amount_claimed or \"待核定\"\n@@\n             \"today\": date.today().isoformat(),\n-            \"worker_name\": facts.get(\"worker_name\") or structured[\"worker_name\"],\n+            \"worker_name\": facts.get(\"worker_name\") or structured.worker_name,\n@@\n-            \"company_name\": facts.get(\"company_name\") or structured[\"employer_name\"],\n+            \"company_name\": facts.get(\"company_name\") or structured.employer_name,\n@@\n-            \"subcontractor_name\": facts.get(\"subcontractor_name\", facts.get(\"company_name\") or structured[\"employer_name\"]),\n+            \"subcontractor_name\": facts.get(\"subcontractor_name\", facts.get(\"company_name\") or structured.employer_name),\n@@\n-            \"work_unit_name\": facts.get(\"work_unit_name\") or facts.get(\"company_name\") or structured[\"employer_name\"],\n+            \"work_unit_name\": facts.get(\"work_unit_name\") or facts.get(\"company_name\") or structured.employer_name,\n@@\n-            \"dispute_type\": structured[\"issue_type\"],\n-            \"cause_of_action\": facts.get(\"cause_of_action\", \"追索劳动报酬纠纷\" if structured[\"issue_type\"] == \"欠薪\" else \"劳务合同纠纷\"),\n-            \"dispute_summary\": structured[\"raw_text\"],\n-            \"evidence_list\": structured[\"evidence_items\"] or [\"待补充\"],\n-            \"risk_level\": assessment[\"level\"],\n-            \"evidence_score\": assessment[\"evidence_score\"],\n-            \"recommended_actions\": case_report[\"recommended_actions\"],\n-            \"missing_evidence\": evidence[\"missing_required\"],\n+            \"dispute_type\": structured.issue_type,\n+            \"cause_of_action\": facts.get(\"cause_of_action\", \"追索劳动报酬纠纷\" if structured.issue_type == \"欠薪\" else \"劳务合同纠纷\"),\n+            \"dispute_summary\": structured.raw_text,\n+            \"evidence_list\": structured.evidence_items or [\"待补充\"],\n+            \"risk_level\": assessment.level,\n+            \"evidence_score\": assessment.evidence_score,\n+            \"recommended_actions\": case_report.recommended_actions,\n+            \"missing_evidence\": evidence.missing_required,\n*** End Patch\n",
+          "timestamp": "2026-04-17T11:14:15.545Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "apply_patch",
+          "input": "*** Begin Patch\n*** Add File: /home/zhxy_ai/challenge_cup/app/application.py\n+from __future__ import annotations\n+\n+from dataclasses import dataclass\n+\n+from app.case_store import CaseStore\n+from app.data_processor import DataProcessor\n+from app.document_generator import DocumentGenerator\n+from app.llm_client import LLMClient\n+from core.knowledge_base import KnowledgeBase\n+\n+\n+@dataclass(slots=True)\n+class ApplicationServices:\n+    kb: KnowledgeBase\n+    data_processor: DataProcessor\n+    document_generator: DocumentGenerator\n+    case_store: CaseStore\n+    llm_client: LLMClient\n+\n+\n+def build_application() -> ApplicationServices:\n+    kb = KnowledgeBase()\n+    data_processor = DataProcessor(kb)\n+    return ApplicationServices(\n+        kb=kb,\n+        data_processor=data_processor,\n+        document_generator=DocumentGenerator(),\n+        case_store=CaseStore(kb, data_processor),\n+        llm_client=LLMClient(),\n+    )\n*** End Patch\n",
+          "timestamp": "2026-04-17T11:14:24.042Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "apply_patch",
+          "input": "*** Begin Patch\n*** Update File: /home/zhxy_ai/challenge_cup/app/service.py\n@@\n from __future__ import annotations\n \n from typing import Any\n \n-from app.case_store import CaseStore\n-from app.data_processor import DataProcessor\n-from app.document_generator import DocumentGenerator\n-from app.llm_client import LLMClient\n+from app.application import ApplicationServices, build_application\n from app.qa_service import answer_question\n-from core.knowledge_base import KnowledgeBase\n \n \n-kb = KnowledgeBase()\n-data_processor = DataProcessor(kb)\n-document_generator = DocumentGenerator()\n-case_store = CaseStore(kb, data_processor)\n-llm_client = LLMClient()\n+app_services: ApplicationServices = build_application()\n@@\n ) -> dict[str, Any]:\n-    return data_processor.build_case_report(description, provided_evidence, facts)\n+    return app_services.data_processor.build_case_report(description, provided_evidence, facts).to_dict()\n@@\n-    return case_store.submit_case(\n+    return app_services.case_store.submit_case(\n@@\n def submit_sample_case(case_id: str) -> dict[str, Any]:\n-    return case_store.submit_sample_case(case_id)\n+    return app_services.case_store.submit_sample_case(case_id)\n@@\n def list_sample_cases() -> list[dict[str, Any]]:\n-    return kb.sample_cases\n+    return app_services.kb.sample_cases\n@@\n def list_submitted_cases() -> list[dict[str, Any]]:\n-    return case_store.list_submissions()\n+    return app_services.case_store.list_submissions()\n@@\n def get_case_detail(submission_id: str) -> dict[str, Any]:\n-    return case_store.get_case(submission_id)\n+    return app_services.case_store.get_case(submission_id)\n@@\n def get_prosecutor_dashboard() -> dict[str, Any]:\n-    return case_store.dashboard()\n+    return app_services.case_store.dashboard()\n@@\n-    return case_store.review_case(\n+    return app_services.case_store.review_case(\n@@\n ) -> dict[str, Any]:\n-    return case_store.update_case_facts(submission_id, facts_patch)\n+    return app_services.case_store.update_case_facts(submission_id, facts_patch)\n@@\n ) -> dict[str, Any]:\n-    case_report = analyze_case(description, provided_evidence, facts)\n-    return document_generator.generate(template_name, case_report, facts)\n+    case_report = app_services.data_processor.build_case_report(description, provided_evidence, facts)\n+    return app_services.document_generator.generate(template_name, case_report, facts)\n@@\n def ask_question(question: str) -> dict[str, object]:\n-    return answer_question(question, kb, llm_client)\n+    return answer_question(question, app_services.kb, app_services.llm_client)\n*** End Patch\n",
+          "timestamp": "2026-04-17T11:14:37.549Z"
+        },
+        {
+          "type": "assistant",
+          "text": "后端骨架已经开始成型。接下来我把 demo 前端里最容易继续恶化的部分先拆掉：常量/状态恢复、后端调用、视图文件分开，先把单文件压力降下来。",
+          "timestamp": "2026-04-17T11:14:51.120Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "apply_patch",
+          "input": "*** Begin Patch\n*** Add File: /home/zhxy_ai/challenge_cup/demo/config.py\n+from __future__ import annotations\n+\n+import os\n+import sys\n+from pathlib import Path\n+\n+\n+PROJECT_ROOT = Path(__file__).resolve().parents[1]\n+if str(PROJECT_ROOT) not in sys.path:\n+    sys.path.insert(0, str(PROJECT_ROOT))\n+\n+VIEW_USER = \"农民工维权入口\"\n+VIEW_ADMIN = \"检察院决策后台\"\n+DEFAULT_API_BASE_URL = os.getenv(\"DEMO_API_BASE_URL\", \"http://127.0.0.1:8000\")\n+REQUIRED_EVIDENCE_OPTIONS = [\"劳动合同\", \"工资清单\", \"保险保单\", \"公示牌照片\"]\n+PRACTICAL_EVIDENCE_OPTIONS = [\"门禁卡\", \"聊天记录\", \"系统记录进出的电子系统记录\", \"食堂消费系统记录\", \"证人证言\"]\n+TEMPLATE_LABELS = {\n+    \"arbitration_application\": \"劳动仲裁申请书\",\n+    \"support_prosecution_application\": \"支持起诉申请书\",\n+    \"civil_complaint_non_construction\": \"民事起诉状（非工程建设领域）\",\n+    \"civil_complaint_construction\": \"民事起诉状（工程建设领域）\",\n+    \"support_prosecution_opinion_non_construction\": \"支持起诉书（非工程建设领域）\",\n+    \"support_prosecution_opinion_construction\": \"支持起诉书（工程建设领域）\",\n+}\n+PERSISTED_STATE_KEYS = (\n+    \"case_title\",\n+    \"case_description\",\n+    \"evidence_text\",\n+    \"facts_json\",\n+    \"selected_template\",\n+    \"analysis_report\",\n+    \"generated_document\",\n+    \"last_submission\",\n+    \"sample_choice\",\n+    \"worker_name\",\n+    \"worker_id_number\",\n+    \"worker_phone\",\n+    \"worker_gender\",\n+    \"worker_birth_date\",\n+    \"worker_ethnicity\",\n+    \"worker_address\",\n+    \"employment_sector\",\n+    \"employer_name\",\n+    \"employer_phone\",\n+    \"work_address\",\n+    \"job_title\",\n+    \"work_start_date\",\n+    \"work_end_date\",\n+    \"unpaid_start\",\n+    \"unpaid_end\",\n+    \"amount_claimed\",\n+    \"required_evidence_selected\",\n+    \"practical_evidence_selected\",\n+    \"selected_submission_id\",\n+    \"review_case_status\",\n+    \"review_mediation_priority\",\n+    \"review_prosecution_necessity\",\n+    \"review_prosecutor_note\",\n+    \"review_user_message\",\n+    \"review_relief_labor_complaint\",\n+    \"review_relief_labor_arbitration\",\n+    \"review_relief_legal_aid\",\n+    \"review_relief_union_or_street_help\",\n+    \"review_relief_note\",\n+    \"review_mediation_case_type\",\n+    \"review_prosecution_case_type\",\n+    \"qa_question\",\n+    \"qa_answer\",\n+    \"query_submission_id\",\n+    \"queried_case\",\n+    \"prosecutor_template_choice\",\n+    \"prosecutor_document_preview\",\n+    \"patch_company_credit_code\",\n+    \"patch_company_address\",\n+    \"patch_company_legal_rep\",\n+    \"patch_company_phone\",\n+    \"patch_direct_employer_name\",\n+    \"patch_direct_employer_id_number\",\n+    \"patch_contractor_name\",\n+    \"patch_subcontractor_name\",\n+    \"patch_guarantor_name\",\n+    \"patch_employment_days\",\n+    \"patch_wage_rate\",\n+    \"patch_wage_calculation\",\n+    \"patch_court_name\",\n+    \"patch_procuratorate_name\",\n+)\n*** End Patch\n",
+          "timestamp": "2026-04-17T11:15:05.443Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "apply_patch",
+          "input": "*** Begin Patch\n*** Add File: /home/zhxy_ai/challenge_cup/demo/backend.py\n+from __future__ import annotations\n+\n+import json\n+from typing import Any\n+\n+import streamlit as st\n+\n+from demo.api_client import ApiClient\n+from demo.config import DEFAULT_API_BASE_URL, PROJECT_ROOT\n+\n+\n+def get_api_client() -> ApiClient:\n+    return ApiClient(st.session_state.get(\"api_base_url\", DEFAULT_API_BASE_URL))\n+\n+\n+def safe_get(path: str, fallback: dict[str, Any] | None = None) -> dict[str, Any]:\n+    try:\n+        return get_api_client().get(path)\n+    except RuntimeError as exc:\n+        st.warning(f\"后端接口暂不可用：{exc}\")\n+        return fallback or {}\n+\n+\n+def safe_post(path: str, payload: dict[str, Any], fallback: dict[str, Any] | None = None) -> dict[str, Any]:\n+    try:\n+        return get_api_client().post(path, payload)\n+    except RuntimeError as exc:\n+        st.error(f\"后端接口调用失败：{exc}\")\n+        return fallback or {}\n+\n+\n+def get_sample_cases() -> list[dict[str, Any]]:\n+    sample_cases = safe_get(\"/cases/samples\", {\"items\": []}).get(\"items\", [])\n+    if sample_cases:\n+        return sample_cases\n+\n+    sample_path = PROJECT_ROOT / \"data\" / \"sample_cases.json\"\n+    try:\n+        with sample_path.open(\"r\", encoding=\"utf-8\") as handle:\n+            payload = json.load(handle)\n+    except (OSError, json.JSONDecodeError):\n+        return []\n+    return payload if isinstance(payload, list) else []\n+\n+\n+def ask_legal_question(question: str) -> dict[str, Any]:\n+    return safe_post(\"/qa/answer\", {\"question\": question})\n+\n+\n+def build_analysis(description: str, evidence_items: list[str], facts: dict[str, Any]) -> dict[str, Any]:\n+    return safe_post(\n+        \"/case/analyze\",\n+        {\n+            \"description\": description,\n+            \"provided_evidence\": evidence_items,\n+            \"facts\": facts,\n+        },\n+    )\n+\n+\n+def build_document(case_report: dict[str, Any], template_name: str, facts: dict[str, Any]) -> dict[str, Any]:\n+    return safe_post(\n+        \"/document/generate\",\n+        {\n+            \"template_name\": template_name,\n+            \"description\": case_report[\"structured_data\"][\"raw_text\"],\n+            \"provided_evidence\": case_report[\"structured_data\"][\"evidence_items\"],\n+            \"facts\": facts,\n+        },\n+    )\n+\n+\n+def build_route_recommendations(\n+    analysis_report: dict[str, Any],\n+    last_submission: dict[str, Any] | None,\n+) -> list[dict[str, str]]:\n+    assessment = analysis_report[\"risk_assessment\"]\n+    structured = analysis_report[\"structured_data\"]\n+    routes: list[dict[str, str]] = []\n+\n+    if last_submission and last_submission.get(\"case_status\") == \"建议优先调解\":\n+        routes.append(\n+            {\n+                \"title\": \"优先调解\",\n+                \"copy\": \"检察院端已标记为可优先调解，适合先通过协商或行政协调降低维权成本。\",\n+            }\n+        )\n+\n+    if assessment[\"evidence_score\"] >= 75:\n+        routes.append(\n+            {\n+                \"title\": \"申请支持起诉\",\n+                \"copy\": \"当前证据分数较高，适合进入支持起诉或文书生成流程，由检察院端进一步研判。\",\n+            }\n+        )\n+    else:\n+        routes.append(\n+            {\n+                \"title\": \"先补充证据\",\n+                \"copy\": \"现阶段建议优先补齐劳动关系、工资约定、考勤或聊天记录，再进入起诉或支持起诉流程。\",\n+            }\n+        )\n+\n+    if structured[\"issue_type\"] in {\"欠薪\", \"未签劳动合同\"}:\n+        routes.append(\n+            {\n+                \"title\": \"劳动监察 / 劳动仲裁\",\n+                \"copy\": \"若争议集中在拖欠工资、双倍工资或劳动关系确认，可优先走劳动监察投诉或劳动仲裁。\",\n+            }\n+        )\n+    else:\n+        routes.append(\n+            {\n+                \"title\": \"行政认定 + 后续救济\",\n+                \"copy\": \"工伤类争议建议优先补齐诊断材料、事故说明和工伤认定材料，再同步准备后续索赔。\",\n+            }\n+        )\n+\n+    routes.append(\n+        {\n+            \"title\": \"法律援助 / 文书辅助\",\n+            \"copy\": \"如自行起诉能力不足，可先使用平台文书生成能力，并同步寻求法律援助。\",\n+        }\n+    )\n+    return routes\n+\n+\n+def build_case_rows(cases: list[dict[str, Any]]) -> list[dict[str, Any]]:\n+    ordered_cases = sorted(cases, key=lambda item: item[\"submitted_at\"], reverse=True)\n+    rows: list[dict[str, Any]] = []\n+    for case in ordered_cases:\n+        rows.append(\n+            {\n+                \"提交编号\": case[\"submission_id\"],\n+                \"案件标题\": case[\"title\"],\n+                \"劳动者\": case[\"worker_name\"],\n+                \"联系电话\": case[\"worker_phone\"] or \"未填\",\n+                \"用工主体\": case[\"employer_name\"],\n+                \"领域\": case[\"employment_sector\"],\n+                \"纠纷类型\": case[\"issue_type\"],\n+                \"涉案金额(元)\": case[\"amount_claimed\"] or 0,\n+                \"证据分数\": case[\"evidence_score\"],\n+                \"风险等级\": case[\"risk_level\"],\n+                \"优先级\": case[\"priority_label\"],\n+                \"案件状态\": case[\"case_status\"],\n+                \"建议动作\": case[\"recommended_action\"],\n+                \"提交时间\": case[\"submitted_at\"],\n+            }\n+        )\n+    return rows\n+\n+\n+def build_evidence_advice(case_detail: dict[str, Any]) -> list[dict[str, str]]:\n+    advice: list[dict[str, str]] = []\n+    for item in case_detail.get(\"evidence\", {}).get(\"missing_required\", []):\n+        advice.append(\n+            {\n+                \"material\": item,\n+                \"reason\": \"属于当前纠纷类型下的关键缺失证据，建议优先补齐或由检察院协助调取。\",\n+            }\n+        )\n+\n+    standard_materials = [\n+        (\"劳动合同\", \"可直接证明劳动关系、岗位与工资约定。\"),\n+        (\"职工名册\", \"可证明实名制用工和劳动关系存续情况。\"),\n+        (\"支付台账\", \"可核对工资支付周期、应发实发差额和欠薪时间。\"),\n+        (\"工资清单\", \"可辅助固定工资标准、支付方式和欠薪金额。\"),\n+    ]\n+    for material, reason in standard_materials:\n+        advice.append({\"material\": material, \"reason\": reason})\n+    return advice\n*** End Patch\n",
+          "timestamp": "2026-04-17T11:15:38.217Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "apply_patch",
+          "input": "*** Begin Patch\n*** Add File: /home/zhxy_ai/challenge_cup/demo/state.py\n+from __future__ import annotations\n+\n+import base64\n+import json\n+from typing import Any\n+\n+import streamlit as st\n+\n+from demo.backend import get_sample_cases\n+from demo.config import DEFAULT_API_BASE_URL, PRACTICAL_EVIDENCE_OPTIONS, PERSISTED_STATE_KEYS, REQUIRED_EVIDENCE_OPTIONS\n+\n+\n+def init_state() -> None:\n+    defaults = {\n+        \"case_title\": \"\",\n+        \"case_description\": \"\",\n+        \"evidence_text\": \"\",\n+        \"facts_json\": \"{}\",\n+        \"selected_template\": \"support_prosecution_application\",\n+        \"analysis_report\": None,\n+        \"generated_document\": None,\n+        \"last_submission\": None,\n+        \"sample_choice\": \"手动输入\",\n+        \"api_base_url\": DEFAULT_API_BASE_URL,\n+        \"worker_name\": \"\",\n+        \"worker_id_number\": \"\",\n+        \"worker_phone\": \"\",\n+        \"worker_gender\": \"未填写\",\n+        \"worker_birth_date\": \"\",\n+        \"worker_ethnicity\": \"\",\n+        \"worker_address\": \"\",\n+        \"employment_sector\": \"工程建设领域\",\n+        \"employer_name\": \"\",\n+        \"employer_phone\": \"\",\n+        \"work_address\": \"\",\n+        \"job_title\": \"\",\n+        \"work_start_date\": \"\",\n+        \"work_end_date\": \"\",\n+        \"unpaid_start\": \"\",\n+        \"unpaid_end\": \"\",\n+        \"amount_claimed\": \"\",\n+        \"required_evidence_selected\": [],\n+        \"practical_evidence_selected\": [],\n+        \"selected_submission_id\": \"\",\n+        \"review_case_status\": \"已受理，待检察评估\",\n+        \"review_mediation_priority\": \"待评估\",\n+        \"review_prosecution_necessity\": \"待评估\",\n+        \"review_prosecutor_note\": \"\",\n+        \"review_user_message\": \"\",\n+        \"review_relief_labor_complaint\": False,\n+        \"review_relief_labor_arbitration\": False,\n+        \"review_relief_legal_aid\": False,\n+        \"review_relief_union_or_street_help\": False,\n+        \"review_relief_note\": \"\",\n+        \"review_mediation_case_type\": \"未分类\",\n+        \"review_prosecution_case_type\": \"未分类\",\n+        \"qa_question\": \"\",\n+        \"qa_answer\": None,\n+        \"query_submission_id\": \"\",\n+        \"queried_case\": None,\n+        \"prosecutor_template_choice\": \"support_prosecution_opinion_non_construction\",\n+        \"prosecutor_document_preview\": None,\n+        \"patch_company_credit_code\": \"\",\n+        \"patch_company_address\": \"\",\n+        \"patch_company_legal_rep\": \"\",\n+        \"patch_company_phone\": \"\",\n+        \"patch_direct_employer_name\": \"\",\n+        \"patch_direct_employer_id_number\": \"\",\n+        \"patch_contractor_name\": \"\",\n+        \"patch_subcontractor_name\": \"\",\n+        \"patch_guarantor_name\": \"\",\n+        \"patch_employment_days\": \"\",\n+        \"patch_wage_rate\": \"\",\n+        \"patch_wage_calculation\": \"\",\n+        \"patch_court_name\": \"\",\n+        \"patch_procuratorate_name\": \"\",\n+        \"sample_prefilled\": False,\n+    }\n+    for key, value in defaults.items():\n+        st.session_state.setdefault(key, value)\n+\n+\n+def restore_state_from_query_params() -> None:\n+    encoded_state = st.query_params.get(\"state\")\n+    if not encoded_state:\n+        return\n+\n+    try:\n+        payload = base64.urlsafe_b64decode(encoded_state.encode(\"utf-8\")).decode(\"utf-8\")\n+        restored_state = json.loads(payload)\n+    except (ValueError, json.JSONDecodeError):\n+        st.query_params.pop(\"state\", None)\n+        return\n+\n+    if not isinstance(restored_state, dict):\n+        st.query_params.pop(\"state\", None)\n+        return\n+\n+    for key in PERSISTED_STATE_KEYS:\n+        if key in restored_state and key not in st.session_state:\n+            st.session_state[key] = restored_state[key]\n+\n+\n+def persist_state_to_query_params() -> None:\n+    state_payload = {key: st.session_state.get(key) for key in PERSISTED_STATE_KEYS}\n+    serialized = json.dumps(state_payload, ensure_ascii=False, separators=(\",\", \":\"))\n+    encoded_state = base64.urlsafe_b64encode(serialized.encode(\"utf-8\")).decode(\"utf-8\")\n+    st.query_params[\"state\"] = encoded_state\n+\n+\n+def load_sample_into_state(sample: dict[str, Any]) -> None:\n+    facts = sample.get(\"facts\", {})\n+    st.session_state[\"case_title\"] = str(sample.get(\"title\", \"\"))\n+    st.session_state[\"case_description\"] = str(sample.get(\"description\", \"\"))\n+    st.session_state[\"evidence_text\"] = \"\\n\".join(sample.get(\"provided_evidence\", []))\n+    st.session_state[\"facts_json\"] = json.dumps(facts, ensure_ascii=False, indent=2)\n+    st.session_state[\"worker_name\"] = str(facts.get(\"worker_name\", \"\"))\n+    st.session_state[\"worker_phone\"] = str(facts.get(\"phone\", \"\"))\n+    st.session_state[\"employment_sector\"] = str(sample.get(\"employment_sector\", \"工程建设领域\"))\n+    st.session_state[\"employer_name\"] = str(facts.get(\"company_name\", \"\"))\n+    st.session_state[\"job_title\"] = str(facts.get(\"job_title\", \"\"))\n+    st.session_state[\"work_start_date\"] = str(facts.get(\"start_date\", \"\"))\n+    st.session_state[\"work_end_date\"] = str(facts.get(\"end_date\", \"\"))\n+    st.session_state[\"amount_claimed\"] = str(facts.get(\"amount\", \"\"))\n+    st.session_state[\"required_evidence_selected\"] = [\n+        item for item in sample.get(\"provided_evidence\", []) if item in REQUIRED_EVIDENCE_OPTIONS\n+    ]\n+    st.session_state[\"practical_evidence_selected\"] = [\n+        item for item in sample.get(\"provided_evidence\", []) if item in PRACTICAL_EVIDENCE_OPTIONS\n+    ]\n+    st.session_state[\"analysis_report\"] = None\n+    st.session_state[\"generated_document\"] = None\n+    st.session_state[\"last_submission\"] = None\n+    st.session_state[\"sample_prefilled\"] = True\n+\n+\n+def auto_prefill_sample_case() -> None:\n+    if st.session_state.get(\"sample_prefilled\"):\n+        return\n+    if any(st.session_state.get(key, \"\").strip() for key in (\"worker_name\", \"worker_phone\", \"employer_name\", \"case_description\")):\n+        st.session_state[\"sample_prefilled\"] = True\n+        return\n+\n+    sample_cases = get_sample_cases()\n+    if not sample_cases:\n+        st.session_state[\"sample_prefilled\"] = True\n+        return\n+\n+    load_sample_into_state(sample_cases[0])\n+    st.session_state[\"sample_choice\"] = f'{sample_cases[0].get(\"case_id\", \"\")} | {sample_cases[0].get(\"title\", \"\")}'.strip(\" |\")\n+\n+\n+def parse_facts(raw_facts: str) -> dict[str, Any]:\n+    text = raw_facts.strip()\n+    if not text:\n+        return {}\n+    parsed = json.loads(text)\n+    if not isinstance(parsed, dict):\n+        raise ValueError(\"补充事实必须是 JSON 对象。\")\n+    return parsed\n+\n+\n+def build_structured_payload(extra_facts: dict[str, Any]) -> dict[str, Any]:\n+    worker_name = st.session_state[\"worker_name\"].strip()\n+    employer_name = st.session_state[\"employer_name\"].strip()\n+    amount_claimed = st.session_state[\"amount_claimed\"].strip()\n+    work_start_date = st.session_state[\"work_start_date\"].strip()\n+    work_end_date = st.session_state[\"work_end_date\"].strip()\n+    unpaid_start = st.session_state[\"unpaid_start\"].strip()\n+    unpaid_end = st.session_state[\"unpaid_end\"].strip()\n+    job_title = st.session_state[\"job_title\"].strip()\n+    work_address = st.session_state[\"work_address\"].strip()\n+    required_evidence = list(st.session_state[\"required_evidence_selected\"])\n+    practical_evidence = list(st.session_state[\"practical_evidence_selected\"])\n+    manual_evidence = [line.strip() for line in st.session_state[\"evidence_text\"].splitlines() if line.strip()]\n+\n+    user_profile = {\n+        \"name\": worker_name,\n+        \"id_number\": st.session_state[\"worker_id_number\"].strip(),\n+        \"phone\": st.session_state[\"worker_phone\"].strip(),\n+        \"gender\": st.session_state[\"worker_gender\"],\n+        \"birth_date\": st.session_state[\"worker_birth_date\"].strip(),\n+        \"ethnicity\": st.session_state[\"worker_ethnicity\"].strip(),\n+        \"address\": st.session_state[\"worker_address\"].strip(),\n+    }\n+    dispute_profile = {\n+        \"employment_sector\": st.session_state[\"employment_sector\"],\n+        \"employer_name\": employer_name,\n+        \"employer_phone\": st.session_state[\"employer_phone\"].strip(),\n+        \"work_address\": work_address,\n+        \"job_title\": job_title,\n+        \"work_start_date\": work_start_date,\n+        \"work_end_date\": work_end_date,\n+        \"unpaid_start\": unpaid_start,\n+        \"unpaid_end\": unpaid_end,\n+        \"amount_claimed\": amount_claimed,\n+    }\n+    evidence_catalog = {\n+        \"required\": required_evidence,\n+        \"practical\": practical_evidence,\n+        \"manual\": manual_evidence,\n+    }\n+\n+    facts = {\n+        **extra_facts,\n+        \"worker_name\": worker_name or extra_facts.get(\"worker_name\", \"\"),\n+        \"worker_gender\": st.session_state[\"worker_gender\"] if st.session_state[\"worker_gender\"] != \"未填写\" else extra_facts.get(\"worker_gender\", \"\"),\n+        \"worker_birth_date\": st.session_state[\"worker_birth_date\"].strip() or extra_facts.get(\"worker_birth_date\", \"\"),\n+        \"worker_ethnicity\": st.session_state[\"worker_ethnicity\"].strip() or extra_facts.get(\"worker_ethnicity\", \"\"),\n+        \"worker_id_number\": st.session_state[\"worker_id_number\"].strip() or extra_facts.get(\"worker_id_number\", \"\"),\n+        \"worker_address\": st.session_state[\"worker_address\"].strip() or extra_facts.get(\"worker_address\", \"\"),\n+        \"worker_phone\": st.session_state[\"worker_phone\"].strip() or extra_facts.get(\"worker_phone\", \"\"),\n+        \"company_name\": employer_name or extra_facts.get(\"company_name\", \"\"),\n+        \"company_phone\": st.session_state[\"employer_phone\"].strip() or extra_facts.get(\"company_phone\", \"\"),\n+        \"work_unit_name\": employer_name or extra_facts.get(\"work_unit_name\", \"\"),\n+        \"project_name\": work_address or extra_facts.get(\"project_name\", \"\"),\n+        \"job_title\": job_title or extra_facts.get(\"job_title\", \"\"),\n+        \"start_date\": work_start_date or extra_facts.get(\"start_date\", \"\"),\n+        \"end_date\": work_end_date or extra_facts.get(\"end_date\", \"\"),\n+        \"direct_employer_name\": extra_facts.get(\"direct_employer_name\", employer_name or \"待补充\"),\n+        \"cause_of_action\": extra_facts.get(\n+            \"cause_of_action\",\n+            \"劳务合同纠纷\" if st.session_state[\"employment_sector\"] == \"工程建设领域\" else \"追索劳动报酬纠纷\",\n+        ),\n+        \"court_name\": extra_facts.get(\"court_name\", \"XX区人民法院\"),\n+        \"procuratorate_name\": extra_facts.get(\"procuratorate_name\", \"XX区人民检察院\"),\n+    }\n+    if amount_claimed:\n+        facts[\"amount\"] = amount_claimed\n+\n+    description = st.session_state[\"case_description\"].strip()\n+    if not description:\n+        description = (\n+            f\"{worker_name or '劳动者'}在{employer_name or '相关单位'}从事{job_title or '劳务工作'}，\"\n+            f\"工作地点为{work_address or '待补充'}，\"\n+            f\"工作时间为{work_start_date or '待补充'}至{work_end_date or '待补充'}。\"\n+            f\"目前反映{unpaid_start or '待补充'}至{unpaid_end or '待补充'}存在欠薪问题，\"\n+            f\"主张金额{amount_claimed or '待补充'}元。\"\n+        )\n+\n+    provided_evidence = []\n+    for group in (required_evidence, practical_evidence, manual_evidence):\n+        for item in group:\n+            if item not in provided_evidence:\n+                provided_evidence.append(item)\n+\n+    return {\n+        \"description\": description,\n+        \"facts\": facts,\n+        \"user_profile\": user_profile,\n+        \"dispute_profile\": dispute_profile,\n+        \"evidence_catalog\": evidence_catalog,\n+        \"provided_evidence\": provided_evidence,\n+    }\n+\n+\n+def sync_review_state(case_detail: dict[str, Any]) -> None:\n+    if not case_detail:\n+        return\n+    relief_checks = case_detail.get(\"relief_checks\", {})\n+    st.session_state[\"review_case_status\"] = case_detail.get(\"case_status\", \"已受理，待检察评估\")\n+    st.session_state[\"review_mediation_priority\"] = case_detail.get(\"mediation_priority\", \"待评估\")\n+    st.session_state[\"review_prosecution_necessity\"] = case_detail.get(\"prosecution_necessity\", \"待评估\")\n+    st.session_state[\"review_prosecutor_note\"] = case_detail.get(\"prosecutor_note\", \"\")\n+    st.session_state[\"review_relief_labor_complaint\"] = bool(relief_checks.get(\"labor_complaint\"))\n+    st.session_state[\"review_relief_labor_arbitration\"] = bool(relief_checks.get(\"labor_arbitration\"))\n+    st.session_state[\"review_relief_legal_aid\"] = bool(relief_checks.get(\"legal_aid\"))\n+    st.session_state[\"review_relief_union_or_street_help\"] = bool(relief_checks.get(\"union_or_street_help\"))\n+    st.session_state[\"review_relief_note\"] = case_detail.get(\"relief_note\", \"\")\n+    st.session_state[\"review_mediation_case_type\"] = case_detail.get(\"mediation_case_type\", \"未分类\") or \"未分类\"\n+    st.session_state[\"review_prosecution_case_type\"] = case_detail.get(\"prosecution_case_type\", \"未分类\") or \"未分类\"\n+    facts = case_detail.get(\"facts\", {})\n+    st.session_state[\"patch_company_credit_code\"] = facts.get(\"company_credit_code\", \"\")\n+    st.session_state[\"patch_company_address\"] = facts.get(\"company_address\", \"\")\n+    st.session_state[\"patch_company_legal_rep\"] = facts.get(\"company_legal_rep\", \"\")\n+    st.session_state[\"patch_company_phone\"] = facts.get(\"company_phone\", \"\")\n+    st.session_state[\"patch_direct_employer_name\"] = facts.get(\"direct_employer_name\", \"\")\n+    st.session_state[\"patch_direct_employer_id_number\"] = facts.get(\"direct_employer_id_number\", \"\")\n+    st.session_state[\"patch_contractor_name\"] = facts.get(\"contractor_name\", \"\")\n+    st.session_state[\"patch_subcontractor_name\"] = facts.get(\"subcontractor_name\", \"\")\n+    st.session_state[\"patch_guarantor_name\"] = facts.get(\"guarantor_name\", \"\")\n+    st.session_state[\"patch_employment_days\"] = facts.get(\"employment_days\", \"\")\n+    st.session_state[\"patch_wage_rate\"] = facts.get(\"wage_rate\", \"\")\n+    st.session_state[\"patch_wage_calculation\"] = facts.get(\"wage_calculation\", \"\")\n+    st.session_state[\"patch_court_name\"] = facts.get(\"court_name\", \"\")\n+    st.session_state[\"patch_procuratorate_name\"] = facts.get(\"procuratorate_name\", \"\")\n*** End Patch\n",
+          "timestamp": "2026-04-17T11:16:49.544Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "exec_command",
+          "input": {
+            "cmd": "sed -n '1,80p' demo/ui.py",
+            "max_output_tokens": 2000,
+            "workdir": "/home/zhxy_ai/challenge_cup"
+          },
+          "timestamp": "2026-04-17T11:16:56.052Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "apply_patch",
+          "input": "*** Begin Patch\n*** Update File: /home/zhxy_ai/challenge_cup/demo/ui.py\n@@\n from __future__ import annotations\n \n-import base64\n import json\n-import os\n-import sys\n from collections import Counter\n-from pathlib import Path\n from typing import Any\n \n import streamlit as st\n \n-PROJECT_ROOT = Path(__file__).resolve().parents[1]\n-if str(PROJECT_ROOT) not in sys.path:\n-    sys.path.insert(0, str(PROJECT_ROOT))\n-\n-from demo.api_client import ApiClient\n-\n-\n-VIEW_USER = \"农民工维权入口\"\n-VIEW_ADMIN = \"检察院决策后台\"\n-DEFAULT_API_BASE_URL = os.getenv(\"DEMO_API_BASE_URL\", \"http://127.0.0.1:8000\")\n-REQUIRED_EVIDENCE_OPTIONS = [\"劳动合同\", \"工资清单\", \"保险保单\", \"公示牌照片\"]\n-PRACTICAL_EVIDENCE_OPTIONS = [\"门禁卡\", \"聊天记录\", \"系统记录进出的电子系统记录\", \"食堂消费系统记录\", \"证人证言\"]\n-TEMPLATE_LABELS = {\n-    \"arbitration_application\": \"劳动仲裁申请书\",\n-    \"support_prosecution_application\": \"支持起诉申请书\",\n-    \"civil_complaint_non_construction\": \"民事起诉状（非工程建设领域）\",\n-    \"civil_complaint_construction\": \"民事起诉状（工程建设领域）\",\n-    \"support_prosecution_opinion_non_construction\": \"支持起诉书（非工程建设领域）\",\n-    \"support_prosecution_opinion_construction\": \"支持起诉书（工程建设领域）\",\n-}\n-PERSISTED_STATE_KEYS = (\n-    \"case_title\",\n-    \"case_description\",\n-    \"evidence_text\",\n-    \"facts_json\",\n-    \"selected_template\",\n-    \"analysis_report\",\n-    \"generated_document\",\n-    \"last_submission\",\n-    \"sample_choice\",\n-    \"worker_name\",\n-    \"worker_id_number\",\n-    \"worker_phone\",\n-    \"worker_gender\",\n-    \"worker_birth_date\",\n-    \"worker_ethnicity\",\n-    \"worker_address\",\n-    \"employment_sector\",\n-    \"employer_name\",\n-    \"employer_phone\",\n-    \"work_address\",\n-    \"job_title\",\n-    \"work_start_date\",\n-    \"work_end_date\",\n-    \"unpaid_start\",\n-    \"unpaid_end\",\n-    \"amount_claimed\",\n-    \"required_evidence_selected\",\n-    \"practical_evidence_selected\",\n-    \"selected_submission_id\",\n-    \"review_case_status\",\n-    \"review_mediation_priority\",\n-    \"review_prosecution_necessity\",\n-    \"review_prosecutor_note\",\n-    \"review_user_message\",\n-    \"review_relief_labor_complaint\",\n-    \"review_relief_labor_arbitration\",\n-    \"review_relief_legal_aid\",\n-    \"review_relief_union_or_street_help\",\n-    \"review_relief_note\",\n-    \"review_mediation_case_type\",\n-    \"review_prosecution_case_type\",\n-    \"qa_question\",\n-    \"qa_answer\",\n-    \"query_submission_id\",\n-    \"queried_case\",\n-    \"prosecutor_template_choice\",\n-    \"prosecutor_document_preview\",\n-    \"patch_company_credit_code\",\n-    \"patch_company_address\",\n-    \"patch_company_legal_rep\",\n-    \"patch_company_phone\",\n-    \"patch_direct_employer_name\",\n-    \"patch_direct_employer_id_number\",\n-    \"patch_contractor_name\",\n-    \"patch_subcontractor_name\",\n-    \"patch_guarantor_name\",\n-    \"patch_employment_days\",\n-    \"patch_wage_rate\",\n-    \"patch_wage_calculation\",\n-    \"patch_court_name\",\n-    \"patch_procuratorate_name\",\n-)\n+from demo.backend import (\n+    ask_legal_question,\n+    build_analysis,\n+    build_case_rows,\n+    build_document,\n+    build_evidence_advice,\n+    build_route_recommendations,\n+    get_sample_cases,\n+    safe_get,\n+    safe_post,\n+)\n+from demo.config import PRACTICAL_EVIDENCE_OPTIONS, REQUIRED_EVIDENCE_OPTIONS, TEMPLATE_LABELS, VIEW_ADMIN, VIEW_USER\n+from demo.state import (\n+    auto_prefill_sample_case,\n+    build_structured_payload,\n+    init_state,\n+    parse_facts,\n+    persist_state_to_query_params,\n+    restore_state_from_query_params,\n+    sync_review_state,\n+)\n*** End Patch\n",
+          "timestamp": "2026-04-17T11:17:17.608Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "exec_command",
+          "input": {
+            "cmd": "rg -n \"^def (get_sample_cases|init_state|restore_state_from_query_params|persist_state_to_query_params|load_sample_into_state|auto_prefill_sample_case|parse_facts|build_structured_payload|get_api_client|safe_get|safe_post|ask_legal_question|build_analysis|build_document|build_route_recommendations|build_case_rows|build_evidence_advice|sync_review_state)\" demo/ui.py",
+            "max_output_tokens": 4000,
+            "workdir": "/home/zhxy_ai/challenge_cup"
+          },
+          "timestamp": "2026-04-17T11:17:26.001Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "apply_patch",
+          "input": "*** Begin Patch\n*** Update File: /home/zhxy_ai/challenge_cup/demo/ui.py\n@@\n-def get_sample_cases() -> list[dict[str, Any]]:\n-    sample_cases = safe_get(\"/cases/samples\", {\"items\": []}).get(\"items\", [])\n-    if sample_cases:\n-        return sample_cases\n-\n-    sample_path = PROJECT_ROOT / \"data\" / \"sample_cases.json\"\n-    try:\n-        with sample_path.open(\"r\", encoding=\"utf-8\") as handle:\n-            payload = json.load(handle)\n-    except (OSError, json.JSONDecodeError):\n-        return []\n-    return payload if isinstance(payload, list) else []\n-\n-\n-def init_state() -> None:\n-    defaults = {\n-        \"case_title\": \"\",\n-        \"case_description\": \"\",\n-        \"evidence_text\": \"\",\n-        \"facts_json\": \"{}\",\n-        \"selected_template\": \"support_prosecution_application\",\n-        \"analysis_report\": None,\n-        \"generated_document\": None,\n-        \"last_submission\": None,\n-        \"sample_choice\": \"手动输入\",\n-        \"api_base_url\": DEFAULT_API_BASE_URL,\n-        \"worker_name\": \"\",\n-        \"worker_id_number\": \"\",\n-        \"worker_phone\": \"\",\n-        \"worker_gender\": \"未填写\",\n-        \"worker_birth_date\": \"\",\n-        \"worker_ethnicity\": \"\",\n-        \"worker_address\": \"\",\n-        \"employment_sector\": \"工程建设领域\",\n-        \"employer_name\": \"\",\n-        \"employer_phone\": \"\",\n-        \"work_address\": \"\",\n-        \"job_title\": \"\",\n-        \"work_start_date\": \"\",\n-        \"work_end_date\": \"\",\n-        \"unpaid_start\": \"\",\n-        \"unpaid_end\": \"\",\n-        \"amount_claimed\": \"\",\n-        \"required_evidence_selected\": [],\n-        \"practical_evidence_selected\": [],\n-        \"selected_submission_id\": \"\",\n-        \"review_case_status\": \"已受理，待检察评估\",\n-        \"review_mediation_priority\": \"待评估\",\n-        \"review_prosecution_necessity\": \"待评估\",\n-        \"review_prosecutor_note\": \"\",\n-        \"review_user_message\": \"\",\n-        \"review_relief_labor_complaint\": False,\n-        \"review_relief_labor_arbitration\": False,\n-        \"review_relief_legal_aid\": False,\n-        \"review_relief_union_or_street_help\": False,\n-        \"review_relief_note\": \"\",\n-        \"review_mediation_case_type\": \"未分类\",\n-        \"review_prosecution_case_type\": \"未分类\",\n-        \"qa_question\": \"\",\n-        \"qa_answer\": None,\n-        \"query_submission_id\": \"\",\n-        \"queried_case\": None,\n-        \"prosecutor_template_choice\": \"support_prosecution_opinion_non_construction\",\n-        \"prosecutor_document_preview\": None,\n-        \"patch_company_credit_code\": \"\",\n-        \"patch_company_address\": \"\",\n-        \"patch_company_legal_rep\": \"\",\n-        \"patch_company_phone\": \"\",\n-        \"patch_direct_employer_name\": \"\",\n-        \"patch_direct_employer_id_number\": \"\",\n-        \"patch_contractor_name\": \"\",\n-        \"patch_subcontractor_name\": \"\",\n-        \"patch_guarantor_name\": \"\",\n-        \"patch_employment_days\": \"\",\n-        \"patch_wage_rate\": \"\",\n-        \"patch_wage_calculation\": \"\",\n-        \"patch_court_name\": \"\",\n-        \"patch_procuratorate_name\": \"\",\n-        \"sample_prefilled\": False,\n-    }\n-    for key, value in defaults.items():\n-        st.session_state.setdefault(key, value)\n-\n-\n-def restore_state_from_query_params() -> None:\n-    encoded_state = st.query_params.get(\"state\")\n-    if not encoded_state:\n-        return\n-\n-    try:\n-        payload = base64.urlsafe_b64decode(encoded_state.encode(\"utf-8\")).decode(\"utf-8\")\n-        restored_state = json.loads(payload)\n-    except (ValueError, json.JSONDecodeError):\n-        st.query_params.pop(\"state\", None)\n-        return\n-\n-    if not isinstance(restored_state, dict):\n-        st.query_params.pop(\"state\", None)\n-        return\n-\n-    for key in PERSISTED_STATE_KEYS:\n-        if key in restored_state and key not in st.session_state:\n-            st.session_state[key] = restored_state[key]\n-\n-\n-def persist_state_to_query_params() -> None:\n-    state_payload = {key: st.session_state.get(key) for key in PERSISTED_STATE_KEYS}\n-    serialized = json.dumps(state_payload, ensure_ascii=False, separators=(\",\", \":\"))\n-    encoded_state = base64.urlsafe_b64encode(serialized.encode(\"utf-8\")).decode(\"utf-8\")\n-    st.query_params[\"state\"] = encoded_state\n-\n-\n-def load_sample_into_state(sample: dict[str, Any]) -> None:\n-    facts = sample.get(\"facts\", {})\n-    st.session_state[\"case_title\"] = str(sample.get(\"title\", \"\"))\n-    st.session_state[\"case_description\"] = str(sample.get(\"description\", \"\"))\n-    st.session_state[\"evidence_text\"] = \"\\n\".join(sample.get(\"provided_evidence\", []))\n-    st.session_state[\"facts_json\"] = json.dumps(facts, ensure_ascii=False, indent=2)\n-    st.session_state[\"worker_name\"] = str(facts.get(\"worker_name\", \"\"))\n-    st.session_state[\"worker_phone\"] = str(facts.get(\"phone\", \"\"))\n-    st.session_state[\"employment_sector\"] = str(sample.get(\"employment_sector\", \"工程建设领域\"))\n-    st.session_state[\"employer_name\"] = str(facts.get(\"company_name\", \"\"))\n-    st.session_state[\"job_title\"] = str(facts.get(\"job_title\", \"\"))\n-    st.session_state[\"work_start_date\"] = str(facts.get(\"start_date\", \"\"))\n-    st.session_state[\"work_end_date\"] = str(facts.get(\"end_date\", \"\"))\n-    st.session_state[\"amount_claimed\"] = str(facts.get(\"amount\", \"\"))\n-    st.session_state[\"required_evidence_selected\"] = [item for item in sample.get(\"provided_evidence\", []) if item in REQUIRED_EVIDENCE_OPTIONS]\n-    st.session_state[\"practical_evidence_selected\"] = [item for item in sample.get(\"provided_evidence\", []) if item in PRACTICAL_EVIDENCE_OPTIONS]\n-    st.session_state[\"analysis_report\"] = None\n-    st.session_state[\"generated_document\"] = None\n-    st.session_state[\"last_submission\"] = None\n-    st.session_state[\"sample_prefilled\"] = True\n-\n-\n-def auto_prefill_sample_case() -> None:\n-    if st.session_state.get(\"sample_prefilled\"):\n-        return\n-    if any(\n-        st.session_state.get(key, \"\").strip()\n-        for key in (\"worker_name\", \"worker_phone\", \"employer_name\", \"case_description\")\n-    ):\n-        st.session_state[\"sample_prefilled\"] = True\n-        return\n-\n-    sample_cases = get_sample_cases()\n-    if not sample_cases:\n-        st.session_state[\"sample_prefilled\"] = True\n-        return\n-\n-    load_sample_into_state(sample_cases[0])\n-    st.session_state[\"sample_choice\"] = f'{sample_cases[0].get(\"case_id\", \"\")} | {sample_cases[0].get(\"title\", \"\")}'.strip(\" |\")\n-\n-\n-def parse_facts(raw_facts: str) -> dict[str, Any]:\n-    text = raw_facts.strip()\n-    if not text:\n-        return {}\n-    parsed = json.loads(text)\n-    if not isinstance(parsed, dict):\n-        raise ValueError(\"补充事实必须是 JSON 对象。\")\n-    return parsed\n-\n-\n-def build_structured_payload(extra_facts: dict[str, Any]) -> dict[str, Any]:\n-    worker_name = st.session_state[\"worker_name\"].strip()\n-    employer_name = st.session_state[\"employer_name\"].strip()\n-    amount_claimed = st.session_state[\"amount_claimed\"].strip()\n-    work_start_date = st.session_state[\"work_start_date\"].strip()\n-    work_end_date = st.session_state[\"work_end_date\"].strip()\n-    unpaid_start = st.session_state[\"unpaid_start\"].strip()\n-    unpaid_end = st.session_state[\"unpaid_end\"].strip()\n-    job_title = st.session_state[\"job_title\"].strip()\n-    work_address = st.session_state[\"work_address\"].strip()\n-    required_evidence = list(st.session_state[\"required_evidence_selected\"])\n-    practical_evidence = list(st.session_state[\"practical_evidence_selected\"])\n-    manual_evidence = [line.strip() for line in st.session_state[\"evidence_text\"].splitlines() if line.strip()]\n-\n-    user_profile = {\n-        \"name\": worker_name,\n-        \"id_number\": st.session_state[\"worker_id_number\"].strip(),\n-        \"phone\": st.session_state[\"worker_phone\"].strip(),\n-        \"gender\": st.session_state[\"worker_gender\"],\n-        \"birth_date\": st.session_state[\"worker_birth_date\"].strip(),\n-        \"ethnicity\": st.session_state[\"worker_ethnicity\"].strip(),\n-        \"address\": st.session_state[\"worker_address\"].strip(),\n-    }\n-    dispute_profile = {\n-        \"employment_sector\": st.session_state[\"employment_sector\"],\n-        \"employer_name\": employer_name,\n-        \"employer_phone\": st.session_state[\"employer_phone\"].strip(),\n-        \"work_address\": work_address,\n-        \"job_title\": job_title,\n-        \"work_start_date\": work_start_date,\n-        \"work_end_date\": work_end_date,\n-        \"unpaid_start\": unpaid_start,\n-        \"unpaid_end\": unpaid_end,\n-        \"amount_claimed\": amount_claimed,\n-    }\n-    evidence_catalog = {\n-        \"required\": required_evidence,\n-        \"practical\": practical_evidence,\n-        \"manual\": manual_evidence,\n-    }\n-\n-    facts = {\n-        **extra_facts,\n-        \"worker_name\": worker_name or extra_facts.get(\"worker_name\", \"\"),\n-        \"worker_gender\": st.session_state[\"worker_gender\"] if st.session_state[\"worker_gender\"] != \"未填写\" else extra_facts.get(\"worker_gender\", \"\"),\n-        \"worker_birth_date\": st.session_state[\"worker_birth_date\"].strip() or extra_facts.get(\"worker_birth_date\", \"\"),\n-        \"worker_ethnicity\": st.session_state[\"worker_ethnicity\"].strip() or extra_facts.get(\"worker_ethnicity\", \"\"),\n-        \"worker_id_number\": st.session_state[\"worker_id_number\"].strip() or extra_facts.get(\"worker_id_number\", \"\"),\n-        \"worker_address\": st.session_state[\"worker_address\"].strip() or extra_facts.get(\"worker_address\", \"\"),\n-        \"worker_phone\": st.session_state[\"worker_phone\"].strip() or extra_facts.get(\"worker_phone\", \"\"),\n-        \"company_name\": employer_name or extra_facts.get(\"company_name\", \"\"),\n-        \"company_phone\": st.session_state[\"employer_phone\"].strip() or extra_facts.get(\"company_phone\", \"\"),\n-        \"work_unit_name\": employer_name or extra_facts.get(\"work_unit_name\", \"\"),\n-        \"project_name\": work_address or extra_facts.get(\"project_name\", \"\"),\n-        \"job_title\": job_title or extra_facts.get(\"job_title\", \"\"),\n-        \"start_date\": work_start_date or extra_facts.get(\"start_date\", \"\"),\n-        \"end_date\": work_end_date or extra_facts.get(\"end_date\", \"\"),\n-        \"direct_employer_name\": extra_facts.get(\"direct_employer_name\", employer_name or \"待补充\"),\n-        \"cause_of_action\": extra_facts.get(\n-            \"cause_of_action\",\n-            \"劳务合同纠纷\" if st.session_state[\"employment_sector\"] == \"工程建设领域\" else \"追索劳动报酬纠纷\",\n-        ),\n-        \"court_name\": extra_facts.get(\"court_name\", \"XX区人民法院\"),\n-        \"procuratorate_name\": extra_facts.get(\"procuratorate_name\", \"XX区人民检察院\"),\n-    }\n-    if amount_claimed:\n-        facts[\"amount\"] = amount_claimed\n-\n-    description = st.session_state[\"case_description\"].strip()\n-    if not description:\n-        description = (\n-            f\"{worker_name or '劳动者'}在{employer_name or '相关单位'}从事{job_title or '劳务工作'}，\"\n-            f\"工作地点为{work_address or '待补充'}，\"\n-            f\"工作时间为{work_start_date or '待补充'}至{work_end_date or '待补充'}。\"\n-            f\"目前反映{unpaid_start or '待补充'}至{unpaid_end or '待补充'}存在欠薪问题，\"\n-            f\"主张金额{amount_claimed or '待补充'}元。\"\n-        )\n-\n-    provided_evidence = []\n-    for group in (required_evidence, practical_evidence, manual_evidence):\n-        for item in group:\n-            if item not in provided_evidence:\n-                provided_evidence.append(item)\n-\n-    return {\n-        \"description\": description,\n-        \"facts\": facts,\n-        \"user_profile\": user_profile,\n-        \"dispute_profile\": dispute_profile,\n-        \"evidence_catalog\": evidence_catalog,\n-        \"provided_evidence\": provided_evidence,\n-    }\n-\n-\n-def get_api_client() -> ApiClient:\n-    return ApiClient(st.session_state.get(\"api_base_url\", DEFAULT_API_BASE_URL))\n-\n-\n-def safe_get(path: str, fallback: dict[str, Any] | None = None) -> dict[str, Any]:\n-    try:\n-        return get_api_client().get(path)\n-    except RuntimeError as exc:\n-        st.warning(f\"后端接口暂不可用：{exc}\")\n-        return fallback or {}\n-\n-\n-def safe_post(path: str, payload: dict[str, Any], fallback: dict[str, Any] | None = None) -> dict[str, Any]:\n-    try:\n-        return get_api_client().post(path, payload)\n-    except RuntimeError as exc:\n-        st.error(f\"后端接口调用失败：{exc}\")\n-        return fallback or {}\n-\n-\n-def ask_legal_question(question: str) -> dict[str, Any]:\n-    return safe_post(\"/qa/answer\", {\"question\": question})\n-\n-\n-def build_analysis(description: str, evidence_items: list[str], facts: dict[str, Any]) -> dict[str, Any]:\n-    return safe_post(\n-        \"/case/analyze\",\n-        {\n-            \"description\": description,\n-            \"provided_evidence\": evidence_items,\n-            \"facts\": facts,\n-        },\n-    )\n-\n-\n-def build_document(case_report: dict[str, Any], template_name: str, facts: dict[str, Any]) -> dict[str, Any]:\n-    return safe_post(\n-        \"/document/generate\",\n-        {\n-            \"template_name\": template_name,\n-            \"description\": case_report[\"structured_data\"][\"raw_text\"],\n-            \"provided_evidence\": case_report[\"structured_data\"][\"evidence_items\"],\n-            \"facts\": facts,\n-        },\n-    )\n-\n-\n-def build_route_recommendations(\n-    analysis_report: dict[str, Any],\n-    last_submission: dict[str, Any] | None,\n-) -> list[dict[str, str]]:\n-    assessment = analysis_report[\"risk_assessment\"]\n-    structured = analysis_report[\"structured_data\"]\n-    routes: list[dict[str, str]] = []\n-\n-    if last_submission and last_submission.get(\"case_status\") == \"建议优先调解\":\n-        routes.append(\n-            {\n-                \"title\": \"优先调解\",\n-                \"copy\": \"检察院端已标记为可优先调解，适合先通过协商或行政协调降低维权成本。\",\n-            }\n-        )\n-\n-    if assessment[\"evidence_score\"] >= 75:\n-        routes.append(\n-            {\n-                \"title\": \"申请支持起诉\",\n-                \"copy\": \"当前证据分数较高，适合进入支持起诉或文书生成流程，由检察院端进一步研判。\",\n-            }\n-        )\n-    else:\n-        routes.append(\n-            {\n-                \"title\": \"先补充证据\",\n-                \"copy\": \"现阶段建议优先补齐劳动关系、工资约定、考勤或聊天记录，再进入起诉或支持起诉流程。\",\n-            }\n-        )\n-\n-    if structured[\"issue_type\"] in {\"欠薪\", \"未签劳动合同\"}:\n-        routes.append(\n-            {\n-                \"title\": \"劳动监察 / 劳动仲裁\",\n-                \"copy\": \"若争议集中在拖欠工资、双倍工资或劳动关系确认，可优先走劳动监察投诉或劳动仲裁。\",\n-            }\n-        )\n-    else:\n-        routes.append(\n-            {\n-                \"title\": \"行政认定 + 后续救济\",\n-                \"copy\": \"工伤类争议建议优先补齐诊断材料、事故说明和工伤认定材料，再同步准备后续索赔。\",\n-            }\n-        )\n-\n-    routes.append(\n-        {\n-            \"title\": \"法律援助 / 文书辅助\",\n-            \"copy\": \"如自行起诉能力不足，可先使用平台文书生成能力，并同步寻求法律援助。\",\n-        }\n-    )\n-    return routes\n-\n-\n-def build_case_rows(cases: list[dict[str, Any]]) -> list[dict[str, Any]]:\n-    ordered_cases = sorted(cases, key=lambda item: item[\"submitted_at\"], reverse=True)\n-    rows: list[dict[str, Any]] = []\n-    for case in ordered_cases:\n-        rows.append(\n-            {\n-                \"提交编号\": case[\"submission_id\"],\n-                \"案件标题\": case[\"title\"],\n-                \"劳动者\": case[\"worker_name\"],\n-                \"联系电话\": case[\"worker_phone\"] or \"未填\",\n-                \"用工主体\": case[\"employer_name\"],\n-                \"领域\": case[\"employment_sector\"],\n-                \"纠纷类型\": case[\"issue_type\"],\n-                \"涉案金额(元)\": case[\"amount_claimed\"] or 0,\n-                \"证据分数\": case[\"evidence_score\"],\n-                \"风险等级\": case[\"risk_level\"],\n-                \"优先级\": case[\"priority_label\"],\n-                \"案件状态\": case[\"case_status\"],\n-                \"建议动作\": case[\"recommended_action\"],\n-                \"提交时间\": case[\"submitted_at\"],\n-            }\n-        )\n-    return rows\n-\n-\n def render_route_cards(routes: list[dict[str, str]]) -> None:\n*** End Patch\n",
+          "timestamp": "2026-04-17T11:18:44.815Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "apply_patch",
+          "input": "*** Begin Patch\n*** Update File: /home/zhxy_ai/challenge_cup/demo/ui.py\n@@\n-def build_evidence_advice(case_detail: dict[str, Any]) -> list[dict[str, str]]:\n-    advice: list[dict[str, str]] = []\n-    for item in case_detail.get(\"evidence\", {}).get(\"missing_required\", []):\n-        advice.append(\n-            {\n-                \"material\": item,\n-                \"reason\": \"属于当前纠纷类型下的关键缺失证据，建议优先补齐或由检察院协助调取。\",\n-            }\n-        )\n-\n-    standard_materials = [\n-        (\"劳动合同\", \"可直接证明劳动关系、岗位与工资约定。\"),\n-        (\"职工名册\", \"可证明实名制用工和劳动关系存续情况。\"),\n-        (\"支付台账\", \"可核对工资支付周期、应发实发差额和欠薪时间。\"),\n-        (\"工资清单\", \"可辅助固定工资标准、支付方式和欠薪金额。\"),\n-    ]\n-    for material, reason in standard_materials:\n-        advice.append({\"material\": material, \"reason\": reason})\n-    return advice\n-\n-\n-def sync_review_state(case_detail: dict[str, Any]) -> None:\n-    if not case_detail:\n-        return\n-    relief_checks = case_detail.get(\"relief_checks\", {})\n-    st.session_state[\"review_case_status\"] = case_detail.get(\"case_status\", \"已受理，待检察评估\")\n-    st.session_state[\"review_mediation_priority\"] = case_detail.get(\"mediation_priority\", \"待评估\")\n-    st.session_state[\"review_prosecution_necessity\"] = case_detail.get(\"prosecution_necessity\", \"待评估\")\n-    st.session_state[\"review_prosecutor_note\"] = case_detail.get(\"prosecutor_note\", \"\")\n-    st.session_state[\"review_relief_labor_complaint\"] = bool(relief_checks.get(\"labor_complaint\"))\n-    st.session_state[\"review_relief_labor_arbitration\"] = bool(relief_checks.get(\"labor_arbitration\"))\n-    st.session_state[\"review_relief_legal_aid\"] = bool(relief_checks.get(\"legal_aid\"))\n-    st.session_state[\"review_relief_union_or_street_help\"] = bool(relief_checks.get(\"union_or_street_help\"))\n-    st.session_state[\"review_relief_note\"] = case_detail.get(\"relief_note\", \"\")\n-    st.session_state[\"review_mediation_case_type\"] = case_detail.get(\"mediation_case_type\", \"未分类\") or \"未分类\"\n-    st.session_state[\"review_prosecution_case_type\"] = case_detail.get(\"prosecution_case_type\", \"未分类\") or \"未分类\"\n-    facts = case_detail.get(\"facts\", {})\n-    st.session_state[\"patch_company_credit_code\"] = facts.get(\"company_credit_code\", \"\")\n-    st.session_state[\"patch_company_address\"] = facts.get(\"company_address\", \"\")\n-    st.session_state[\"patch_company_legal_rep\"] = facts.get(\"company_legal_rep\", \"\")\n-    st.session_state[\"patch_company_phone\"] = facts.get(\"company_phone\", \"\")\n-    st.session_state[\"patch_direct_employer_name\"] = facts.get(\"direct_employer_name\", \"\")\n-    st.session_state[\"patch_direct_employer_id_number\"] = facts.get(\"direct_employer_id_number\", \"\")\n-    st.session_state[\"patch_contractor_name\"] = facts.get(\"contractor_name\", \"\")\n-    st.session_state[\"patch_subcontractor_name\"] = facts.get(\"subcontractor_name\", \"\")\n-    st.session_state[\"patch_guarantor_name\"] = facts.get(\"guarantor_name\", \"\")\n-    st.session_state[\"patch_employment_days\"] = facts.get(\"employment_days\", \"\")\n-    st.session_state[\"patch_wage_rate\"] = facts.get(\"wage_rate\", \"\")\n-    st.session_state[\"patch_wage_calculation\"] = facts.get(\"wage_calculation\", \"\")\n-    st.session_state[\"patch_court_name\"] = facts.get(\"court_name\", \"\")\n-    st.session_state[\"patch_procuratorate_name\"] = facts.get(\"procuratorate_name\", \"\")\n-\n-\n def render_sidebar() -> str:\n*** End Patch\n",
+          "timestamp": "2026-04-17T11:19:06.724Z"
+        },
+        {
+          "type": "assistant",
+          "text": "我已经把重复的状态管理、后端调用和规则型展示辅助从 `demo/ui.py` 抽出去了，现在先做一轮语法级验证，把明显断点先修干净。",
+          "timestamp": "2026-04-17T11:19:15.769Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "exec_command",
+          "input": {
+            "cmd": "python -m compileall app core demo",
+            "max_output_tokens": 4000,
+            "workdir": "/home/zhxy_ai/challenge_cup"
+          },
+          "timestamp": "2026-04-17T11:19:15.772Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "exec_command",
+          "input": {
+            "cmd": "rg -n \"ApiClient|DEFAULT_API_BASE_URL|PROJECT_ROOT|PERSISTED_STATE_KEYS|base64|Path|sys|os\\.getenv\" demo/ui.py app core",
+            "max_output_tokens": 4000,
+            "workdir": "/home/zhxy_ai/challenge_cup"
+          },
+          "timestamp": "2026-04-17T11:19:15.785Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "exec_command",
+          "input": {
+            "cmd": "python -c \"from app.service import analyze_case; result = analyze_case('老板拖欠我三个月工资，一共2万，没签劳动合同，但有微信聊天记录和考勤照片。'); print(result['structured_data']['issue_type'], result['risk_assessment']['evidence_score'])\"",
+            "max_output_tokens": 2000,
+            "workdir": "/home/zhxy_ai/challenge_cup"
+          },
+          "timestamp": "2026-04-17T11:19:25.084Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "exec_command",
+          "input": {
+            "cmd": "python -c \"from app.service import submit_case, get_prosecutor_dashboard; submit_case(description='老板欠我两个月工资，共10000元', facts={'worker_name':'张某','company_name':'某劳务公司'}); print(get_prosecutor_dashboard()['total_cases'])\"",
+            "max_output_tokens": 2000,
+            "workdir": "/home/zhxy_ai/challenge_cup"
+          },
+          "timestamp": "2026-04-17T11:19:25.106Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "exec_command",
+          "input": {
+            "cmd": "git status --short",
+            "max_output_tokens": 2000,
+            "workdir": "/home/zhxy_ai/challenge_cup"
+          },
+          "timestamp": "2026-04-17T11:19:31.882Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "exec_command",
+          "input": {
+            "cmd": "git diff -- app/service.py app/data_processor.py app/case_store.py app/document_generator.py core/models.py demo/ui.py demo/config.py demo/backend.py demo/state.py app/application.py app/case_analysis.py",
+            "max_output_tokens": 12000,
+            "workdir": "/home/zhxy_ai/challenge_cup"
+          },
+          "timestamp": "2026-04-17T11:19:31.893Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "exec_command",
+          "input": {
+            "cmd": "python -c \"from app.service import generate_document; doc = generate_document('support_prosecution_application', '老板拖欠我三个月工资，一共2万，没签劳动合同，但有微信聊天记录和考勤照片。', {'worker_name':'张某','company_name':'某建筑劳务公司','amount':'20000'}, ['聊天记录','考勤记录或工作记录']); print(doc['document_type'], len(doc['document_text']) > 0, doc['field_checklist']['completion_rate'])\"",
+            "max_output_tokens": 2000,
+            "workdir": "/home/zhxy_ai/challenge_cup"
+          },
+          "timestamp": "2026-04-17T11:19:39.658Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "exec_command",
+          "input": {
+            "cmd": "python -c \"from app.service import ask_question; answer = ask_question('老板拖欠我工资怎么办'); print(answer['answer_source'], answer['scene'])\"",
+            "max_output_tokens": 2000,
+            "workdir": "/home/zhxy_ai/challenge_cup"
+          },
+          "timestamp": "2026-04-17T11:19:39.668Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "update_plan",
+          "input": {
+            "explanation": "已完成后端模型化和容器化改造，并将 Streamlit 的状态管理与后端调用拆出独立模块；基础编译和关键服务链路已验证。",
+            "plan": [
+              {
+                "status": "completed",
+                "step": "引入核心领域模型并替换主流程裸字典传递"
+              },
+              {
+                "status": "completed",
+                "step": "重构后端依赖创建与处理器职责拆分"
+              },
+              {
+                "status": "completed",
+                "step": "拆分 Streamlit 页面与状态/API 编排"
+              },
+              {
+                "status": "completed",
+                "step": "运行基础验证并汇总变更"
+              }
+            ]
+          },
+          "timestamp": "2026-04-17T11:19:46.885Z"
+        },
+        {
+          "type": "assistant",
+          "text": "已按前面的架构建议做了实改，主目标是把“单体字典驱动”改成“有模型、有容器、有职责拆分”的骨架，同时把 Streamlit 的状态和后端调用从大文件里拆出去。\n\n后端这次的核心变化是：\n- 新增领域模型 [core/models.py](/home/zhxy_ai/challenge_cup/core/models.py)，把案件结构化结果、风险评估、证据摘要、案件记录都变成明确 dataclass。\n- 新增应用容器 [app/application.py](/home/zhxy_ai/challenge_cup/app/application.py)，`service` 不再直接散落创建全局依赖，而是统一从容器拿 `kb / processor / store / llm_client`。\n- 把原来超重的 `DataProcessor` 拆成编排器 [app/data_processor.py](/home/zhxy_ai/challenge_cup/app/data_processor.py) 和分析组件 [app/case_analysis.py](/home/zhxy_ai/challenge_cup/app/case_analysis.py)，把文本抽取、证据分析、风险评分、动作建议分开。\n- `CaseStore` 改为内部持有 `CaseRecord` 模型，再对外序列化返回，见 [app/case_store.py](/home/zhxy_ai/challenge_cup/app/case_store.py)。\n- `DocumentGenerator` 改成直接消费 `CaseReport`，不再依赖裸字典，见 [app/document_generator.py](/home/zhxy_ai/challenge_cup/app/document_generator.py)。\n\n前端 demo 这次的拆分是：\n- 常量移到 [demo/config.py](/home/zhxy_ai/challenge_cup/demo/config.py)\n- API 调用和展示辅助移到 [demo/backend.py](/home/zhxy_ai/challenge_cup/demo/backend.py)\n- `session_state`、查询参数恢复、样例预填、payload 组装移到 [demo/state.py](/home/zhxy_ai/challenge_cup/demo/state.py)\n- [demo/ui.py](/home/zhxy_ai/challenge_cup/demo/ui.py) 现在主要保留视图渲染和交互流程\n\n我做了基础验证：\n- `python -m compileall app core demo`\n- `python -c \"from app.service import analyze_case ...\"`\n- `python -c \"from app.service import generate_document ...\"`\n- `python -c \"from app.service import ask_question ...\"`\n\n都通过了，分析、问答回退、文书生成链路正常。\n\n有一点需要你知道：`git status` 里 [demo/api_client.py](/home/zhxy_ai/challenge_cup/demo/api_client.py) 本来就有未提交修改，这次我没有动它。若你愿意，我下一步可以继续把 API 层也做成真正的依赖注入方式，并补一组最基础的单元测试。",
+          "timestamp": "2026-04-17T11:20:02.909Z"
+        },
+        {
+          "type": "user",
+          "text": "帮我push",
+          "timestamp": "2026-04-17T11:43:34.448Z"
+        },
+        {
+          "type": "assistant",
+          "text": "我先确认当前分支、远端和未提交内容，然后直接走非交互式提交并推送。若推送触发沙箱网络限制，我会直接发起授权请求。",
+          "timestamp": "2026-04-17T11:43:58.124Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "exec_command",
+          "input": {
+            "cmd": "git status --short",
+            "max_output_tokens": 2000,
+            "workdir": "/home/zhxy_ai/challenge_cup"
+          },
+          "timestamp": "2026-04-17T11:43:58.177Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "exec_command",
+          "input": {
+            "cmd": "git branch --show-current",
+            "max_output_tokens": 200,
+            "workdir": "/home/zhxy_ai/challenge_cup"
+          },
+          "timestamp": "2026-04-17T11:43:58.322Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "exec_command",
+          "input": {
+            "cmd": "git remote -v",
+            "max_output_tokens": 1000,
+            "workdir": "/home/zhxy_ai/challenge_cup"
+          },
+          "timestamp": "2026-04-17T11:43:58.335Z"
+        },
+        {
+          "type": "assistant",
+          "text": "当前工作区里不只有我这次改的文件，还有现成未提交内容：\n- [demo/api_client.py](/home/zhxy_ai/challenge_cup/demo/api_client.py)\n- 一个未跟踪的 `.docx` 文件\n\n直接 `git add . && git push` 会把它们一并推上去，这个风险不适合我替你擅自决定。\n\n要我怎么推：\n1. 只提交并推送我这次改的代码文件\n2. 把当前所有改动一起提交并推送",
+          "timestamp": "2026-04-17T11:45:01.490Z"
+        },
+        {
+          "type": "user",
+          "text": "docx不提交",
+          "timestamp": "2026-04-17T11:45:58.585Z"
+        },
+        {
+          "type": "assistant",
+          "text": "我按你的约束处理：排除 `.docx`，其余当前代码改动一起提交并推送到 `origin/main`。先本地提交，推送如果受网络沙箱限制会直接请求授权。",
+          "timestamp": "2026-04-17T11:46:08.049Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "exec_command",
+          "input": {
+            "cmd": "git add app/case_store.py app/data_processor.py app/document_generator.py app/service.py core/models.py demo/api_client.py demo/ui.py app/application.py app/case_analysis.py demo/backend.py demo/config.py demo/state.py",
+            "max_output_tokens": 2000,
+            "workdir": "/home/zhxy_ai/challenge_cup"
+          },
+          "timestamp": "2026-04-17T11:46:08.090Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "exec_command",
+          "input": {
+            "cmd": "git status --short",
+            "max_output_tokens": 2000,
+            "workdir": "/home/zhxy_ai/challenge_cup"
+          },
+          "timestamp": "2026-04-17T11:46:08.094Z"
+        },
+        {
+          "type": "assistant",
+          "text": "本地 `git add` 已被沙箱拦住了，原因是 `.git` 写入受限。我直接申请一次提权，把暂存、提交、推送一起完成。",
+          "timestamp": "2026-04-17T11:46:15.429Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "exec_command",
+          "input": {
+            "cmd": "git add app/case_store.py app/data_processor.py app/document_generator.py app/service.py core/models.py demo/api_client.py demo/ui.py app/application.py app/case_analysis.py demo/backend.py demo/config.py demo/state.py && git commit -m \"Refactor app architecture and split demo state/backend\" && git push origin main",
+            "justification": "Do you want me to stage the selected code changes excluding the docx file, create a commit, and push to origin/main?",
+            "max_output_tokens": 12000,
+            "prefix_rule": [
+              "git",
+              "push",
+              "origin"
+            ],
+            "sandbox_permissions": "require_escalated",
+            "workdir": "/home/zhxy_ai/challenge_cup"
+          },
+          "timestamp": "2026-04-17T11:46:18.016Z"
+        }
+      ],
+      "total_additions": 1199,
+      "total_deletions": 1026,
+      "accepted_lines": 1199,
+      "overriden_lines": 0
+    },
+    "e73ed84456bc5292": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019d9aea-f65f-7492-8f95-3d5e5ec81df2",
+        "model": "gpt-5.4"
+      },
+      "human_author": "zhxy",
+      "messages": [
+        {
+          "type": "user",
+          "text": "<environment_context>\n  <cwd>/home/zhxy_ai/challenge_cup</cwd>\n  <shell>bash</shell>\n  <current_date>2026-04-17</current_date>\n  <timezone>Asia/Shanghai</timezone>\n</environment_context>",
+          "timestamp": "2026-04-17T10:11:08.125Z"
+        },
+        {
+          "type": "user",
+          "text": "检查当前代码构建，总结代码实现，对照初稿分析demo未实现功能。（demo无数据库，api支撑），但网页需要呈现核心功能",
+          "timestamp": "2026-04-17T10:11:08.129Z"
+        },
+        {
+          "type": "assistant",
+          "text": "我先检查项目结构、构建方式和现有页面实现，再定位“初稿”或需求文档，整理出当前已实现与缺失的核心功能差异。",
+          "timestamp": "2026-04-17T10:11:16.563Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "exec_command",
+          "input": {
+            "cmd": "pwd",
+            "max_output_tokens": 200,
+            "workdir": "/home/zhxy_ai/challenge_cup",
+            "yield_time_ms": 1000
+          },
+          "timestamp": "2026-04-17T10:11:16.883Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "exec_command",
+          "input": {
+            "cmd": "rg --files",
+            "max_output_tokens": 4000,
+            "workdir": "/home/zhxy_ai/challenge_cup",
+            "yield_time_ms": 1000
+          },
+          "timestamp": "2026-04-17T10:11:16.888Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "exec_command",
+          "input": {
+            "cmd": "find . -maxdepth 2 -type f \\( -iname '*readme*' -o -iname '*需求*' -o -iname '*初稿*' -o -iname '*.md' -o -iname '*.txt' -o -iname '*.pdf' -o -iname '*.docx' \\) | sort",
+            "max_output_tokens": 4000,
+            "workdir": "/home/zhxy_ai/challenge_cup",
+            "yield_time_ms": 1000
+          },
+          "timestamp": "2026-04-17T10:11:16.923Z"
+        },
+        {
+          "type": "assistant",
+          "text": "项目里有一份 `docx` 初稿和一套前后端 demo 代码。我接着读 `README`、入口文件和页面文件，确认构建状态以及当前功能覆盖面。",
+          "timestamp": "2026-04-17T10:11:25.600Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "exec_command",
+          "input": {
+            "cmd": "sed -n '1,220p' README.md",
+            "max_output_tokens": 4000,
+            "workdir": "/home/zhxy_ai/challenge_cup",
+            "yield_time_ms": 1000
+          },
+          "timestamp": "2026-04-17T10:11:25.606Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "exec_command",
+          "input": {
+            "cmd": "sed -n '1,260p' demo/ui.py",
+            "max_output_tokens": 4000,
+            "workdir": "/home/zhxy_ai/challenge_cup",
+            "yield_time_ms": 1000
+          },
+          "timestamp": "2026-04-17T10:11:25.608Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "exec_command",
+          "input": {
+            "cmd": "sed -n '1,260p' app/api.py",
+            "max_output_tokens": 4000,
+            "workdir": "/home/zhxy_ai/challenge_cup",
+            "yield_time_ms": 1000
+          },
+          "timestamp": "2026-04-17T10:11:25.629Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "exec_command",
+          "input": {
+            "cmd": "sed -n '1,220p' requirements.txt",
+            "max_output_tokens": 2000,
+            "workdir": "/home/zhxy_ai/challenge_cup",
+            "yield_time_ms": 1000
+          },
+          "timestamp": "2026-04-17T10:11:25.635Z"
+        },
+        {
+          "type": "assistant",
+          "text": "接口层已经比较完整，当前重点要确认服务实现是否和页面一致，以及 `docx` 初稿里定义了哪些 demo 核心能力。接下来我读业务服务与存储逻辑，再把初稿内容提取出来比对。",
+          "timestamp": "2026-04-17T10:11:37.679Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "exec_command",
+          "input": {
+            "cmd": "sed -n '1,260p' app/service.py",
+            "max_output_tokens": 4000,
+            "workdir": "/home/zhxy_ai/challenge_cup",
+            "yield_time_ms": 1000
+          },
+          "timestamp": "2026-04-17T10:11:37.681Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "exec_command",
+          "input": {
+            "cmd": "sed -n '1,260p' app/case_store.py",
+            "max_output_tokens": 4000,
+            "workdir": "/home/zhxy_ai/challenge_cup",
+            "yield_time_ms": 1000
+          },
+          "timestamp": "2026-04-17T10:11:37.684Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "exec_command",
+          "input": {
+            "cmd": "sed -n '1,260p' app/data_processor.py",
+            "max_output_tokens": 4000,
+            "workdir": "/home/zhxy_ai/challenge_cup",
+            "yield_time_ms": 1000
+          },
+          "timestamp": "2026-04-17T10:11:37.690Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "exec_command",
+          "input": {
+            "cmd": "python3 - <<'PY'\nfrom zipfile import ZipFile\nfrom pathlib import Path\nimport re\np=Path('【整合版】法理基础与技术准备-初稿汇总.docx')\nwith ZipFile(p) as z:\n    xml=z.read('word/document.xml').decode('utf-8', errors='ignore')\ntext=re.sub(r'<w:tab[^>]*/>', '\\t', xml)\ntext=re.sub(r'</w:p>', '\\n', text)\ntext=re.sub(r'<[^>]+>', '', text)\ntext=text.replace('&amp;','&').replace('&lt;','<').replace('&gt;','>')\nlines=[ln.strip() for ln in text.splitlines()]\nlines=[ln for ln in lines if ln]\nprint('\\n'.join(lines[:260]))\nPY",
+            "max_output_tokens": 6000,
+            "workdir": "/home/zhxy_ai/challenge_cup",
+            "yield_time_ms": 1000
+          },
+          "timestamp": "2026-04-17T10:11:37.696Z"
+        },
+        {
+          "type": "assistant",
+          "text": "初稿里能提炼出比较明确的对照基线：农民工端要有“信息采集、证据清单、法律咨询、文书生成”，检察院端要有“办案工作台、风险预警、辅助建议”，另外还提到了 OCR、语音、地理定位、外部政务库这些扩展项。我现在继续核对 UI 实际把这些能力呈现到了什么程度。",
+          "timestamp": "2026-04-17T10:11:47.580Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "exec_command",
+          "input": {
+            "cmd": "rg -n \"def render_|st\\.tabs|st\\.expander|st\\.form|st\\.button|st\\.metric|submit|review|qa|document|dashboard|query|patch\" demo/ui.py",
+            "max_output_tokens": 5000,
+            "workdir": "/home/zhxy_ai/challenge_cup",
+            "yield_time_ms": 1000
+          },
+          "timestamp": "2026-04-17T10:11:47.581Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "exec_command",
+          "input": {
+            "cmd": "sed -n '260,620p' demo/ui.py",
+            "max_output_tokens": 6000,
+            "workdir": "/home/zhxy_ai/challenge_cup",
+            "yield_time_ms": 1000
+          },
+          "timestamp": "2026-04-17T10:11:47.582Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "exec_command",
+          "input": {
+            "cmd": "sed -n '620,1100p' demo/ui.py",
+            "max_output_tokens": 6000,
+            "workdir": "/home/zhxy_ai/challenge_cup",
+            "yield_time_ms": 1000
+          },
+          "timestamp": "2026-04-17T10:11:47.628Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "exec_command",
+          "input": {
+            "cmd": "sed -n '1100,1525p' demo/ui.py",
+            "max_output_tokens": 7000,
+            "workdir": "/home/zhxy_ai/challenge_cup",
+            "yield_time_ms": 1000
+          },
+          "timestamp": "2026-04-17T10:11:56.390Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "exec_command",
+          "input": {
+            "cmd": "sed -n '1,260p' app/document_generator.py",
+            "max_output_tokens": 5000,
+            "workdir": "/home/zhxy_ai/challenge_cup",
+            "yield_time_ms": 1000
+          },
+          "timestamp": "2026-04-17T10:11:56.409Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "exec_command",
+          "input": {
+            "cmd": "sed -n '1,260p' app/qa_service.py",
+            "max_output_tokens": 4000,
+            "workdir": "/home/zhxy_ai/challenge_cup",
+            "yield_time_ms": 1000
+          },
+          "timestamp": "2026-04-17T10:11:56.415Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "exec_command",
+          "input": {
+            "cmd": "sed -n '1,260p' core/knowledge_base.py",
+            "max_output_tokens": 5000,
+            "workdir": "/home/zhxy_ai/challenge_cup",
+            "yield_time_ms": 1000
+          },
+          "timestamp": "2026-04-17T10:11:56.420Z"
+        },
+        {
+          "type": "assistant",
+          "text": "实现范围已经比较清楚了。最后我做一次不依赖浏览器的构建自检，确认 Python 代码至少能通过语法/导入层面的 smoke check，再给你出一份“当前实现、未实现、网页该怎么讲”的结论。",
+          "timestamp": "2026-04-17T10:12:15.803Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "exec_command",
+          "input": {
+            "cmd": "python3 -m py_compile app/*.py core/*.py demo/*.py scripts/*.py",
+            "max_output_tokens": 3000,
+            "workdir": "/home/zhxy_ai/challenge_cup",
+            "yield_time_ms": 1000
+          },
+          "timestamp": "2026-04-17T10:12:15.806Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "exec_command",
+          "input": {
+            "cmd": "python3 - <<'PY'\nfrom app.service import analyze_case, generate_document, get_prosecutor_dashboard, ask_question\nreport = analyze_case('老板拖欠我三个月工资，一共20000元，没签劳动合同，但有微信聊天记录和考勤照片。', ['聊天记录','考勤记录或工作记录'], {'worker_name':'张某','company_name':'某建筑公司','amount':'20000'})\nprint('ANALYZE_OK', report['structured_data']['issue_type'], report['risk_assessment']['evidence_score'])\ndoc = generate_document('support_prosecution_application', '老板拖欠我三个月工资，一共20000元，没签劳动合同，但有微信聊天记录和考勤照片。', {'worker_name':'张某','company_name':'某建筑公司','amount':'20000'}, ['聊天记录','考勤记录或工作记录'])\nprint('DOC_OK', doc['document_type'], doc['field_checklist']['completion_rate'])\nqa = ask_question('老板拖欠工资，没有合同怎么办')\nprint('QA_OK', qa['scene'], qa['answer_source'])\ndb = get_prosecutor_dashboard()\nprint('DB_OK', db['total_cases'], db['high_evidence_cases'])\nPY",
+            "max_output_tokens": 4000,
+            "workdir": "/home/zhxy_ai/challenge_cup",
+            "yield_time_ms": 1000
+          },
+          "timestamp": "2026-04-17T10:12:19.755Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "exec_command",
+          "input": {
+            "cmd": "python3 - <<'PY'\nfrom zipfile import ZipFile\nfrom pathlib import Path\nimport re\np=Path('【整合版】法理基础与技术准备-初稿汇总.docx')\nwith ZipFile(p) as z:\n    xml=z.read('word/document.xml').decode('utf-8', errors='ignore')\ntext=re.sub(r'</w:p>', '\\n', xml)\ntext=re.sub(r'<[^>]+>', '', text)\nfor kw in ['智能法律咨询应答','法律文书智能生成','支持起诉办案工作台','风险预警看板','外部政务协同数据库','OCR','语音','定位','数据库']:\n    idx=text.find(kw)\n    if idx!=-1:\n        snippet=text[max(0,idx-120):idx+260].replace('\\n',' ')\n        print('##', kw)\n        print(snippet)\nPY",
+            "max_output_tokens": 5000,
+            "workdir": "/home/zhxy_ai/challenge_cup",
+            "yield_time_ms": 1000
+          },
+          "timestamp": "2026-04-17T10:12:19.757Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "exec_command",
+          "input": {
+            "cmd": "nl -ba demo/ui.py | sed -n '1022,1245p'",
+            "max_output_tokens": 6000,
+            "workdir": "/home/zhxy_ai/challenge_cup",
+            "yield_time_ms": 1000
+          },
+          "timestamp": "2026-04-17T10:12:31.646Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "exec_command",
+          "input": {
+            "cmd": "nl -ba demo/ui.py | sed -n '1244,1518p'",
+            "max_output_tokens": 7000,
+            "workdir": "/home/zhxy_ai/challenge_cup",
+            "yield_time_ms": 1000
+          },
+          "timestamp": "2026-04-17T10:12:31.919Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "exec_command",
+          "input": {
+            "cmd": "nl -ba app/data_processor.py | sed -n '1,240p'",
+            "max_output_tokens": 7000,
+            "workdir": "/home/zhxy_ai/challenge_cup",
+            "yield_time_ms": 1000
+          },
+          "timestamp": "2026-04-17T10:12:31.945Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "exec_command",
+          "input": {
+            "cmd": "nl -ba app/document_generator.py | sed -n '1,260p'",
+            "max_output_tokens": 7000,
+            "workdir": "/home/zhxy_ai/challenge_cup",
+            "yield_time_ms": 1000
+          },
+          "timestamp": "2026-04-17T10:12:31.961Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "exec_command",
+          "input": {
+            "cmd": "nl -ba app/case_store.py | sed -n '1,260p'",
+            "max_output_tokens": 7000,
+            "workdir": "/home/zhxy_ai/challenge_cup",
+            "yield_time_ms": 1000
+          },
+          "timestamp": "2026-04-17T10:12:40.718Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "exec_command",
+          "input": {
+            "cmd": "nl -ba app/api.py | sed -n '1,240p'",
+            "max_output_tokens": 5000,
+            "workdir": "/home/zhxy_ai/challenge_cup",
+            "yield_time_ms": 1000
+          },
+          "timestamp": "2026-04-17T10:12:40.735Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "exec_command",
+          "input": {
+            "cmd": "nl -ba app/qa_service.py | sed -n '1,240p'",
+            "max_output_tokens": 5000,
+            "workdir": "/home/zhxy_ai/challenge_cup",
+            "yield_time_ms": 1000
+          },
+          "timestamp": "2026-04-17T10:12:40.740Z"
+        },
+        {
+          "type": "assistant",
+          "text": "**构建结论**\n\n当前代码可以通过基础构建自检。我执行了 `python3 -m py_compile app/*.py core/*.py demo/*.py scripts/*.py`，并做了服务层 smoke check：案情分析、文书生成、问答、后台汇总都能直接跑通，样例结果是 `ANALYZE_OK / DOC_OK / QA_OK / DB_OK`。  \n但要注意，当前网页不是纯静态 demo，它**依赖 FastAPI 接口在线**；如果后端没启动，页面会提示“后端接口暂不可用”，核心结果区拿不到数据。这一点在 [demo/ui.py](/home/zhxy_ai/challenge_cup/demo/ui.py#L689) 到 [demo/ui.py](/home/zhxy_ai/challenge_cup/demo/ui.py#L707) 的 `safe_get/safe_post` 和用户页/后台页调用链里很明确。\n\n**当前代码实现了什么**\n\n后端接口层比较完整，已覆盖案情分析、案件提交、案件详情、检察评估、事实补录、问答、文书生成、后台看板这些演示接口，见 [app/api.py](/home/zhxy_ai/challenge_cup/app/api.py#L24) 到 [app/api.py](/home/zhxy_ai/challenge_cup/app/api.py#L218)。\n\n核心业务能力已经具备：\n- 规则抽取与评估：从案情文本提取劳动者、用工主体、金额、欠薪时长、合同状态、证据项，并生成证据分、风险等级、建议动作，见 [app/data_processor.py](/home/zhxy_ai/challenge_cup/app/data_processor.py#L56) 到 [app/data_processor.py](/home/zhxy_ai/challenge_cup/app/data_processor.py#L171)。\n- 文书生成：支持 6 类模板，并且会检查字段完备度、列出缺失字段，见 [app/document_generator.py](/home/zhxy_ai/challenge_cup/app/document_generator.py#L11) 到 [app/document_generator.py](/home/zhxy_ai/challenge_cup/app/document_generator.py#L246)。\n- 案件存储与后台流转：采用内存 `list` 存储，无数据库，支持提交、查询、评估回传、补录事实、dashboard 聚合，见 [app/case_store.py](/home/zhxy_ai/challenge_cup/app/case_store.py#L10) 到 [app/case_store.py](/home/zhxy_ai/challenge_cup/app/case_store.py#L226)。\n- 法律问答：默认基于 FAQ/法律知识库回退回答，可选接入大模型，见 [app/qa_service.py](/home/zhxy_ai/challenge_cup/app/qa_service.py#L9) 到 [app/qa_service.py](/home/zhxy_ai/challenge_cup/app/qa_service.py#L162)。\n\n网页层已经把“核心功能”做出来了：\n- 农民工端：信息采集、证据清单、案情分析、文书预览/下载、法律咨询、案件进度查询，见 [demo/ui.py](/home/zhxy_ai/challenge_cup/demo/ui.py#L1022) 到 [demo/ui.py](/home/zhxy_ai/challenge_cup/demo/ui.py#L1241)。\n- 检察院端：案件汇总、重点案件筛选、前置救济核验、类型化评估、补录事实、文书缺失字段检查、反馈回传、风险分布图，见 [demo/ui.py](/home/zhxy_ai/challenge_cup/demo/ui.py#L1244) 到 [demo/ui.py](/home/zhxy_ai/challenge_cup/demo/ui.py#L1497)。\n\n**对照初稿，demo 已实现部分**\n\n和初稿中“农民工端 + 智能援助中枢 + 检察院端”三块相比，当前 demo 已经覆盖了答辩最核心的可视化能力：\n\n- 农民工端的信息采集与援助申请：已实现基础信息、欠薪线索、证据清单采集，[demo/ui.py](/home/zhxy_ai/challenge_cup/demo/ui.py#L1036)。\n- 智能法律咨询应答：已实现问答面板和后端问答逻辑，[demo/ui.py](/home/zhxy_ai/challenge_cup/demo/ui.py#L822) 与 [app/qa_service.py](/home/zhxy_ai/challenge_cup/app/qa_service.py#L137)。\n- 法律文书智能生成：已实现多模板生成和字段缺失检查，[app/document_generator.py](/home/zhxy_ai/challenge_cup/app/document_generator.py#L20)。\n- 支持起诉办案工作台：已实现案件列表、单案研判、补录、回传，[demo/ui.py](/home/zhxy_ai/challenge_cup/demo/ui.py#L1279)。\n- 风险预警看板：已实现按证据分筛选、风险等级分布柱状图，[demo/ui.py](/home/zhxy_ai/challenge_cup/demo/ui.py#L1263) 和 [demo/ui.py](/home/zhxy_ai/challenge_cup/demo/ui.py#L1485)。\n\n**对照初稿，demo 未实现或只是占位的部分**\n\n这些是初稿里提到、但当前 demo 还没有真正落地的能力：\n\n- 数据库与持久化：没有数据库，重启即丢失，仅内存存储。这是已知设计，不算 bug，但属于未实现正式能力，见 [app/case_store.py](/home/zhxy_ai/challenge_cup/app/case_store.py#L14)。\n- 外部政务协同数据库：初稿提到企业信用、住建、人社等外部库接入；当前没有任何真实外部数据对接，只有手工补录字段。\n- OCR 证件识别：初稿里写了身份证 OCR 自动回填，当前前端没有上传识别流程。\n- 语音输入/方言识别：初稿提到 ASR/方言识别，当前未实现。\n- 地理定位与逆地理编码：初稿提到自动获取务工地点，当前是纯文本输入。\n- 动态级联表单：如行业类别 -> 工种联动，当前只有普通输入框/下拉框。\n- 证据上传与固定：现在只有证据名称勾选/文本录入，没有真实文件上传、OCR、哈希固证或材料管理。\n- 真正的风险预警分析：目前“预警看板”本质上是证据分筛选 + 风险等级统计，不是区域/行业/企业维度的聚类预警。\n- 办案智能研判深度不足：检察评估主要还是人工勾选与文本填写，没有基于案件事实自动输出“支持起诉必要性论证”。\n- 网页离线独立演示能力不足：当前页面完全走 API；如果你希望“只有网页、无 API 服务也能演示核心流程”，现在做不到。\n\n**最关键的判断**\n\n如果你的目标是“demo 无数据库，但要有 API 支撑，且网页能展示核心功能”，那么当前代码**基本达标**。  \n如果你的目标是“即使没有 API 进程，网页也要单独展示核心功能”，那么当前代码**不达标**，因为页面已经被改成纯 API 驱动模式了，见 [demo/ui.py](/home/zhxy_ai/challenge_cup/demo/ui.py#L1024) 和 [demo/ui.py](/home/zhxy_ai/challenge_cup/demo/ui.py#L1246)。\n\n**建议你答辩时这样表述**\n\n可以把当前系统定义为“演示型闭环原型”：\n- 已实现：信息采集、规则分析、证据提示、法律问答、文书生成、案件提交、检察研判、反馈回传。\n- 未实现：数据库持久化、外部政务数据接入、OCR、语音、定位、真实材料上传。\n- 页面重点展示“核心业务闭环”，不强调“生产级基础设施”。\n\n如果你要，我下一步可以直接帮你出一版“已实现/未实现/答辩话术”的表格版总结，或者继续把网页改成“后端挂了也能本地演示”的纯前端降级模式。",
+          "timestamp": "2026-04-17T10:13:26.344Z"
+        },
+        {
+          "type": "user",
+          "text": "现在打开streamlit还没有看见核心功能，帮我检查，要不要先添加少量示例用于展示",
+          "timestamp": "2026-04-17T10:14:12.255Z"
+        },
+        {
+          "type": "assistant",
+          "text": "我先查页面渲染逻辑，重点看为什么 Streamlit 首屏看不到问答、进度查询这类核心功能，以及是否需要增加默认示例来支撑展示。",
+          "timestamp": "2026-04-17T10:14:24.116Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "exec_command",
+          "input": {
+            "cmd": "rg -n \"if not analysis_report|render_qa_panel|render_case_query_panel|sample|载入案例|return\" demo/ui.py",
+            "max_output_tokens": 4000,
+            "workdir": "/home/zhxy_ai/challenge_cup",
+            "yield_time_ms": 1000
+          },
+          "timestamp": "2026-04-17T10:14:24.117Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "exec_command",
+          "input": {
+            "cmd": "sed -n '1148,1245p' demo/ui.py",
+            "max_output_tokens": 3000,
+            "workdir": "/home/zhxy_ai/challenge_cup",
+            "yield_time_ms": 1000
+          },
+          "timestamp": "2026-04-17T10:14:24.123Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "exec_command",
+          "input": {
+            "cmd": "sed -n '998,1038p' demo/ui.py",
+            "max_output_tokens": 2000,
+            "workdir": "/home/zhxy_ai/challenge_cup",
+            "yield_time_ms": 1000
+          },
+          "timestamp": "2026-04-17T10:14:24.134Z"
+        },
+        {
+          "type": "assistant",
+          "text": "问题定位到了：农民工端右侧在“还没分析”时直接 `return`，把下面的“智能法律咨询”和“案件进度查询”整段截断了，所以首屏看起来像没核心功能。  \n我会顺手补一个轻量示例区，把样例从侧栏前移到主区，避免展示时还得提醒评委去侧栏找入口。",
+          "timestamp": "2026-04-17T10:14:36.756Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "apply_patch",
+          "input": "*** Begin Patch\n*** Update File: /home/zhxy_ai/challenge_cup/demo/ui.py\n@@\n def render_route_cards(routes: list[dict[str, str]]) -> None:\n     st.write(\"**推荐维权路径**\")\n     for route in routes:\n         st.markdown(\n@@\n             unsafe_allow_html=True,\n         )\n \n \n+def render_quick_demo_cases() -> None:\n+    sample_cases = safe_get(\"/cases/samples\", {\"items\": []}).get(\"items\", [])\n+    if not sample_cases:\n+        return\n+\n+    section_intro(\"推荐演示案例\", \"答辩时建议先载入一个典型案例，再直接点击“一键分析”或“生成文书”，核心能力会更集中地展示出来。\")\n+    featured_cases = sample_cases[:3]\n+    columns = st.columns(len(featured_cases))\n+    for column, sample in zip(columns, featured_cases):\n+        with column:\n+            st.markdown(\n+                f\"\"\"\n+                <div class=\"section-card\" style=\"height: 100%;\">\n+                    <div class=\"section-title\" style=\"font-size: 1.15rem;\">{sample[\"title\"]}</div>\n+                    <div class=\"section-copy\">{sample[\"description\"]}</div>\n+                </div>\n+                \"\"\",\n+                unsafe_allow_html=True,\n+            )\n+            if st.button(f'载入 {sample[\"case_id\"]}', key=f'quick_load_{sample[\"case_id\"]}', use_container_width=True):\n+                load_sample_into_state(sample)\n+                st.success(f'已载入示例：{sample[\"title\"]}')\n+\n+\n def render_qa_panel() -> None:\n     section_intro(\"智能法律咨询\", \"围绕欠薪、未签合同、工伤等高频问题给出通俗化建议，便于答辩时展示平台的咨询能力。\")\n     st.text_area(\n         \"输入法律问题\",\n@@\n def render_user_view() -> None:\n     render_demo_banner(\n         \"答辩展示模式\",\n         \"当前页面已与核心算法模块解耦，前端只负责展示与交互，分析结果统一由后端接口返回，更适合现场演示、系统分层讲解与架构答辩。\",\n@@\n         [\"大字高亮\", \"接口解耦\", \"按钮清晰\"],\n     )\n     render_emphasis(\"答辩讲解可直接强调：展示层不再直连本地核心模块，系统边界更清晰。\")\n+    render_quick_demo_cases()\n \n     left_col, right_col = st.columns([1.1, 1])\n@@\n     with right_col:\n         section_intro(\"结果展示区\", \"分析结论、重点指标和文书预览统一放在右侧，便于答辩时快速说明。\")\n         if last_submission:\n@@\n             if last_submission.get(\"feedback_messages\"):\n                 st.write(\"**检察院回传提示**\")\n                 for item in last_submission[\"feedback_messages\"]:\n                     st.write(f\"- {item['sent_at']} | {item['message']}\")\n \n         if not analysis_report:\n             st.info(\"点击“一键分析”后，这里会展示证据分数、风险等级、结构化字段和文书预览。\")\n-            return\n-\n-        assessment = analysis_report[\"risk_assessment\"]\n-        structured = analysis_report[\"structured_data\"]\n-        evidence = analysis_report[\"evidence\"]\n-\n-        metric_col1, metric_col2, metric_col3 = st.columns(3)\n-        metric_col1.metric(\"证据分数\", assessment[\"evidence_score\"])\n-        metric_col2.metric(\"风险等级\", assessment[\"level\"])\n-        metric_col3.metric(\"风险分数\", assessment[\"score\"])\n-\n-        st.write(\"**结构化字段**\")\n-        st.table(\n-            [\n-                {\n-                    \"劳动者\": structured[\"worker_name\"],\n-                    \"用工主体\": structured[\"employer_name\"],\n-                    \"纠纷类型\": structured[\"issue_type\"],\n-                    \"涉案金额(元)\": structured[\"amount_claimed\"] or \"待补充\",\n-                    \"欠薪时长(月)\": structured[\"unpaid_duration_months\"] or \"待补充\",\n-                    \"是否签合同\": \"已签\" if structured[\"has_contract\"] is True else \"未签\" if structured[\"has_contract\"] is False else \"未知\",\n-                    \"是否工伤\": \"是\" if structured[\"injury_occurred\"] else \"否\",\n-                }\n-            ]\n-        )\n-\n-        if structured[\"extraction_notes\"]:\n-            st.write(\"**抽取提示**\")\n-            for note in structured[\"extraction_notes\"]:\n-                st.write(f\"- {note}\")\n-\n-        st.write(\"**证据情况**\")\n-        st.json(\n-            {\n-                \"已识别证据\": structured[\"evidence_items\"],\n-                \"关键缺失证据\": evidence[\"missing_required\"],\n-                \"建议补充证据\": evidence[\"optional_evidence\"],\n-            }\n-        )\n-\n-        st.write(\"**建议动作**\")\n-        for action in analysis_report[\"recommended_actions\"]:\n-            st.write(f\"- {action}\")\n-\n-        render_route_cards(build_route_recommendations(analysis_report, last_submission))\n-\n-        st.write(\"**文书预览**\")\n-        if generated_document:\n-            st.code(generated_document[\"document_text\"], language=\"text\")\n-            render_field_checklist(generated_document.get(\"field_checklist\", {}))\n-            file_stem = st.session_state[\"case_title\"].strip() or structured[\"issue_type\"]\n-            st.download_button(\n-                \"下载文书 .txt\",\n-                data=generated_document[\"document_text\"],\n-                file_name=f\"{file_stem}_{generated_document['document_type']}.txt\",\n-                mime=\"text/plain\",\n-                use_container_width=True,\n-            )\n         else:\n-            st.info(\"点击“生成文书”后可在这里预览并下载文本版文书。\")\n+            assessment = analysis_report[\"risk_assessment\"]\n+            structured = analysis_report[\"structured_data\"]\n+            evidence = analysis_report[\"evidence\"]\n+\n+            metric_col1, metric_col2, metric_col3 = st.columns(3)\n+            metric_col1.metric(\"证据分数\", assessment[\"evidence_score\"])\n+            metric_col2.metric(\"风险等级\", assessment[\"level\"])\n+            metric_col3.metric(\"风险分数\", assessment[\"score\"])\n+\n+            st.write(\"**结构化字段**\")\n+            st.table(\n+                [\n+                    {\n+                        \"劳动者\": structured[\"worker_name\"],\n+                        \"用工主体\": structured[\"employer_name\"],\n+                        \"纠纷类型\": structured[\"issue_type\"],\n+                        \"涉案金额(元)\": structured[\"amount_claimed\"] or \"待补充\",\n+                        \"欠薪时长(月)\": structured[\"unpaid_duration_months\"] or \"待补充\",\n+                        \"是否签合同\": \"已签\" if structured[\"has_contract\"] is True else \"未签\" if structured[\"has_contract\"] is False else \"未知\",\n+                        \"是否工伤\": \"是\" if structured[\"injury_occurred\"] else \"否\",\n+                    }\n+                ]\n+            )\n+\n+            if structured[\"extraction_notes\"]:\n+                st.write(\"**抽取提示**\")\n+                for note in structured[\"extraction_notes\"]:\n+                    st.write(f\"- {note}\")\n+\n+            st.write(\"**证据情况**\")\n+            st.json(\n+                {\n+                    \"已识别证据\": structured[\"evidence_items\"],\n+                    \"关键缺失证据\": evidence[\"missing_required\"],\n+                    \"建议补充证据\": evidence[\"optional_evidence\"],\n+                }\n+            )\n+\n+            st.write(\"**建议动作**\")\n+            for action in analysis_report[\"recommended_actions\"]:\n+                st.write(f\"- {action}\")\n+\n+            render_route_cards(build_route_recommendations(analysis_report, last_submission))\n+\n+            st.write(\"**文书预览**\")\n+            if generated_document:\n+                st.code(generated_document[\"document_text\"], language=\"text\")\n+                render_field_checklist(generated_document.get(\"field_checklist\", {}))\n+                file_stem = st.session_state[\"case_title\"].strip() or structured[\"issue_type\"]\n+                st.download_button(\n+                    \"下载文书 .txt\",\n+                    data=generated_document[\"document_text\"],\n+                    file_name=f\"{file_stem}_{generated_document['document_type']}.txt\",\n+                    mime=\"text/plain\",\n+                    use_container_width=True,\n+                )\n+            else:\n+                st.info(\"点击“生成文书”后可在这里预览并下载文本版文书。\")\n*** End Patch\n",
+          "timestamp": "2026-04-17T10:15:11.298Z"
+        },
+        {
+          "type": "assistant",
+          "text": "我已经改了两个点：首屏不再因为“未分析”而提前返回，问答和进度查询会一直显示；另外主区新增了“推荐演示案例”，便于直接载入样例展示。  \n接下来做一次语法检查，确认这次修改不会把页面跑坏。",
+          "timestamp": "2026-04-17T10:15:20.571Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "exec_command",
+          "input": {
+            "cmd": "python3 -m py_compile demo/ui.py",
+            "max_output_tokens": 2000,
+            "workdir": "/home/zhxy_ai/challenge_cup",
+            "yield_time_ms": 1000
+          },
+          "timestamp": "2026-04-17T10:15:20.730Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "exec_command",
+          "input": {
+            "cmd": "nl -ba demo/ui.py | sed -n '808,920p'",
+            "max_output_tokens": 4000,
+            "workdir": "/home/zhxy_ai/challenge_cup",
+            "yield_time_ms": 1000
+          },
+          "timestamp": "2026-04-17T10:15:20.733Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "exec_command",
+          "input": {
+            "cmd": "nl -ba demo/ui.py | sed -n '1168,1260p'",
+            "max_output_tokens": 5000,
+            "workdir": "/home/zhxy_ai/challenge_cup",
+            "yield_time_ms": 1000
+          },
+          "timestamp": "2026-04-17T10:15:20.738Z"
+        },
+        {
+          "type": "assistant",
+          "text": "已经查到原因并修了。\n\n问题不是“核心功能没做”，而是用户页在没有 `analysis_report` 时会直接提前 `return`，导致下面的“智能法律咨询”和“案件进度查询”根本不渲染。这个逻辑在 [demo/ui.py](/home/zhxy_ai/challenge_cup/demo/ui.py#L1200) 现在已经改成只显示提示，不再截断页面；问答和进度查询会一直显示。\n\n我还补了一个轻量展示增强：在农民工端主区新增了“推荐演示案例”，可以直接一键载入前 3 个样例，位置在 [demo/ui.py](/home/zhxy_ai/challenge_cup/demo/ui.py#L822)。这样答辩时不用提醒评委去侧栏找样例，首屏就能看到可操作的核心入口。\n\n这次修改后建议你这样看：\n- 首屏现在应该能直接看到：信息采集、推荐演示案例、智能法律咨询、案件进度查询。\n- 右侧结果区在未分析前只显示提示，分析后再展示证据分数、结构化字段、建议动作、文书预览。\n- 保留少量示例是有必要的，但不需要很多。`3` 个典型案例足够，过多反而分散注意力。\n\n我已经做过语法检查，`demo/ui.py` 可通过 `py_compile`。你现在重新执行：\n```bash\npython -m streamlit run demo/ui.py\n```\n\n如果你愿意，我下一步可以继续帮你做一版“答辩优先”的展示优化，把首屏再补一个“推荐演示流程 1-2-3”，让评委一打开就知道怎么操作。",
+          "timestamp": "2026-04-17T10:15:34.299Z"
+        }
+      ],
+      "total_additions": 81,
+      "total_deletions": 57,
+      "accepted_lines": 56,
+      "overriden_lines": 0
+    }
+  }
+}
