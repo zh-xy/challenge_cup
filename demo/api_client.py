@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import socket
 from typing import Any
 from urllib import error, request
 
@@ -32,3 +33,5 @@ class ApiClient:
             raise RuntimeError(f"API returned {exc.code}: {message}") from exc
         except error.URLError as exc:
             raise RuntimeError(f"API unavailable: {exc.reason}") from exc
+        except (TimeoutError, socket.timeout) as exc:
+            raise RuntimeError("API unavailable: request timed out") from exc

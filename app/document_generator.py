@@ -6,6 +6,7 @@ from typing import Any
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
 from core.knowledge_base import TEMPLATE_DIR
+from core.models import CaseReport
 
 
 class DocumentGenerator:
@@ -103,29 +104,29 @@ class DocumentGenerator:
     def generate(
         self,
         template_name: str,
-        case_report: dict[str, Any],
+        case_report: CaseReport,
         facts: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
         if template_name not in self.TEMPLATE_MAP:
             raise ValueError(f"Unsupported template: {template_name}")
 
         facts = facts or {}
-        structured = case_report["structured_data"]
-        assessment = case_report["risk_assessment"]
-        evidence = case_report["evidence"]
+        structured = case_report.structured_data
+        assessment = case_report.risk_assessment
+        evidence = case_report.evidence
         template = self.env.get_template(self.TEMPLATE_MAP[template_name])
-        amount = facts.get("amount") or structured["amount_claimed"] or "待核定"
+        amount = facts.get("amount") or structured.amount_claimed or "待核定"
 
         context = {
             "today": date.today().isoformat(),
-            "worker_name": facts.get("worker_name") or structured["worker_name"],
+            "worker_name": facts.get("worker_name") or structured.worker_name,
             "worker_gender": facts.get("worker_gender", "性别待补充"),
             "worker_birth_date": facts.get("worker_birth_date", "出生日期待补充"),
             "worker_ethnicity": facts.get("worker_ethnicity", "民族待补充"),
             "worker_id_number": facts.get("worker_id_number", "身份证号待补充"),
             "worker_address": facts.get("worker_address", "住址待补充"),
             "worker_phone": facts.get("worker_phone", "联系电话待补充"),
-            "company_name": facts.get("company_name") or structured["employer_name"],
+            "company_name": facts.get("company_name") or structured.employer_name,
             "company_credit_code": facts.get("company_credit_code", "统一社会信用代码待补充"),
             "company_address": facts.get("company_address", "住所地待补充"),
             "company_legal_rep": facts.get("company_legal_rep", "法定代表人待补充"),
@@ -142,7 +143,7 @@ class DocumentGenerator:
             "contractor_address": facts.get("contractor_address", "住所地待补充"),
             "contractor_legal_rep": facts.get("contractor_legal_rep", "法定代表人待补充"),
             "contractor_phone": facts.get("contractor_phone", "联系电话待补充"),
-            "subcontractor_name": facts.get("subcontractor_name", facts.get("company_name") or structured["employer_name"]),
+            "subcontractor_name": facts.get("subcontractor_name", facts.get("company_name") or structured.employer_name),
             "subcontractor_credit_code": facts.get("subcontractor_credit_code", "统一社会信用代码待补充"),
             "subcontractor_address": facts.get("subcontractor_address", "住所地待补充"),
             "subcontractor_legal_rep": facts.get("subcontractor_legal_rep", "法定代表人待补充"),
@@ -160,19 +161,19 @@ class DocumentGenerator:
             "end_date": facts.get("end_date", "待补充"),
             "work_start_date": facts.get("start_date", "待补充"),
             "work_end_date": facts.get("end_date", "待补充"),
-            "work_unit_name": facts.get("work_unit_name") or facts.get("company_name") or structured["employer_name"],
+            "work_unit_name": facts.get("work_unit_name") or facts.get("company_name") or structured.employer_name,
             "project_name": facts.get("project_name", "项目名称待补充"),
             "employment_days": facts.get("employment_days", "待补充"),
             "wage_rate": facts.get("wage_rate", "待补充"),
             "wage_calculation": facts.get("wage_calculation", "待补充"),
-            "dispute_type": structured["issue_type"],
-            "cause_of_action": facts.get("cause_of_action", "追索劳动报酬纠纷" if structured["issue_type"] == "欠薪" else "劳务合同纠纷"),
-            "dispute_summary": structured["raw_text"],
-            "evidence_list": structured["evidence_items"] or ["待补充"],
-            "risk_level": assessment["level"],
-            "evidence_score": assessment["evidence_score"],
-            "recommended_actions": case_report["recommended_actions"],
-            "missing_evidence": evidence["missing_required"],
+            "dispute_type": structured.issue_type,
+            "cause_of_action": facts.get("cause_of_action", "追索劳动报酬纠纷" if structured.issue_type == "欠薪" else "劳务合同纠纷"),
+            "dispute_summary": structured.raw_text,
+            "evidence_list": structured.evidence_items or ["待补充"],
+            "risk_level": assessment.level,
+            "evidence_score": assessment.evidence_score,
+            "recommended_actions": case_report.recommended_actions,
+            "missing_evidence": evidence.missing_required,
             "court_name": facts.get("court_name", "XX区人民法院"),
             "procuratorate_name": facts.get("procuratorate_name", "XX区人民检察院"),
         }
