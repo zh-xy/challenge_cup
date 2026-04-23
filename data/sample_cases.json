@@ -1,87 +1,361 @@
 [
   {
     "case_id": "A001",
-    "title": "工地欠薪三个月且未签合同",
-    "description": "张某在某建筑劳务公司工地做木工，老板欠我三个月工资，一共2万4，没签劳动合同，但是有微信聊天记录、考勤照片和工友证言。",
+    "title": "北京住宅项目木工欠薪",
+    "description": "张某在北京市海淀区住宅项目做木工，2025年11月至2026年1月工资拖欠，累计24000元。",
     "facts": {
       "worker_name": "张某",
-      "company_name": "某建筑劳务公司",
+      "company_name": "北京某建筑劳务公司",
       "amount": "24000",
       "job_title": "木工",
       "start_date": "2025-09-01",
       "end_date": "2026-01-31",
       "unpaid_duration_months": 3,
-      "has_contract": false
+      "has_contract": false,
+      "payment_method": "月结",
+      "work_address": "北京市海淀区XX住宅项目"
     },
-    "provided_evidence": [
-      "身份证明",
-      "考勤记录或工作记录",
-      "聊天记录",
-      "工友证言",
-      "工作照片"
-    ]
+    "provided_evidence": ["身份证明", "考勤记录或工作记录", "聊天记录", "工作照片"]
   },
   {
     "case_id": "B001",
-    "title": "施工现场受伤待申请工伤认定",
-    "description": "李某在某工程建设公司搬运材料时摔伤骨折，已经住院治疗，目前只有事故经过说明、医院诊断材料、现场照片和医疗费票据，还没有工伤认定材料。",
+    "title": "天津工地工伤与工资争议",
+    "description": "李某在天津市滨海新区工地搬运受伤，停工后工资与赔付均未落实。",
     "facts": {
       "worker_name": "李某",
-      "company_name": "某工程建设公司",
+      "company_name": "天津某工程建设公司",
       "amount": "36000",
       "job_title": "搬运工",
       "start_date": "2026-02-10",
       "end_date": "2026-03-18",
-      "has_contract": false
+      "has_contract": false,
+      "payment_method": "月结",
+      "work_address": "天津市滨海新区XX建设项目"
     },
-    "provided_evidence": [
-      "身份证明",
-      "事故经过说明",
-      "医院诊断材料",
-      "现场照片",
-      "医疗费票据"
-    ]
+    "provided_evidence": ["身份证明", "医院诊断材料", "现场照片", "事故经过说明", "医疗费票据"]
   },
   {
     "case_id": "C001",
-    "title": "未签劳动合同主张双倍工资",
-    "description": "王某在一家加工厂上班8个月，一直没签合同，但每个月通过微信转账发工资，有考勤截图、聊天记录和工牌照片，现在准备申请双倍工资。",
+    "title": "河北加工厂未签合同双倍工资",
+    "description": "王某在廊坊加工厂工作8个月未签合同，主张双倍工资差额18000元。",
     "facts": {
       "worker_name": "王某",
-      "company_name": "某加工厂",
+      "company_name": "河北某加工厂",
       "amount": "18000",
       "job_title": "普工",
       "start_date": "2025-06-01",
       "end_date": "2026-01-31",
       "duration_months": 8,
-      "has_contract": false
+      "has_contract": false,
+      "payment_method": "月结",
+      "work_address": "河北省廊坊市XX工业园"
     },
-    "provided_evidence": [
-      "身份证明",
-      "入职时间证明",
-      "实际工作证明",
-      "工资支付记录",
-      "聊天记录",
-      "工牌照片"
-    ]
+    "provided_evidence": ["身份证明", "工资支付记录", "聊天记录", "工牌照片", "考勤截图"]
   },
   {
     "case_id": "D001",
-    "title": "包工头跑路导致工资无法结算",
-    "description": "赵某在装修工地干活两个月，包工头跑路后一直不给结算工资，大约1万2，目前只有工友联系方式和部分工作照片，没有合同也没有工资流水。",
+    "title": "北京装修项目包工头失联欠薪",
+    "description": "赵某在通州装修改造项目做瓦工，包工头失联后欠薪12000元。",
     "facts": {
       "worker_name": "赵某",
-      "company_name": "某装修项目部",
+      "company_name": "北京某装修项目部",
       "amount": "12000",
       "job_title": "瓦工",
       "start_date": "2026-01-05",
       "end_date": "2026-03-05",
       "unpaid_duration_months": 2,
-      "has_contract": false
+      "has_contract": false,
+      "payment_method": "完工结",
+      "work_address": "北京市通州区XX商业综合体项目"
     },
-    "provided_evidence": [
-      "工友证言",
-      "工作照片"
-    ]
+    "provided_evidence": ["工友证言", "工作照片", "工程群聊天记录"]
+  },
+  {
+    "case_id": "E001",
+    "title": "北京餐饮门店少发并欠发工资",
+    "description": "陈某在朝阳区餐饮门店后厨工作，连续两个月少发并欠发工资8600元。",
+    "facts": {
+      "worker_name": "陈某",
+      "company_name": "北京某连锁餐饮门店",
+      "amount": "8600",
+      "job_title": "后厨帮工",
+      "start_date": "2025-10-01",
+      "end_date": "2026-02-20",
+      "unpaid_duration_months": 2,
+      "has_contract": true,
+      "payment_method": "月结",
+      "work_address": "北京市朝阳区XX商场B1层"
+    },
+    "provided_evidence": ["身份证明", "排班记录", "工资到账记录", "聊天记录", "同事证言"]
+  },
+  {
+    "case_id": "F001",
+    "title": "江苏电子厂加班费与欠薪叠加",
+    "description": "周某在苏州电子厂连续加班，2026年2月工资未发且加班费核算异常。",
+    "facts": {
+      "worker_name": "周某",
+      "company_name": "江苏某电子制造有限公司",
+      "amount": "13500",
+      "job_title": "装配工",
+      "start_date": "2025-08-15",
+      "end_date": "2026-03-10",
+      "unpaid_duration_months": 1,
+      "has_contract": true,
+      "payment_method": "月结",
+      "work_address": "江苏省苏州市XX高新区"
+    },
+    "provided_evidence": ["身份证明", "考勤记录或工作记录", "工资清单", "工资支付记录", "门禁记录"]
+  },
+  {
+    "case_id": "G001",
+    "title": "北京市政项目班组群体欠薪",
+    "description": "孙某带领12人钢筋班组在昌平市政项目施工，两个月工资共欠52000元。",
+    "facts": {
+      "worker_name": "孙某",
+      "company_name": "北京某市政工程项目部",
+      "amount": "52000",
+      "job_title": "钢筋工班组长",
+      "start_date": "2025-11-01",
+      "end_date": "2026-03-15",
+      "unpaid_duration_months": 2,
+      "has_contract": false,
+      "payment_method": "月结",
+      "work_address": "北京市昌平区XX市政道路工程"
+    },
+    "provided_evidence": ["身份证明", "职工名册", "工资流水或欠薪记录", "施工日志", "项目群通知记录"]
+  },
+  {
+    "case_id": "H001",
+    "title": "北京物流配送员劳动关系争议",
+    "description": "马某在丰台物流网点配送快递，未签合同且被拖欠工资7800元。",
+    "facts": {
+      "worker_name": "马某",
+      "company_name": "北京某物流直营网点",
+      "amount": "7800",
+      "job_title": "配送员",
+      "start_date": "2025-09-05",
+      "end_date": "2026-03-01",
+      "duration_months": 6,
+      "has_contract": false,
+      "payment_method": "计件",
+      "work_address": "北京市丰台区XX物流园"
+    },
+    "provided_evidence": ["身份证明", "派件系统截图", "工资支付记录", "聊天记录", "站点通知"]
+  },
+  {
+    "case_id": "I001",
+    "title": "上海写字楼保洁欠薪",
+    "description": "刘某在上海浦东写字楼做保洁，物业外包单位拖欠两个月工资。",
+    "facts": {
+      "worker_name": "刘某",
+      "company_name": "上海某物业服务公司",
+      "amount": "9800",
+      "job_title": "保洁员",
+      "start_date": "2025-11-10",
+      "end_date": "2026-03-05",
+      "unpaid_duration_months": 2,
+      "has_contract": true,
+      "payment_method": "月结",
+      "work_address": "上海市浦东新区XX商务中心"
+    },
+    "provided_evidence": ["身份证明", "排班记录", "工资清单", "聊天记录"]
+  },
+  {
+    "case_id": "J001",
+    "title": "广东制造企业批量欠薪",
+    "description": "黄某所在注塑车间出现批量欠薪，涉及20余人，企业连续拖延支付。",
+    "facts": {
+      "worker_name": "黄某",
+      "company_name": "广东某塑胶科技有限公司",
+      "amount": "68000",
+      "job_title": "注塑工",
+      "start_date": "2025-07-01",
+      "end_date": "2026-03-20",
+      "unpaid_duration_months": 3,
+      "has_contract": true,
+      "payment_method": "月结",
+      "work_address": "广东省东莞市XX工业区"
+    },
+    "provided_evidence": ["身份证明", "工资流水或欠薪记录", "考勤记录或工作记录", "同事证言", "工资清单"]
+  },
+  {
+    "case_id": "K001",
+    "title": "浙江电商仓库计件工资争议",
+    "description": "何某在杭州电商仓库按计件结算，系统件量与结算件量差异较大并欠发工资。",
+    "facts": {
+      "worker_name": "何某",
+      "company_name": "浙江某仓储物流公司",
+      "amount": "15600",
+      "job_title": "分拣员",
+      "start_date": "2025-10-01",
+      "end_date": "2026-03-10",
+      "unpaid_duration_months": 2,
+      "has_contract": true,
+      "payment_method": "计件",
+      "work_address": "浙江省杭州市钱塘区XX物流园"
+    },
+    "provided_evidence": ["身份证明", "系统件量截图", "工资结算单", "聊天记录", "考勤记录或工作记录"]
+  },
+  {
+    "case_id": "L001",
+    "title": "四川建筑项目分包链条欠薪",
+    "description": "唐某在成都建设项目做钢筋工，分包链条复杂导致工资被拖欠。",
+    "facts": {
+      "worker_name": "唐某",
+      "company_name": "四川某建筑劳务公司",
+      "amount": "33200",
+      "job_title": "钢筋工",
+      "start_date": "2025-08-20",
+      "end_date": "2026-02-28",
+      "unpaid_duration_months": 3,
+      "has_contract": false,
+      "payment_method": "月结",
+      "work_address": "四川省成都市双流区XX保障房项目"
+    },
+    "provided_evidence": ["身份证明", "工作照片", "项目群聊天记录", "工友证言", "考勤记录或工作记录"]
+  },
+  {
+    "case_id": "M001",
+    "title": "湖北餐饮后厨工伤停工欠薪",
+    "description": "彭某在武汉餐饮门店后厨烫伤后停工，门店拒绝支付停工期间工资。",
+    "facts": {
+      "worker_name": "彭某",
+      "company_name": "湖北某餐饮管理公司",
+      "amount": "11200",
+      "job_title": "后厨",
+      "start_date": "2025-12-01",
+      "end_date": "2026-03-01",
+      "unpaid_duration_months": 1,
+      "has_contract": true,
+      "payment_method": "月结",
+      "work_address": "湖北省武汉市洪山区XX商圈"
+    },
+    "provided_evidence": ["身份证明", "医院诊断材料", "工资支付记录", "聊天记录", "同事证言"]
+  },
+  {
+    "case_id": "N001",
+    "title": "山东港口装卸工工资拖欠",
+    "description": "高某在青岛港口装卸队工作，春节后连续两月未收到劳务报酬。",
+    "facts": {
+      "worker_name": "高某",
+      "company_name": "山东某港务劳务公司",
+      "amount": "21400",
+      "job_title": "装卸工",
+      "start_date": "2025-09-15",
+      "end_date": "2026-03-15",
+      "unpaid_duration_months": 2,
+      "has_contract": false,
+      "payment_method": "月结",
+      "work_address": "山东省青岛市黄岛区XX港区"
+    },
+    "provided_evidence": ["身份证明", "班次记录", "工资流水或欠薪记录", "工友证言"]
+  },
+  {
+    "case_id": "O001",
+    "title": "河南装修队完工结算争议",
+    "description": "杜某在郑州家装项目按完工结算，验收后业主付款但班组工资仍未发放。",
+    "facts": {
+      "worker_name": "杜某",
+      "company_name": "河南某装饰工程队",
+      "amount": "9400",
+      "job_title": "油漆工",
+      "start_date": "2025-12-20",
+      "end_date": "2026-02-25",
+      "unpaid_duration_months": 1,
+      "has_contract": false,
+      "payment_method": "完工结",
+      "work_address": "河南省郑州市金水区XX住宅项目"
+    },
+    "provided_evidence": ["工作照片", "验收单照片", "聊天记录", "工友证言"]
+  },
+  {
+    "case_id": "P001",
+    "title": "重庆外卖站点劳务报酬争议",
+    "description": "宋某在重庆外卖站点兼职配送，站点拖欠结算并单方扣罚。",
+    "facts": {
+      "worker_name": "宋某",
+      "company_name": "重庆某同城配送站点",
+      "amount": "6700",
+      "job_title": "骑手",
+      "start_date": "2025-11-05",
+      "end_date": "2026-02-28",
+      "unpaid_duration_months": 1,
+      "has_contract": false,
+      "payment_method": "计件",
+      "work_address": "重庆市渝北区XX街道"
+    },
+    "provided_evidence": ["派单系统截图", "扣罚通知", "聊天记录", "身份证明"]
+  },
+  {
+    "case_id": "Q001",
+    "title": "陕西工程机械司机欠薪",
+    "description": "姚某在西安工程项目驾驶挖机，项目停工后被拖欠两个月工资。",
+    "facts": {
+      "worker_name": "姚某",
+      "company_name": "陕西某工程机械公司",
+      "amount": "28800",
+      "job_title": "挖机司机",
+      "start_date": "2025-09-10",
+      "end_date": "2026-03-10",
+      "unpaid_duration_months": 2,
+      "has_contract": true,
+      "payment_method": "月结",
+      "work_address": "陕西省西安市长安区XX施工标段"
+    },
+    "provided_evidence": ["身份证明", "设备作业记录", "工资清单", "聊天记录", "工作照片"]
+  },
+  {
+    "case_id": "R001",
+    "title": "福建服装厂离职后工资拖欠",
+    "description": "郑某在泉州服装厂离职后，被拖欠最后一个月工资及绩效。",
+    "facts": {
+      "worker_name": "郑某",
+      "company_name": "福建某服饰有限公司",
+      "amount": "8300",
+      "job_title": "车缝工",
+      "start_date": "2025-07-01",
+      "end_date": "2026-02-15",
+      "unpaid_duration_months": 1,
+      "has_contract": true,
+      "payment_method": "月结",
+      "work_address": "福建省泉州市晋江市XX工业区"
+    },
+    "provided_evidence": ["身份证明", "离职记录", "工资支付记录", "聊天记录"]
+  },
+  {
+    "case_id": "S001",
+    "title": "云南文旅项目季节工欠薪",
+    "description": "罗某在丽江文旅项目做季节性施工，结算周期跨年后工资未兑现。",
+    "facts": {
+      "worker_name": "罗某",
+      "company_name": "云南某文旅建设公司",
+      "amount": "17400",
+      "job_title": "泥工",
+      "start_date": "2025-10-15",
+      "end_date": "2026-02-10",
+      "unpaid_duration_months": 2,
+      "has_contract": false,
+      "payment_method": "月结",
+      "work_address": "云南省丽江市古城区XX文旅项目"
+    },
+    "provided_evidence": ["身份证明", "工作照片", "项目群通知记录", "工友证言"]
+  },
+  {
+    "case_id": "T001",
+    "title": "辽宁物业维修工欠薪与加班费争议",
+    "description": "邵某在沈阳物业公司做维修工，除基本工资拖欠外还存在加班费未结。",
+    "facts": {
+      "worker_name": "邵某",
+      "company_name": "辽宁某物业管理有限公司",
+      "amount": "14900",
+      "job_title": "维修工",
+      "start_date": "2025-08-01",
+      "end_date": "2026-03-01",
+      "unpaid_duration_months": 2,
+      "has_contract": true,
+      "payment_method": "月结",
+      "work_address": "辽宁省沈阳市铁西区XX小区"
+    },
+    "provided_evidence": ["身份证明", "值班记录", "工资清单", "工资支付记录", "聊天记录"]
   }
 ]

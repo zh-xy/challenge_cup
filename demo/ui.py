@@ -3,8 +3,11 @@ from __future__ import annotations
 import base64
 import json
 import os
+import re
 import sys
 from collections import Counter
+from collections import defaultdict
+from datetime import date
 from pathlib import Path
 from typing import Any
 
@@ -50,13 +53,28 @@ PERSISTED_STATE_KEYS = (
     "employment_sector",
     "employer_name",
     "employer_phone",
+    "payment_method",
+    "mediation_status",
+    "mediation_willingness",
+    "arbitration_status",
+    "still_employed",
     "work_address",
+    "work_latitude",
+    "work_longitude",
     "job_title",
     "work_start_date",
     "work_end_date",
     "unpaid_start",
     "unpaid_end",
     "amount_claimed",
+    "amount_claimed_number",
+    "employment_days",
+    "unpaid_worker_count",
+    "wage_unit",
+    "uploaded_evidence_names",
+    "contractor_name",
+    "subcontractor_name",
+    "guarantor_name",
     "required_evidence_selected",
     "practical_evidence_selected",
     "selected_submission_id",
@@ -94,22 +112,29 @@ PERSISTED_STATE_KEYS = (
     "patch_procuratorate_name",
 )
 
+DATE_STATE_KEYS = {
+    "work_start_date",
+    "work_end_date",
+    "unpaid_start",
+    "unpaid_end",
+}
+
 
 def render_global_styles() -> None:
     st.markdown(
         """
         <style>
-        /* 侧栏纯红 + 主区纯浅棕；白/近白底用黑字，浅棕底用深棕字 */
+        /* 政务产品化风格：深色侧栏 + 浅灰主区 + 蓝色强调 */
         :root {
-            --main-bg: #F1E9C3;
-            --sidebar-red: #BF2F2F;
-            --text-main: #2d1810;
-            --text-muted: #5c4033;
-            --text-on-white: #0a0a0a;
-            --text-on-white-muted: rgba(0, 0, 0, 0.72);
-            --scrollbar-track: #3A3F3E;
-            --scrollbar-thumb: #3A3F3E;
-            --scrollbar-thumb-hover: #3A3F3E;
+            --main-bg: #f3f6fb;
+            --sidebar-red: #1f365c;
+            --text-main: #1f2a3d;
+            --text-muted: #5b6880;
+            --text-on-white: #172033;
+            --text-on-white-muted: rgba(23, 32, 51, 0.72);
+            --scrollbar-track: #d7deeb;
+            --scrollbar-thumb: #94a3bd;
+            --scrollbar-thumb-hover: #6c7f9c;
         }
         .stApp {
             background-color: var(--main-bg);
@@ -167,7 +192,7 @@ def render_global_styles() -> None:
         [data-testid="stMetricValue"] {
             font-size: 2rem !important;
             font-weight: 900 !important;
-            color: var(--sidebar-red) !important;
+            color: #1a4fa3 !important;
         }
         [data-testid="stMetricLabel"] {
             font-size: 1rem !important;
@@ -177,7 +202,7 @@ def render_global_styles() -> None:
         [data-testid="stSidebar"] {
             background-color: var(--sidebar-red) !important;
             background-image: none !important;
-            border-right: 2px solid rgba(0, 0, 0, 0.12);
+            border-right: 1px solid rgba(255, 255, 255, 0.08);
         }
         /* 侧栏标题、说明、单选、指标标签等保持白字（勿对全局 * 设白，否则会与浅底下拉/按钮冲突） */
         [data-testid="stSidebar"] h1,
@@ -193,12 +218,12 @@ def render_global_styles() -> None:
         [data-testid="stSidebar"] [data-testid="stMetricValue"] {
             color: #ffffff !important;
         }
-        /* 演示案例：下拉框、侧栏次要按钮等为浅底 → 黑字 */
+        /* 侧栏下拉与次要按钮：浅底深字 */
         [data-testid="stSidebar"] .stSelectbox label {
             color: #ffffff !important;
         }
         [data-testid="stSidebar"] .stSelectbox [data-baseweb="select"] > div {
-            background-color: #fff8f0 !important;
+            background-color: #edf2fa !important;
             color: #0a0a0a !important;
             border: 1px solid rgba(0, 0, 0, 0.14) !important;
         }
@@ -206,12 +231,12 @@ def render_global_styles() -> None:
         [data-testid="stSidebar"] .stSelectbox [data-baseweb="select"] p {
             color: #0a0a0a !important;
         }
-        /* 载入案例等次要按钮：浅底黑字（含 Base Web 内层 p/span，避免继承侧栏白字） */
+        /* 载入样例等次要按钮：浅底深字 */
         [data-testid="stSidebar"] .stButton > button:not([kind="primary"]),
         [data-testid="stSidebar"] .stButton > button[kind="secondary"],
         [data-testid="stSidebar"] button[data-testid="baseButton-secondary"],
         [data-testid="stSidebar"] button[data-testid="stBaseButton-secondary"] {
-            background-color: #fff8f0 !important;
+            background-color: #edf2fa !important;
             color: #0a0a0a !important;
             border: 1px solid rgba(0, 0, 0, 0.14) !important;
         }
@@ -240,7 +265,7 @@ def render_global_styles() -> None:
         ::-webkit-scrollbar-thumb:hover {
             background: var(--scrollbar-thumb-hover);
         }
-        /* 主区证据分数滑动条：轨道与已选段加深 */
+        /* 主区证据分数滑动条 */
         section.main .stSlider [data-testid="stSliderTrack"] {
             background-color: rgba(45, 24, 16, 0.28) !important;
         }
@@ -248,16 +273,16 @@ def render_global_styles() -> None:
             background-color: rgba(45, 24, 16, 0.35) !important;
         }
         section.main .stSlider [data-baseweb="slider"] [role="slider"] {
-            background-color: var(--sidebar-red) !important;
+            background-color: #1a4fa3 !important;
             border: 2px solid #ffffff !important;
             box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
         }
         .hero-panel {
-            background: #fffdf9;
-            border: 1px solid rgba(120, 37, 46, 0.22);
+            background: #ffffff;
+            border: 1px solid rgba(31, 54, 92, 0.16);
             border-radius: 24px;
             padding: 1.8rem 2rem;
-            box-shadow: 0 8px 24px rgba(45, 24, 16, 0.08);
+            box-shadow: 0 10px 30px rgba(21, 34, 56, 0.08);
             margin-bottom: 1.2rem;
             color: var(--text-on-white);
         }
@@ -266,7 +291,7 @@ def render_global_styles() -> None:
             font-size: 0.95rem;
             font-weight: 800;
             color: #ffffff;
-            background: var(--sidebar-red);
+            background: #1a4fa3;
             border-radius: 999px;
             padding: 0.35rem 0.75rem;
             margin-bottom: 0.9rem;
@@ -286,11 +311,11 @@ def render_global_styles() -> None:
             color: var(--text-on-white-muted) !important;
         }
         .section-card {
-            background: #fffdf9;
-            border: 1px solid rgba(45, 24, 16, 0.12);
+            background: #ffffff;
+            border: 1px solid rgba(31, 54, 92, 0.12);
             border-radius: 22px;
             padding: 1.35rem 1.2rem 1.1rem 1.2rem;
-            box-shadow: 0 6px 20px rgba(45, 24, 16, 0.06);
+            box-shadow: 0 8px 24px rgba(21, 34, 56, 0.06);
             margin-bottom: 1rem;
             color: var(--text-on-white);
         }
@@ -311,17 +336,17 @@ def render_global_styles() -> None:
             margin: 0.15rem 0.45rem 0.15rem 0;
             padding: 0.36rem 0.75rem;
             border-radius: 999px;
-            background: var(--sidebar-red);
+            background: #1a4fa3;
             color: #ffffff;
             font-size: 0.92rem;
             font-weight: 800;
         }
         .demo-banner {
-            background: linear-gradient(135deg, #bf2f2f 0%, #8f2020 100%);
+            background: linear-gradient(135deg, #1f365c 0%, #2a4a7f 100%);
             border-radius: 24px;
             padding: 1.2rem 1.35rem;
             margin-bottom: 1rem;
-            box-shadow: 0 12px 28px rgba(80, 16, 16, 0.18);
+            box-shadow: 0 12px 28px rgba(31, 54, 92, 0.2);
         }
         .demo-banner-title {
             font-size: 2rem;
@@ -340,7 +365,7 @@ def render_global_styles() -> None:
         .demo-emphasis {
             font-size: 1.22rem;
             font-weight: 900;
-            color: #bf2f2f !important;
+            color: #1a4fa3 !important;
             margin: 0.25rem 0 0.8rem 0;
         }
         /* 覆盖 .main .stMarkdown p，保证白底卡片内为黑字 */
@@ -367,7 +392,7 @@ def render_global_styles() -> None:
             box-shadow: none;
         }
         .stButton > button[kind="primary"] {
-            background-color: var(--sidebar-red);
+            background-color: #1a4fa3;
             color: #ffffff;
             border: none;
         }
@@ -387,8 +412,8 @@ def render_global_styles() -> None:
         }
         .stExpander {
             border-radius: 16px !important;
-            border: 1px solid rgba(45, 24, 16, 0.15) !important;
-            background: #faf6f0 !important;
+            border: 1px solid rgba(31, 54, 92, 0.12) !important;
+            background: #f7f9fd !important;
             color: var(--text-on-white) !important;
         }
         .stExpander summary, .streamlit-expanderHeader {
@@ -405,7 +430,7 @@ def render_global_styles() -> None:
         }
         pre code, .stCodeBlock {
             color: var(--text-on-white) !important;
-            background: #faf6f0 !important;
+            background: #f7f9fd !important;
         }
         </style>
         """,
@@ -418,7 +443,7 @@ def render_page_hero(title: str, subtitle: str, tags: list[str]) -> None:
     st.markdown(
         f"""
         <section class="hero-panel">
-            <div class="hero-kicker">展示页面升级</div>
+            <div class="hero-kicker">平台运行中</div>
             <div class="hero-title">{title}</div>
             <p class="hero-subtitle">{subtitle}</p>
             <div style="margin-top: 0.9rem;">{tags_html}</div>
@@ -440,7 +465,7 @@ def section_intro(title: str, copy: str) -> None:
     )
 
 
-def render_demo_banner(title: str, copy: str) -> None:
+def render_status_banner(title: str, copy: str) -> None:
     st.markdown(
         f"""
         <section class="demo-banner">
@@ -458,9 +483,9 @@ def render_emphasis(text: str) -> None:
 
 def init_state() -> None:
     defaults = {
-        "case_title": "",
-        "case_description": "",
-        "evidence_text": "",
+        "case_title": "工地木工欠薪线索（默认示例）",
+        "case_description": "我于2025年10月至2026年1月在某建筑劳务公司从事木工，工作地点在海淀区某工地。2025年11月至2026年1月工资未按约支付，累计欠薪24000元。已多次协商未果，现提交线索并申请协助维权。",
+        "evidence_text": "身份证明\n考勤记录或工作记录\n聊天记录\n工作照片",
         "facts_json": "{}",
         "selected_template": "support_prosecution_application",
         "analysis_report": None,
@@ -468,58 +493,94 @@ def init_state() -> None:
         "last_submission": None,
         "sample_choice": "手动输入",
         "api_base_url": DEFAULT_API_BASE_URL,
-        "worker_name": "",
-        "worker_id_number": "",
-        "worker_phone": "",
-        "worker_gender": "未填写",
-        "worker_birth_date": "",
-        "worker_ethnicity": "",
-        "worker_address": "",
+        "worker_name": "张某",
+        "worker_id_number": "110101199203156718",
+        "worker_phone": "13812345678",
+        "worker_gender": "男",
+        "worker_birth_date": "1992-03-15",
+        "worker_ethnicity": "汉族",
+        "worker_address": "四川省达州市通川区XX镇XX村",
         "employment_sector": "工程建设领域",
-        "employer_name": "",
-        "employer_phone": "",
-        "work_address": "",
-        "job_title": "",
-        "work_start_date": "",
-        "work_end_date": "",
-        "unpaid_start": "",
-        "unpaid_end": "",
-        "amount_claimed": "",
-        "required_evidence_selected": [],
-        "practical_evidence_selected": [],
+        "employer_name": "某建筑劳务有限公司",
+        "employer_phone": "010-62345678",
+        "payment_method": "月结",
+        "mediation_status": "进行中",
+        "mediation_willingness": "愿意调解",
+        "arbitration_status": "未进行",
+        "still_employed": "否",
+        "work_address": "北京市海淀区中关村街道XX建设项目",
+        "work_latitude": "39.9834",
+        "work_longitude": "116.3229",
+        "job_title": "木工",
+        "work_start_date": date(2025, 10, 1),
+        "work_end_date": date(2026, 1, 31),
+        "unpaid_start": date(2025, 11, 1),
+        "unpaid_end": date(2026, 1, 31),
+        "amount_claimed": "24000",
+        "amount_claimed_number": 24000.0,
+        "employment_days": 120,
+        "unpaid_worker_count": 6,
+        "wage_unit": "元",
+        "uploaded_evidence_names": ["工资表截图.pdf", "工地考勤照片.jpg"],
+        "contractor_name": "北京某建设集团有限公司",
+        "subcontractor_name": "北京某劳务分包有限公司",
+        "guarantor_name": "某项目工资支付担保机构",
+        "required_evidence_selected": ["劳动合同", "工资清单", "公示牌照片"],
+        "practical_evidence_selected": ["聊天记录", "证人证言", "门禁卡"],
         "selected_submission_id": "",
         "review_case_status": "已受理，待检察评估",
-        "review_mediation_priority": "待评估",
-        "review_prosecution_necessity": "待评估",
-        "review_prosecutor_note": "",
-        "review_user_message": "",
-        "review_relief_labor_complaint": False,
+        "review_mediation_priority": "可诉前再协调",
+        "review_prosecution_necessity": "需补充事实后再评估",
+        "review_prosecutor_note": "已核验当事人基本劳动关系线索，建议先补齐工资约定依据与欠薪流水，再进行支持起诉必要性复评。",
+        "review_user_message": "请补充近三个月工资发放记录、与班组长确认工资标准的聊天记录，并保留原始截图时间信息。",
+        "review_relief_labor_complaint": True,
         "review_relief_labor_arbitration": False,
-        "review_relief_legal_aid": False,
-        "review_relief_union_or_street_help": False,
-        "review_relief_note": "",
-        "review_mediation_case_type": "未分类",
-        "review_prosecution_case_type": "未分类",
-        "qa_question": "",
-        "qa_answer": None,
-        "query_submission_id": "",
+        "review_relief_legal_aid": True,
+        "review_relief_union_or_street_help": True,
+        "review_relief_note": "已向劳动监察投诉并完成受理登记；街道调解已组织一次协商未达成一致；法律援助已完成初审。",
+        "review_mediation_case_type": "双方有明确调解意愿型",
+        "review_prosecution_case_type": "维权能力严重欠缺型",
+        "qa_question": "老板拖欠我三个月工资，没有签劳动合同，只有聊天记录和考勤照片，下一步怎么维权？",
+        "qa_answer": {
+            "summary": "建议先固定劳动关系与欠薪金额证据，优先走劳动监察或劳动仲裁；若存在批量欠薪、弱势群体维权能力不足或执行困难，再申请检察支持起诉。",
+            "question_type": "欠薪维权路径",
+            "scene": "欠薪",
+            "steps": [
+                "整理时间线：入职时间、欠薪起止时间、每月应发与实发金额。",
+                "先向劳动监察投诉并保留受理回执，同步准备仲裁材料。",
+                "补齐关键证据后提交仲裁；如执行风险高，可同步申请检察支持起诉。"
+            ],
+            "materials": [
+                "身份证明、考勤记录、工资约定证据",
+                "聊天记录原图及导出记录",
+                "工资流水或欠薪明细表"
+            ],
+            "risk_tip": "注意保留原始证据文件和形成时间，避免仅提交转发截图导致证明力下降。",
+            "legal_basis": [
+                {"title": "《劳动合同法》第三十条", "summary": "用人单位应当及时足额支付劳动报酬。"},
+                {"title": "《劳动争议调解仲裁法》", "summary": "劳动者可通过仲裁程序主张劳动报酬和相关权益。"}
+            ]
+        },
+        "query_submission_id": "SUB-0001",
         "queried_case": None,
         "prosecutor_template_choice": "support_prosecution_opinion_non_construction",
         "prosecutor_document_preview": None,
-        "patch_company_credit_code": "",
-        "patch_company_address": "",
-        "patch_company_legal_rep": "",
-        "patch_company_phone": "",
-        "patch_direct_employer_name": "",
-        "patch_direct_employer_id_number": "",
-        "patch_contractor_name": "",
-        "patch_subcontractor_name": "",
-        "patch_guarantor_name": "",
-        "patch_employment_days": "",
-        "patch_wage_rate": "",
-        "patch_wage_calculation": "",
-        "patch_court_name": "",
-        "patch_procuratorate_name": "",
+        "last_action": "",
+        "_review_synced_submission_id": "SUB-0001",
+        "patch_company_credit_code": "91110108MA01ABCDE1",
+        "patch_company_address": "北京市海淀区XX路88号",
+        "patch_company_legal_rep": "李某某",
+        "patch_company_phone": "010-62118888",
+        "patch_direct_employer_name": "王某（班组长）",
+        "patch_direct_employer_id_number": "110101198805068877",
+        "patch_contractor_name": "北京某建设集团有限公司",
+        "patch_subcontractor_name": "北京某劳务分包有限公司",
+        "patch_guarantor_name": "某工程保证担保有限公司",
+        "patch_employment_days": "118",
+        "patch_wage_rate": "400元/天",
+        "patch_wage_calculation": "按出勤天数月结，次月15日前支付",
+        "patch_court_name": "北京市海淀区人民法院",
+        "patch_procuratorate_name": "北京市海淀区人民检察院",
     }
     for key, value in defaults.items():
         st.session_state.setdefault(key, value)
@@ -543,11 +604,21 @@ def restore_state_from_query_params() -> None:
 
     for key in PERSISTED_STATE_KEYS:
         if key in restored_state and key not in st.session_state:
-            st.session_state[key] = restored_state[key]
+            value = restored_state[key]
+            if key in DATE_STATE_KEYS:
+                st.session_state[key] = parse_date_value(value)
+            else:
+                st.session_state[key] = value
 
 
 def persist_state_to_query_params() -> None:
-    state_payload = {key: st.session_state.get(key) for key in PERSISTED_STATE_KEYS}
+    state_payload: dict[str, Any] = {}
+    for key in PERSISTED_STATE_KEYS:
+        value = st.session_state.get(key)
+        if isinstance(value, date):
+            state_payload[key] = value.isoformat()
+        else:
+            state_payload[key] = value
     serialized = json.dumps(state_payload, ensure_ascii=False, separators=(",", ":"))
     encoded_state = base64.urlsafe_b64encode(serialized.encode("utf-8")).decode("utf-8")
     st.query_params["state"] = encoded_state
@@ -564,9 +635,14 @@ def load_sample_into_state(sample: dict[str, Any]) -> None:
     st.session_state["employment_sector"] = str(sample.get("employment_sector", "工程建设领域"))
     st.session_state["employer_name"] = str(facts.get("company_name", ""))
     st.session_state["job_title"] = str(facts.get("job_title", ""))
-    st.session_state["work_start_date"] = str(facts.get("start_date", ""))
-    st.session_state["work_end_date"] = str(facts.get("end_date", ""))
-    st.session_state["amount_claimed"] = str(facts.get("amount", ""))
+    st.session_state["work_start_date"] = parse_date_value(facts.get("start_date"))
+    st.session_state["work_end_date"] = parse_date_value(facts.get("end_date"))
+    sample_amount = str(facts.get("amount", "0"))
+    st.session_state["amount_claimed"] = sample_amount
+    try:
+        st.session_state["amount_claimed_number"] = float(sample_amount)
+    except ValueError:
+        st.session_state["amount_claimed_number"] = 0.0
     st.session_state["required_evidence_selected"] = [item for item in sample.get("provided_evidence", []) if item in REQUIRED_EVIDENCE_OPTIONS]
     st.session_state["practical_evidence_selected"] = [item for item in sample.get("provided_evidence", []) if item in PRACTICAL_EVIDENCE_OPTIONS]
     st.session_state["analysis_report"] = None
@@ -584,19 +660,45 @@ def parse_facts(raw_facts: str) -> dict[str, Any]:
     return parsed
 
 
+def parse_date_value(value: Any) -> date:
+    if isinstance(value, date):
+        return value
+    if isinstance(value, str) and value:
+        try:
+            return date.fromisoformat(value)
+        except ValueError:
+            return date.today()
+    return date.today()
+
+
+def format_year_month(value: Any) -> str:
+    if isinstance(value, date):
+        return value.strftime("%Y-%m")
+    return str(value or "")
+
+
+def is_valid_phone(phone: str) -> bool:
+    if not phone:
+        return True
+    mobile_pattern = r"^1[3-9]\d{9}$"
+    landline_pattern = r"^(0\d{2,3}-?)?\d{7,8}$"
+    return bool(re.match(mobile_pattern, phone) or re.match(landline_pattern, phone))
+
+
 def build_structured_payload(extra_facts: dict[str, Any]) -> dict[str, Any]:
     worker_name = st.session_state["worker_name"].strip()
     employer_name = st.session_state["employer_name"].strip()
     amount_claimed = st.session_state["amount_claimed"].strip()
-    work_start_date = st.session_state["work_start_date"].strip()
-    work_end_date = st.session_state["work_end_date"].strip()
-    unpaid_start = st.session_state["unpaid_start"].strip()
-    unpaid_end = st.session_state["unpaid_end"].strip()
+    work_start_date = format_year_month(st.session_state["work_start_date"])
+    work_end_date = format_year_month(st.session_state["work_end_date"])
+    unpaid_start = format_year_month(st.session_state["unpaid_start"])
+    unpaid_end = format_year_month(st.session_state["unpaid_end"])
     job_title = st.session_state["job_title"].strip()
     work_address = st.session_state["work_address"].strip()
     required_evidence = list(st.session_state["required_evidence_selected"])
     practical_evidence = list(st.session_state["practical_evidence_selected"])
     manual_evidence = [line.strip() for line in st.session_state["evidence_text"].splitlines() if line.strip()]
+    uploaded_evidence = list(st.session_state.get("uploaded_evidence_names", []))
 
     user_profile = {
         "name": worker_name,
@@ -611,18 +713,28 @@ def build_structured_payload(extra_facts: dict[str, Any]) -> dict[str, Any]:
         "employment_sector": st.session_state["employment_sector"],
         "employer_name": employer_name,
         "employer_phone": st.session_state["employer_phone"].strip(),
+        "payment_method": st.session_state["payment_method"],
+        "mediation_status": st.session_state["mediation_status"],
+        "mediation_willingness": st.session_state["mediation_willingness"],
+        "arbitration_status": st.session_state["arbitration_status"],
+        "still_employed": st.session_state["still_employed"],
         "work_address": work_address,
+        "work_latitude": st.session_state["work_latitude"],
+        "work_longitude": st.session_state["work_longitude"],
         "job_title": job_title,
         "work_start_date": work_start_date,
         "work_end_date": work_end_date,
         "unpaid_start": unpaid_start,
         "unpaid_end": unpaid_end,
         "amount_claimed": amount_claimed,
+        "employment_days": st.session_state["employment_days"],
+        "unpaid_worker_count": st.session_state["unpaid_worker_count"],
     }
     evidence_catalog = {
         "required": required_evidence,
         "practical": practical_evidence,
         "manual": manual_evidence,
+        "uploaded": uploaded_evidence,
     }
 
     facts = {
@@ -636,6 +748,11 @@ def build_structured_payload(extra_facts: dict[str, Any]) -> dict[str, Any]:
         "worker_phone": st.session_state["worker_phone"].strip() or extra_facts.get("worker_phone", ""),
         "company_name": employer_name or extra_facts.get("company_name", ""),
         "company_phone": st.session_state["employer_phone"].strip() or extra_facts.get("company_phone", ""),
+        "payment_method": st.session_state["payment_method"],
+        "mediation_status": st.session_state["mediation_status"],
+        "mediation_willingness": st.session_state["mediation_willingness"],
+        "arbitration_status": st.session_state["arbitration_status"],
+        "still_employed": st.session_state["still_employed"],
         "work_unit_name": employer_name or extra_facts.get("work_unit_name", ""),
         "project_name": work_address or extra_facts.get("project_name", ""),
         "job_title": job_title or extra_facts.get("job_title", ""),
@@ -648,7 +765,14 @@ def build_structured_payload(extra_facts: dict[str, Any]) -> dict[str, Any]:
         ),
         "court_name": extra_facts.get("court_name", "XX区人民法院"),
         "procuratorate_name": extra_facts.get("procuratorate_name", "XX区人民检察院"),
+        "employment_days": str(st.session_state["employment_days"] or ""),
+        "unpaid_worker_count": str(st.session_state["unpaid_worker_count"] or ""),
+        "wage_unit": st.session_state["wage_unit"],
     }
+    if st.session_state["employment_sector"] == "工程建设领域":
+        facts["contractor_name"] = st.session_state["contractor_name"].strip() or extra_facts.get("contractor_name", "")
+        facts["subcontractor_name"] = st.session_state["subcontractor_name"].strip() or extra_facts.get("subcontractor_name", "")
+        facts["guarantor_name"] = st.session_state["guarantor_name"].strip() or extra_facts.get("guarantor_name", "")
     if amount_claimed:
         facts["amount"] = amount_claimed
 
@@ -667,6 +791,9 @@ def build_structured_payload(extra_facts: dict[str, Any]) -> dict[str, Any]:
         for item in group:
             if item not in provided_evidence:
                 provided_evidence.append(item)
+    for item in uploaded_evidence:
+        if item not in provided_evidence:
+            provided_evidence.append(item)
 
     return {
         "description": description,
@@ -805,6 +932,204 @@ def build_case_rows(cases: list[dict[str, Any]]) -> list[dict[str, Any]]:
     return rows
 
 
+def parse_amount_value(value: Any) -> float:
+    try:
+        return float(value or 0)
+    except (TypeError, ValueError):
+        return 0.0
+
+
+def extract_region_label(address: str) -> str:
+    text = (address or "").strip()
+    if not text:
+        return "未标注地区"
+    match = re.search(r"(.{2,10}?(?:省|市|自治区))", text)
+    if match:
+        return match.group(1)
+    match = re.search(r"(.{2,10}?(?:区|县))", text)
+    if match:
+        return match.group(1)
+    return text[:8]
+
+
+def classify_amount_bucket(amount: float) -> str:
+    if amount < 10000:
+        return "1万以下"
+    if amount < 30000:
+        return "1万-3万"
+    if amount < 50000:
+        return "3万-5万"
+    return "5万以上"
+
+
+def build_warning_dashboard_data(
+    dashboard_items: list[dict[str, Any]],
+    submissions: list[dict[str, Any]],
+) -> dict[str, Any]:
+    submission_map = {item.get("submission_id"): item for item in submissions}
+
+    region_counter: Counter[str] = Counter()
+    industry_counter: Counter[str] = Counter()
+    amount_bucket_counter: Counter[str] = Counter()
+    month_counter: Counter[str] = Counter()
+    month_high_risk_counter: Counter[str] = Counter()
+    employer_counter: Counter[str] = Counter()
+    region_amount_total: defaultdict[str, float] = defaultdict(float)
+
+    for item in dashboard_items:
+        sid = item.get("submission_id")
+        detail = submission_map.get(sid, {})
+        dispute_profile = detail.get("dispute_profile", {})
+        facts = detail.get("facts", {})
+
+        amount = parse_amount_value(item.get("amount_claimed"))
+        employer = str(item.get("employer_name") or "未知主体")
+        industry = str(
+            dispute_profile.get("employment_sector")
+            or item.get("employment_sector")
+            or "未区分"
+        )
+        work_address = str(
+            dispute_profile.get("work_address")
+            or facts.get("project_name")
+            or facts.get("work_address")
+            or ""
+        )
+        region = extract_region_label(work_address)
+        month = str(item.get("submitted_at", ""))[:7] or "未知月份"
+
+        region_counter[region] += 1
+        industry_counter[industry] += 1
+        amount_bucket_counter[classify_amount_bucket(amount)] += 1
+        month_counter[month] += 1
+        employer_counter[employer] += 1
+        region_amount_total[region] += amount
+        if item.get("risk_level") in {"高风险", "中风险"}:
+            month_high_risk_counter[month] += 1
+
+    repeated_employers = [
+        {"主体名称": name, "案件数": count}
+        for name, count in employer_counter.items()
+        if name not in {"", "未知主体"} and count >= 2
+    ]
+    repeated_employers.sort(key=lambda x: x["案件数"], reverse=True)
+
+    region_rows = [
+        {
+            "地区": region,
+            "案件数": count,
+            "涉案总额(元)": round(region_amount_total.get(region, 0), 2),
+        }
+        for region, count in region_counter.items()
+    ]
+    region_rows.sort(key=lambda x: x["案件数"], reverse=True)
+
+    industry_rows = [{"行业/领域": key, "案件数": value} for key, value in industry_counter.items()]
+    industry_rows.sort(key=lambda x: x["案件数"], reverse=True)
+
+    amount_rows = [
+        {"金额区间": bucket, "案件数": amount_bucket_counter.get(bucket, 0)}
+        for bucket in ["1万以下", "1万-3万", "3万-5万", "5万以上"]
+    ]
+
+    month_rows = [
+        {
+            "月份": month,
+            "案件数": month_counter.get(month, 0),
+            "中高风险案件": month_high_risk_counter.get(month, 0),
+        }
+        for month in sorted(month_counter.keys())
+    ]
+
+    alerts: list[dict[str, str]] = []
+    hotspot_regions = [row for row in region_rows if row["案件数"] >= 2]
+    if hotspot_regions:
+        region_names = "、".join(item["地区"] for item in hotspot_regions[:3])
+        alerts.append(
+            {
+                "level": "中高",
+                "title": "区域案件聚集预警",
+                "detail": f"{region_names} 出现集中申报，建议核查工程项目用工与工资支付链条。",
+            }
+        )
+    if repeated_employers:
+        top = repeated_employers[0]
+        alerts.append(
+            {
+                "level": "高",
+                "title": "重复涉案主体预警",
+                "detail": f"{top['主体名称']} 已出现 {top['案件数']} 起关联案件，建议列入重点监督清单。",
+            }
+        )
+    if len(month_rows) >= 2:
+        prev, curr = month_rows[-2], month_rows[-1]
+        if prev["案件数"] > 0 and curr["案件数"] >= prev["案件数"] * 1.3:
+            alerts.append(
+                {
+                    "level": "中",
+                    "title": "短期增长波动预警",
+                    "detail": f"{curr['月份']} 案件量较 {prev['月份']} 上升明显，建议开展专题排查。",
+                }
+            )
+
+    summary_lines = [
+        f"当前共监测 {len(dashboard_items)} 件案件，覆盖 {len(region_counter)} 个地区、{len(industry_counter)} 类行业场景。",
+        f"中高风险案件 {sum(1 for item in dashboard_items if item.get('risk_level') in {'高风险', '中风险'})} 件。",
+        f"重复涉案主体 {len(repeated_employers)} 个，金额主要集中在 1万-3万 与 3万-5万 区间。",
+    ]
+
+    return {
+        "region_rows": region_rows,
+        "industry_rows": industry_rows,
+        "amount_rows": amount_rows,
+        "month_rows": month_rows,
+        "repeated_employers": repeated_employers,
+        "alerts": alerts,
+        "summary_lines": summary_lines,
+    }
+
+
+def render_warning_dashboard(analytics: dict[str, Any], total_cases: int) -> None:
+    st.subheader("风险预警看板")
+    st.write("**风险总览**")
+    control_col1, control_col2, control_col3 = st.columns(3)
+    control_col1.metric("纳入研判案件", total_cases)
+    control_col2.metric("预警专题数", len(analytics["alerts"]))
+    control_col3.metric("重复涉案主体", len(analytics["repeated_employers"]))
+
+    top_industry = analytics["industry_rows"][0] if analytics["industry_rows"] else None
+    if top_industry and total_cases > 0:
+        ratio = round(top_industry["案件数"] * 100 / total_cases, 1)
+        st.info(f"案件主要集中在「{top_industry['行业/领域']}」，占比约 {ratio}%。")
+
+    st.write("**结构分布**")
+    tab1, tab2, tab3 = st.tabs(["区域分布", "行业分布", "金额区间"])
+    with tab1:
+        st.dataframe(analytics["region_rows"], use_container_width=True, hide_index=True)
+    with tab2:
+        st.dataframe(analytics["industry_rows"], use_container_width=True, hide_index=True)
+        st.bar_chart(analytics["industry_rows"], x="行业/领域", y="案件数")
+    with tab3:
+        st.bar_chart(analytics["amount_rows"], x="金额区间", y="案件数")
+
+    st.write("**趋势分析**")
+    st.dataframe(analytics["month_rows"], use_container_width=True, hide_index=True)
+    if analytics["month_rows"]:
+        st.line_chart(analytics["month_rows"], x="月份", y=["案件数", "中高风险案件"])
+
+    st.write("**预警摘要**")
+    for line in analytics["summary_lines"]:
+        st.write(f"- {line}")
+    if analytics["alerts"]:
+        for alert in analytics["alerts"]:
+            st.warning(f"[{alert['level']}] {alert['title']}：{alert['detail']}")
+    else:
+        st.info("当前未触发明显异常波动，建议持续观察趋势变化。")
+
+    st.write("**复核说明**")
+    st.caption("预警阈值按当前演示数据自动计算，结果用于辅助研判，不替代人工业务判断。")
+
+
 def render_route_cards(routes: list[dict[str, str]]) -> None:
     st.write("**推荐维权路径**")
     for route in routes:
@@ -820,7 +1145,7 @@ def render_route_cards(routes: list[dict[str, str]]) -> None:
 
 
 def render_qa_panel() -> None:
-    section_intro("智能法律咨询", "围绕欠薪、未签合同、工伤等高频问题给出通俗化建议，便于答辩时展示平台的咨询能力。")
+    section_intro("智能法律咨询", "围绕欠薪、未签合同、工伤等高频问题给出结构化建议，提升咨询效率与办理可操作性。")
     st.text_area(
         "输入法律问题",
         key="qa_question",
@@ -970,35 +1295,40 @@ def sync_review_state(case_detail: dict[str, Any]) -> None:
     st.session_state["review_case_status"] = case_detail.get("case_status", "已受理，待检察评估")
     st.session_state["review_mediation_priority"] = case_detail.get("mediation_priority", "待评估")
     st.session_state["review_prosecution_necessity"] = case_detail.get("prosecution_necessity", "待评估")
-    st.session_state["review_prosecutor_note"] = case_detail.get("prosecutor_note", "")
+    st.session_state["review_prosecutor_note"] = case_detail.get("prosecutor_note", "") or "已初步核验劳动关系线索，建议补齐工资约定和欠薪流水后进入支持起诉必要性复评。"
+    latest_feedback = ""
+    feedback_messages = case_detail.get("feedback_messages", [])
+    if feedback_messages:
+        latest_feedback = str(feedback_messages[-1].get("message", ""))
+    st.session_state["review_user_message"] = latest_feedback or "请在3个工作日内补充工资约定依据、近三个月工资流水和关键聊天原图，补齐后可优先进入文书生成。"
     st.session_state["review_relief_labor_complaint"] = bool(relief_checks.get("labor_complaint"))
     st.session_state["review_relief_labor_arbitration"] = bool(relief_checks.get("labor_arbitration"))
     st.session_state["review_relief_legal_aid"] = bool(relief_checks.get("legal_aid"))
     st.session_state["review_relief_union_or_street_help"] = bool(relief_checks.get("union_or_street_help"))
-    st.session_state["review_relief_note"] = case_detail.get("relief_note", "")
-    st.session_state["review_mediation_case_type"] = case_detail.get("mediation_case_type", "未分类") or "未分类"
-    st.session_state["review_prosecution_case_type"] = case_detail.get("prosecution_case_type", "未分类") or "未分类"
+    st.session_state["review_relief_note"] = case_detail.get("relief_note", "") or "劳动监察已受理登记，街道组织过一次协调；建议同步保留受理回执与调解记录。"
+    st.session_state["review_mediation_case_type"] = case_detail.get("mediation_case_type", "未分类") or "双方有明确调解意愿型"
+    st.session_state["review_prosecution_case_type"] = case_detail.get("prosecution_case_type", "未分类") or "维权能力严重欠缺型"
     facts = case_detail.get("facts", {})
-    st.session_state["patch_company_credit_code"] = facts.get("company_credit_code", "")
-    st.session_state["patch_company_address"] = facts.get("company_address", "")
-    st.session_state["patch_company_legal_rep"] = facts.get("company_legal_rep", "")
-    st.session_state["patch_company_phone"] = facts.get("company_phone", "")
-    st.session_state["patch_direct_employer_name"] = facts.get("direct_employer_name", "")
-    st.session_state["patch_direct_employer_id_number"] = facts.get("direct_employer_id_number", "")
-    st.session_state["patch_contractor_name"] = facts.get("contractor_name", "")
-    st.session_state["patch_subcontractor_name"] = facts.get("subcontractor_name", "")
-    st.session_state["patch_guarantor_name"] = facts.get("guarantor_name", "")
-    st.session_state["patch_employment_days"] = facts.get("employment_days", "")
-    st.session_state["patch_wage_rate"] = facts.get("wage_rate", "")
-    st.session_state["patch_wage_calculation"] = facts.get("wage_calculation", "")
-    st.session_state["patch_court_name"] = facts.get("court_name", "")
-    st.session_state["patch_procuratorate_name"] = facts.get("procuratorate_name", "")
+    st.session_state["patch_company_credit_code"] = facts.get("company_credit_code", "") or "91110108MA01ABCDE1"
+    st.session_state["patch_company_address"] = facts.get("company_address", "") or "北京市海淀区XX路88号"
+    st.session_state["patch_company_legal_rep"] = facts.get("company_legal_rep", "") or "李某某"
+    st.session_state["patch_company_phone"] = facts.get("company_phone", "") or "010-62118888"
+    st.session_state["patch_direct_employer_name"] = facts.get("direct_employer_name", "") or "王某（班组长）"
+    st.session_state["patch_direct_employer_id_number"] = facts.get("direct_employer_id_number", "") or "110101198805068877"
+    st.session_state["patch_contractor_name"] = facts.get("contractor_name", "") or "某建设集团有限公司"
+    st.session_state["patch_subcontractor_name"] = facts.get("subcontractor_name", "") or "某劳务分包有限公司"
+    st.session_state["patch_guarantor_name"] = facts.get("guarantor_name", "") or "某工程保证担保有限公司"
+    st.session_state["patch_employment_days"] = facts.get("employment_days", "") or "118"
+    st.session_state["patch_wage_rate"] = facts.get("wage_rate", "") or "400元/天"
+    st.session_state["patch_wage_calculation"] = facts.get("wage_calculation", "") or "按出勤天数月结，次月15日前支付"
+    st.session_state["patch_court_name"] = facts.get("court_name", "") or "北京市海淀区人民法院"
+    st.session_state["patch_procuratorate_name"] = facts.get("procuratorate_name", "") or "北京市海淀区人民检察院"
 
 
 def render_sidebar() -> str:
-    st.sidebar.title("产品门面")
+    st.sidebar.title("平台控制台")
     view = st.sidebar.radio("视图切换", options=[VIEW_USER, VIEW_ADMIN])
-    st.sidebar.caption("展示页仅通过后端 API 获取结果，不再直接调用本地核心模块。")
+    st.sidebar.caption("页面统一通过后端 API 获取结果，确保接口边界清晰、运行可追踪。")
     st.sidebar.text_input("后端地址", key="api_base_url")
 
     sample_cases = safe_get("/cases/samples", {"items": []}).get("items", [])
@@ -1006,7 +1336,7 @@ def render_sidebar() -> str:
     sample_options.update({f'{item["case_id"]} | {item["title"]}': item for item in sample_cases})
 
     st.sidebar.divider()
-    st.sidebar.subheader("演示案例")
+    st.sidebar.subheader("标准样例库")
     selected_label = st.sidebar.selectbox("快速载入样例", options=list(sample_options.keys()), key="sample_choice")
     if st.sidebar.button("载入案例", use_container_width=True) and sample_options[selected_label]:
         load_sample_into_state(sample_options[selected_label])
@@ -1020,16 +1350,16 @@ def render_sidebar() -> str:
 
 
 def render_user_view() -> None:
-    render_demo_banner(
-        "答辩展示模式",
-        "当前页面已与核心算法模块解耦，前端只负责展示与交互，分析结果统一由后端接口返回，更适合现场演示、系统分层讲解与架构答辩。",
+    render_status_banner(
+        "农民工服务端",
+        "入口统一采集案件信息、证据线索与补充材料，结果由后端规则引擎与文书模块统一返回，支持稳定运行与持续迭代。",
     )
     render_page_hero(
         "农民工维权入口",
-        "操作保持简洁，重点信息放大显示。输入案情后即可通过标准接口完成分析、文书生成与后台提交。",
-        ["大字高亮", "接口解耦", "按钮清晰"],
+        "围绕真实办案流程组织采集字段，确保前端输入可直接进入分析、文书生成与检察院协同流程。",
+        ["流程闭环", "字段规范", "接口稳定"],
     )
-    render_emphasis("答辩讲解可直接强调：展示层不再直连本地核心模块，系统边界更清晰。")
+    render_emphasis("当前页面支持从线索采集到后台流转的全流程闭环。")
 
     left_col, right_col = st.columns([1.1, 1])
 
@@ -1042,7 +1372,7 @@ def render_user_view() -> None:
         base_col1.text_input("姓名", key="worker_name", placeholder="例如：张某")
         base_col2.text_input("联系电话", key="worker_phone", placeholder="例如：13800000000")
         base_col3, base_col4 = st.columns(2)
-        base_col3.text_input("身份证号码", key="worker_id_number", placeholder="演示可留空")
+        base_col3.text_input("身份证号码", key="worker_id_number", placeholder="可选填")
         base_col4.selectbox("性别", options=["未填写", "男", "女"], key="worker_gender")
         base_col5, base_col6 = st.columns(2)
         base_col5.text_input("出生日期", key="worker_birth_date", placeholder="例如：1990-01-01")
@@ -1053,18 +1383,42 @@ def render_user_view() -> None:
         clue_col1, clue_col2 = st.columns(2)
         clue_col1.selectbox("工作领域", options=["工程建设领域", "非工程建设领域"], key="employment_sector")
         clue_col2.text_input("拖欠工资单位名称", key="employer_name", placeholder="例如：某建筑劳务公司")
+        clue_col11, clue_col12 = st.columns(2)
+        clue_col11.selectbox("工资结算方式", options=["日结", "月结", "计件", "完工结"], key="payment_method")
+        clue_col12.selectbox("后续是否仍在原单位就业", options=["是", "否"], key="still_employed")
+        clue_col13, clue_col14, clue_col15 = st.columns(3)
+        clue_col13.selectbox("调解情况", options=["未进行", "进行中", "已完成"], key="mediation_status")
+        clue_col14.selectbox("调解意愿", options=["愿意调解", "不愿调解", "待定"], key="mediation_willingness")
+        clue_col15.selectbox("劳动争议仲裁情况", options=["未进行", "申请中", "已裁决"], key="arbitration_status")
         clue_col3, clue_col4 = st.columns(2)
-        clue_col3.text_input("拖欠工资单位电话", key="employer_phone", placeholder="演示可留空")
+        clue_col3.text_input("拖欠工资单位电话", key="employer_phone", placeholder="可选填")
         clue_col4.text_input("实际工作地址", key="work_address", placeholder="例如：某区某工地")
+        locate_col1, locate_col2, locate_col3 = st.columns(3)
+        if locate_col1.button("自动定位填充", use_container_width=True):
+            st.session_state["work_address"] = st.session_state["work_address"] or "北京市海淀区中关村街道XX工地"
+            st.session_state["work_latitude"] = "39.9834"
+            st.session_state["work_longitude"] = "116.3229"
+        locate_col2.text_input("纬度（自动填充）", key="work_latitude")
+        locate_col3.text_input("经度（自动填充）", key="work_longitude")
         clue_col5, clue_col6 = st.columns(2)
         clue_col5.text_input("从事工种/工作内容", key="job_title", placeholder="例如：木工")
-        clue_col6.text_input("主张金额（元）", key="amount_claimed", placeholder="例如：24000")
+        clue_col6.number_input("主张金额", min_value=0.0, step=100.0, key="amount_claimed_number")
+        unit_col1, unit_col2, unit_col3 = st.columns(3)
+        unit_col1.number_input("总工作时长（天）", min_value=0, step=1, key="employment_days")
+        unit_col2.number_input("欠薪涉及人数", min_value=1, step=1, key="unpaid_worker_count")
+        unit_col3.selectbox("金额单位", options=["元", "万元"], key="wage_unit")
         clue_col7, clue_col8 = st.columns(2)
-        clue_col7.text_input("工作开始时间", key="work_start_date", placeholder="例如：2025-09")
-        clue_col8.text_input("工作结束时间", key="work_end_date", placeholder="例如：2026-01")
+        clue_col7.date_input("工作开始时间", key="work_start_date")
+        clue_col8.date_input("工作结束时间", key="work_end_date")
         clue_col9, clue_col10 = st.columns(2)
-        clue_col9.text_input("欠薪起始时间", key="unpaid_start", placeholder="例如：2025-11")
-        clue_col10.text_input("欠薪截止时间", key="unpaid_end", placeholder="例如：2026-01")
+        clue_col9.date_input("欠薪起始时间", key="unpaid_start")
+        clue_col10.date_input("欠薪截止时间", key="unpaid_end")
+        if st.session_state["employment_sector"] == "工程建设领域":
+            st.caption("工程建设领域补充信息（条件渲染）")
+            eng_col1, eng_col2, eng_col3 = st.columns(3)
+            eng_col1.text_input("施工总承包单位", key="contractor_name", placeholder="可从维权告示牌获取")
+            eng_col2.text_input("分包单位", key="subcontractor_name", placeholder="可选填")
+            eng_col3.text_input("担保方", key="guarantor_name", placeholder="可选填")
         st.text_area(
             "欠薪基本情况概要",
             key="case_description",
@@ -1091,6 +1445,14 @@ def render_user_view() -> None:
             height=120,
             placeholder="身份证明\n考勤记录或工作记录\n工作照片",
         )
+        uploaded_files = st.file_uploader(
+            "上传证据材料（图片/文档/音视频）",
+            accept_multiple_files=True,
+            type=["png", "jpg", "jpeg", "pdf", "doc", "docx", "mp4", "mp3", "wav", "txt"],
+        )
+        st.session_state["uploaded_evidence_names"] = [file.name for file in (uploaded_files or [])]
+        if st.session_state["uploaded_evidence_names"]:
+            st.caption("已选择文件：" + "；".join(st.session_state["uploaded_evidence_names"]))
         with st.expander("补充事实（JSON，可选）"):
             st.text_area(
                 "用于增强文书生成上下文，例如 worker_name / company_name / amount",
@@ -1111,8 +1473,13 @@ def render_user_view() -> None:
 
     action_report: dict[str, Any] | None = None
     if analyze_clicked or generate_clicked or submit_clicked:
+        st.session_state["amount_claimed"] = str(int(st.session_state.get("amount_claimed_number", 0)))
         if not st.session_state["worker_name"].strip() or not st.session_state["worker_phone"].strip():
             st.warning("请至少填写劳动者姓名和联系电话。")
+        elif not is_valid_phone(st.session_state["worker_phone"].strip()):
+            st.warning("联系电话格式有误，请填写11位手机号或固定电话。")
+        elif st.session_state["employer_phone"].strip() and not is_valid_phone(st.session_state["employer_phone"].strip()):
+            st.warning("单位联系电话格式有误，请检查后重试。")
         elif not st.session_state["employer_name"].strip() or not st.session_state["case_description"].strip():
             st.warning("请填写拖欠工资单位名称和欠薪基本情况概要。")
         else:
@@ -1125,12 +1492,16 @@ def render_user_view() -> None:
                 action_report = build_analysis(payload["description"], payload["provided_evidence"], payload["facts"])
                 if action_report:
                     st.session_state["analysis_report"] = action_report
+                if analyze_clicked and not generate_clicked:
+                    st.session_state["generated_document"] = None
+                    st.session_state["last_action"] = "analysis"
                 if generate_clicked and action_report:
                     st.session_state["generated_document"] = build_document(
                         action_report,
                         st.session_state["selected_template"],
                         payload["facts"],
                     )
+                    st.session_state["last_action"] = "document"
                 if submit_clicked:
                     st.session_state["last_submission"] = safe_post(
                         "/cases/submit",
@@ -1144,13 +1515,21 @@ def render_user_view() -> None:
                             "evidence_catalog": payload["evidence_catalog"],
                         },
                     )
+                    st.session_state["last_action"] = "submit"
 
     analysis_report = st.session_state.get("analysis_report")
     generated_document = st.session_state.get("generated_document")
     last_submission = st.session_state.get("last_submission")
 
     with right_col:
-        section_intro("结果展示区", "分析结论、重点指标和文书预览统一放在右侧，便于答辩时快速说明。")
+        section_intro("结果输出区", "分析结论、风险指标和文书预览统一呈现，便于业务办理和研判复核。")
+        last_action = st.session_state.get("last_action", "")
+        if last_action == "analysis":
+            st.info("当前展示为：分析结果（未生成文书）。")
+        elif last_action == "document":
+            st.info("当前展示为：文书结果（基于最新分析生成）。")
+        elif last_action == "submit":
+            st.info("当前展示为：提交结果（已写入检察院后台）。")
         if last_submission:
             st.success(
                 f"案件已进入检察后台：{last_submission['submission_id']} | "
@@ -1185,6 +1564,7 @@ def render_user_view() -> None:
         metric_col2.metric("风险等级", assessment["level"])
         metric_col3.metric("风险分数", assessment["score"])
 
+        st.subheader("分析输出")
         st.write("**结构化字段**")
         st.table(
             [
@@ -1220,6 +1600,7 @@ def render_user_view() -> None:
 
         render_route_cards(build_route_recommendations(analysis_report, last_submission))
 
+        st.subheader("文书输出")
         st.write("**文书预览**")
         if generated_document:
             st.code(generated_document["document_text"], language="text")
@@ -1242,16 +1623,16 @@ def render_user_view() -> None:
 
 
 def render_admin_view() -> None:
-    render_demo_banner(
-        "检察后台展示模式",
-        "后台页只读取聚合后的接口结果，适合在答辩时说明系统已经具备前后端分层、接口复用和后续部署扩展能力。",
+    render_status_banner(
+        "检察业务后台",
+        "后台聚合案件状态、风险分布、补证建议与评估操作，支持案件分流、协同处置与持续运营。",
     )
     render_page_hero(
         "检察院决策后台",
-        "采用更醒目的数据指标和更克制的页面结构，便于快速查看重点案件与风险分布。",
-        ["数据更聚焦", "高亮指标", "前后端分层"],
+        "围绕办案优先级和证据质量建立可视化工作台，提升线索转化效率与处置一致性。",
+        ["风险分层", "状态跟踪", "协同处置"],
     )
-    render_emphasis("答辩提示：当前后台展示只依赖 API 聚合数据，不依赖页面本地业务逻辑。")
+    render_emphasis("后台数据与前端页面解耦，支持后续部署扩展与多端复用。")
 
     dashboard = safe_get("/prosecutor/dashboard", {"items": []})
     rows = build_case_rows(dashboard.get("items", []))
@@ -1260,8 +1641,8 @@ def render_admin_view() -> None:
         st.info("当前还没有提交案件。")
         return
 
-    section_intro("案件概览", "保留关键筛选和统计信息，减少页面装饰性干扰。")
-    threshold = st.slider("证据分数阈值（展示 > 当前值的重点案件）", min_value=0, max_value=100, value=80)
+    section_intro("办案总览", "先看全局态势，再进入个案研判与处置操作。")
+    threshold = st.slider("证据分数阈值（筛选 > 当前值的重点案件）", min_value=0, max_value=100, value=0)
     filtered_rows = [row for row in rows if row["证据分数"] > threshold]
 
     metric_col1, metric_col2, metric_col3 = st.columns(3)
@@ -1272,14 +1653,24 @@ def render_admin_view() -> None:
     st.write("**案件汇总表**")
     st.dataframe(filtered_rows or rows, use_container_width=True, hide_index=True)
 
+    submissions_payload = safe_get("/cases/submissions", {"items": []})
+    submissions = submissions_payload.get("items", [])
+    analytics = build_warning_dashboard_data(dashboard.get("items", []), submissions)
+    render_warning_dashboard(analytics, len(rows))
+
+    st.divider()
+    st.subheader("个案研判")
     available_ids = [item["submission_id"] for item in dashboard.get("items", [])]
     if available_ids and st.session_state["selected_submission_id"] not in available_ids:
         st.session_state["selected_submission_id"] = available_ids[0]
 
-    st.write("**案件研判与反馈**")
+    st.write("**选择案件并处理**")
     st.selectbox("选择案件", options=available_ids, key="selected_submission_id")
     selected_case = safe_get(f"/cases/{st.session_state['selected_submission_id']}", {})
-    sync_review_state(selected_case)
+    current_submission_id = st.session_state.get("selected_submission_id", "")
+    if current_submission_id and current_submission_id != st.session_state.get("_review_synced_submission_id", ""):
+        sync_review_state(selected_case)
+        st.session_state["_review_synced_submission_id"] = current_submission_id
 
     if selected_case:
         detail_col1, detail_col2 = st.columns(2)
@@ -1308,7 +1699,7 @@ def render_admin_view() -> None:
             ]
         )
 
-        st.write("**前置救济核验**")
+        st.write("**第一步：前置救济核验**")
         relief_col1, relief_col2, relief_col3, relief_col4 = st.columns(4)
         relief_col1.checkbox("已走劳动监察", key="review_relief_labor_complaint")
         relief_col2.checkbox("已申请仲裁", key="review_relief_labor_arbitration")
@@ -1321,7 +1712,7 @@ def render_admin_view() -> None:
             placeholder="例如：已拨打12333并登记，但尚未形成实质处理结果；当事人暂无仲裁能力。",
         )
 
-        st.write("**类型化评估**")
+        st.write("**第二步：类型化评估**")
         review_col1, review_col2, review_col3 = st.columns(3)
         review_col1.selectbox(
             "案件状态",
@@ -1350,11 +1741,11 @@ def render_admin_view() -> None:
             key="review_prosecution_case_type",
         )
 
-        st.write("**证据调取与补证建议**")
+        st.write("**第三步：补证建议**")
         evidence_advice = build_evidence_advice(selected_case)
         st.table(evidence_advice)
 
-        st.write("**按模板检查文书缺失字段**")
+        st.write("**第四步：文书准备与字段补录**")
         st.selectbox(
             "检察院端文书模板",
             options=list(TEMPLATE_LABELS.keys()),
@@ -1440,7 +1831,7 @@ def render_admin_view() -> None:
             st.code(prosecutor_document_preview["document_text"], language="text")
             render_field_checklist(prosecutor_document_preview.get("field_checklist", {}))
 
-        st.write("**检察院评估操作**")
+        st.write("**第五步：评估结论与回传**")
         st.text_area(
             "检察院内部研判意见",
             key="review_prosecutor_note",
@@ -1482,19 +1873,7 @@ def render_admin_view() -> None:
             for item in selected_case["feedback_messages"]:
                 st.write(f"- {item['sent_at']} | {item['message']}")
 
-    chart_source = filtered_rows or rows
-    risk_counts = Counter(row["风险等级"] for row in chart_source)
-    chart_data = [
-        {"风险等级": level, "案件数量": risk_counts.get(level, 0)}
-        for level in ["高风险", "中风险", "低风险"]
-        if risk_counts.get(level, 0) > 0
-    ]
-
-    st.write("**风险等级分布**")
-    if chart_data:
-        st.bar_chart(chart_data, x="风险等级", y="案件数量")
-    else:
-        st.info("当前筛选条件下没有可展示的风险分布数据。")
+    # 删除重复且解释价值低的风险等级小图，避免干扰主看板与个案操作链路。
 
 
 def main() -> None:
@@ -1504,7 +1883,7 @@ def main() -> None:
     render_global_styles()
 
     st.title("农民工权益保障智能平台")
-    st.caption("页面风格已调整为简洁、大字、高亮重点，并已改为通过后端 API 驱动展示。")
+    st.caption("系统当前以 API 为核心驱动方式，支持稳定运行、功能扩展与跨端复用。")
 
     view = render_sidebar()
     if view == VIEW_USER:
