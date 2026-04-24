@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+import base64
 import json
+import re
 import os
 import sys
 from collections import Counter
@@ -94,6 +96,7 @@ PERSISTED_STATE_KEYS = (
 )
 
 DATE_STATE_KEYS = {
+    "worker_birth_date",
     "work_start_date",
     "work_end_date",
     "unpaid_start",
@@ -464,68 +467,68 @@ def render_emphasis(text: str) -> None:
 
 def init_state() -> None:
     defaults = {
-        "case_title": "",
-        "case_description": "",
-        "evidence_text": "",
-        "facts_json": "{}",
+        "case_title": "某建筑工地欠薪纠纷",
+        "case_description": "本人于2023年5月1日至2024年2月28日在某建筑劳务公司从事木工工作，自2024年1月1日开始被拖欠工资，目前共被拖欠工资约50000元。与用人单位多次协商未果，现向检察机关申请支持起诉。",
+        "evidence_text": "身份证复印件\n劳动合同（口头约定）\n工地考勤表照片\n与工头的微信聊天记录\n银行转账凭证（预付款5000元）\n工友证人证言",
+        "facts_json": "{\"company_credit_code\": \"91110000MA00XXXXX\", \"company_legal_rep\": \"王某\", \"has_contract\": false}",
         "selected_template": "support_prosecution_application",
         "analysis_report": None,
         "generated_document": None,
         "last_submission": None,
         "sample_choice": "手动输入",
         "api_base_url": DEFAULT_API_BASE_URL,
-        "worker_name": "",
-        "worker_id_number": "",
-        "worker_phone": "",
-        "worker_gender": "未填写",
-        "worker_birth_date": "",
-        "worker_ethnicity": "",
-        "worker_address": "",
+        "worker_name": "张三",
+        "worker_id_number": "110101199001011234",
+        "worker_phone": "13800138000",
+        "worker_gender": "男",
+        "worker_birth_date": None,
+        "worker_ethnicity": "汉族",
+        "worker_address": "四川省成都市武侯区某街道",
         "employment_sector": "工程建设领域",
-        "employer_name": "",
-        "employer_phone": "",
-        "work_address": "",
-        "job_title": "",
-        "work_start_date": "",
-        "work_end_date": "",
-        "unpaid_start": "",
-        "unpaid_end": "",
-        "amount_claimed": "",
-        "required_evidence_selected": [],
-        "practical_evidence_selected": [],
+        "employer_name": "某建筑劳务有限公司",
+        "employer_phone": "010-12345678",
+        "work_address": "北京市朝阳区某工地",
+        "job_title": "木工",
+        "work_start_date": None,
+        "work_end_date": None,
+        "unpaid_start": None,
+        "unpaid_end": None,
+        "amount_claimed": "50000",
+        "required_evidence_selected": ["劳动合同", "工资清单"],
+        "practical_evidence_selected": ["聊天记录"],
         "selected_submission_id": "",
         "review_case_status": "已受理，待检察评估",
         "review_mediation_priority": "待评估",
         "review_prosecution_necessity": "待评估",
-        "review_prosecutor_note": "",
-        "review_user_message": "",
-        "review_relief_labor_complaint": False,
+        "review_prosecutor_note": "经查，劳动者举证充分，用人单位未依法支付劳动报酬，建议支持起诉。",
+        "review_user_message": "检察机关已受理您的案件申请。建议您补充完整的聊天记录和考勤证据。如有后续变化，请及时反馈。",
+        "review_relief_labor_complaint": True,
         "review_relief_labor_arbitration": False,
         "review_relief_legal_aid": False,
         "review_relief_union_or_street_help": False,
-        "review_relief_note": "",
+        "review_relief_note": "已拨打12333并登记，待处理中。",
         "review_mediation_case_type": "未分类",
-        "review_prosecution_case_type": "未分类",
-        "qa_question": "",
+        "review_prosecution_case_type": "恶意欠薪型",
+        "qa_question": "老板拖欠我三个月工资，没有签书面合同，只有微信聊天记录和考勤照片，我该怎么办？",
         "qa_answer": None,
         "query_submission_id": "",
         "queried_case": None,
         "prosecutor_template_choice": "support_prosecution_opinion_non_construction",
         "prosecutor_document_preview": None,
-        "patch_company_credit_code": "",
-        "patch_company_address": "",
-        "patch_company_legal_rep": "",
-        "patch_company_phone": "",
-        "patch_direct_employer_name": "",
-        "patch_direct_employer_id_number": "",
-        "patch_contractor_name": "",
-        "patch_subcontractor_name": "",
-        "patch_guarantor_name": "",
-        "patch_employment_days": "",
-        "patch_wage_rate": "",
-        "patch_wage_calculation": "",
-        "patch_court_name": "",
-        "patch_procuratorate_name": "",
+        "patch_company_credit_code": "91110000MA00XXXXX",
+        "patch_company_address": "北京市朝阳区某街道某号",
+        "patch_company_legal_rep": "王某",
+        "patch_company_phone": "010-12345678",
+        "patch_direct_employer_name": "李某（工头）",
+        "patch_direct_employer_id_number": "110101198501012222",
+        "patch_contractor_name": "某大型建筑集团有限公司",
+        "patch_subcontractor_name": "某劳务分包公司",
+        "patch_guarantor_name": "某保证公司",
+        "patch_employment_days": "240",
+        "patch_wage_rate": "150元/天",
+        "patch_wage_calculation": "日结制，按实际工作天数计算",
+        "patch_court_name": "北京市朝阳区人民法院",
+        "patch_procuratorate_name": "北京市朝阳区人民检察院",
     }
     for key, value in defaults.items():
         st.session_state.setdefault(key, value)
@@ -549,14 +552,48 @@ def restore_state_from_query_params() -> None:
 
     for key in PERSISTED_STATE_KEYS:
         if key in restored_state and key not in st.session_state:
-            st.session_state[key] = restored_state[key]
+            value = restored_state[key]
+            # 处理日期字段
+            if key in DATE_STATE_KEYS:
+                value = parse_date_value(value)
+            st.session_state[key] = value
 
 
 def persist_state_to_query_params() -> None:
-    state_payload = {key: st.session_state.get(key) for key in PERSISTED_STATE_KEYS}
+    state_payload = {}
+    for key in PERSISTED_STATE_KEYS:
+        value = st.session_state.get(key)
+        # 将date对象转换为ISO字符串
+        if key in DATE_STATE_KEYS and value is not None:
+            try:
+                value = value.isoformat()
+            except AttributeError:
+                pass
+        state_payload[key] = value
     serialized = json.dumps(state_payload, ensure_ascii=False, separators=(",", ":"))
     encoded_state = base64.urlsafe_b64encode(serialized.encode("utf-8")).decode("utf-8")
     st.query_params["state"] = encoded_state
+
+
+def parse_date_value(value: Any) -> Any:
+    """将字符串转换为date对象，如果为空则返回None"""
+    if value is None or value == "":
+        return None
+    if isinstance(value, str):
+        try:
+            from datetime import datetime
+            # 尝试ISO格式
+            return datetime.strptime(value, "%Y-%m-%d").date()
+        except (ValueError, TypeError):
+            return None
+    return value
+
+
+def is_valid_phone(phone: str) -> bool:
+    """校验手机号（11位数字）或固定电话（带或不带区号，如 010-12345678）"""
+    # 匹配 11位手机号 或 3-4位区号-7-8位直播号 或 7-8位直播号
+    pattern = r'^1\d{10}$|^(\d{3,4}-)?\d{7,8}$'
+    return bool(re.match(pattern, phone))
 
 
 def load_sample_into_state(sample: dict[str, Any]) -> None:
@@ -570,8 +607,8 @@ def load_sample_into_state(sample: dict[str, Any]) -> None:
     st.session_state["employment_sector"] = str(sample.get("employment_sector", "工程建设领域"))
     st.session_state["employer_name"] = str(facts.get("company_name", ""))
     st.session_state["job_title"] = str(facts.get("job_title", ""))
-    st.session_state["work_start_date"] = str(facts.get("start_date", ""))
-    st.session_state["work_end_date"] = str(facts.get("end_date", ""))
+    st.session_state["work_start_date"] = parse_date_value(facts.get("start_date"))
+    st.session_state["work_end_date"] = parse_date_value(facts.get("end_date"))
     st.session_state["amount_claimed"] = str(facts.get("amount", ""))
     st.session_state["required_evidence_selected"] = [item for item in sample.get("provided_evidence", []) if item in REQUIRED_EVIDENCE_OPTIONS]
     st.session_state["practical_evidence_selected"] = [item for item in sample.get("provided_evidence", []) if item in PRACTICAL_EVIDENCE_OPTIONS]
@@ -594,10 +631,10 @@ def build_structured_payload(extra_facts: dict[str, Any]) -> dict[str, Any]:
     worker_name = st.session_state["worker_name"].strip()
     employer_name = st.session_state["employer_name"].strip()
     amount_claimed = st.session_state["amount_claimed"].strip()
-    work_start_date = st.session_state["work_start_date"].strip()
-    work_end_date = st.session_state["work_end_date"].strip()
-    unpaid_start = st.session_state["unpaid_start"].strip()
-    unpaid_end = st.session_state["unpaid_end"].strip()
+    work_start_date = str(st.session_state["work_start_date"]) if st.session_state["work_start_date"] else ""
+    work_end_date = str(st.session_state["work_end_date"]) if st.session_state["work_end_date"] else ""
+    unpaid_start = str(st.session_state["unpaid_start"]) if st.session_state["unpaid_start"] else ""
+    unpaid_end = str(st.session_state["unpaid_end"]) if st.session_state["unpaid_end"] else ""
     job_title = st.session_state["job_title"].strip()
     work_address = st.session_state["work_address"].strip()
     required_evidence = list(st.session_state["required_evidence_selected"])
@@ -609,7 +646,7 @@ def build_structured_payload(extra_facts: dict[str, Any]) -> dict[str, Any]:
         "id_number": st.session_state["worker_id_number"].strip(),
         "phone": st.session_state["worker_phone"].strip(),
         "gender": st.session_state["worker_gender"],
-        "birth_date": st.session_state["worker_birth_date"].strip(),
+        "birth_date": str(st.session_state["worker_birth_date"]) if st.session_state["worker_birth_date"] else "",
         "ethnicity": st.session_state["worker_ethnicity"].strip(),
         "address": st.session_state["worker_address"].strip(),
     }
@@ -635,7 +672,7 @@ def build_structured_payload(extra_facts: dict[str, Any]) -> dict[str, Any]:
         **extra_facts,
         "worker_name": worker_name or extra_facts.get("worker_name", ""),
         "worker_gender": st.session_state["worker_gender"] if st.session_state["worker_gender"] != "未填写" else extra_facts.get("worker_gender", ""),
-        "worker_birth_date": st.session_state["worker_birth_date"].strip() or extra_facts.get("worker_birth_date", ""),
+        "worker_birth_date": (str(st.session_state["worker_birth_date"]) if st.session_state["worker_birth_date"] else "") or extra_facts.get("worker_birth_date", ""),
         "worker_ethnicity": st.session_state["worker_ethnicity"].strip() or extra_facts.get("worker_ethnicity", ""),
         "worker_id_number": st.session_state["worker_id_number"].strip() or extra_facts.get("worker_id_number", ""),
         "worker_address": st.session_state["worker_address"].strip() or extra_facts.get("worker_address", ""),
@@ -826,7 +863,7 @@ def render_route_cards(routes: list[dict[str, str]]) -> None:
 
 
 def render_qa_panel() -> None:
-    section_intro("智能法律咨询", "围绕欠薪、未签合同、工伤等高频问题给出通俗化建议，便于答辩时展示平台的咨询能力。")
+    section_intro("智能法律咨询", "围绕欠薪、未签合同、工伤等高频问题给出通俗化建议。")
     st.text_area(
         "输入法律问题",
         key="qa_question",
@@ -1026,21 +1063,16 @@ def render_sidebar() -> str:
 
 
 def render_user_view() -> None:
-    render_demo_banner(
-        "答辩展示模式",
-        "当前页面已与核心算法模块解耦，前端只负责展示与交互，分析结果统一由后端接口返回，更适合现场演示、系统分层讲解与架构答辩。",
-    )
     render_page_hero(
         "农民工维权入口",
         "操作保持简洁，重点信息放大显示。输入案情后即可通过标准接口完成分析、文书生成与后台提交。",
         ["大字高亮", "接口解耦", "按钮清晰"],
     )
-    render_emphasis("答辩讲解可直接强调：展示层不再直连本地核心模块，系统边界更清晰。")
 
     left_col, right_col = st.columns([1.1, 1])
 
     with left_col:
-        section_intro("填写案件信息", "页面已自动填入一组示例信息，可直接修改、分析、生成文书或提交后台。")
+        section_intro("填写案件信息", "所有字段已自动填入示例数据，您可直接修改、分析、生成文书或提交后台。")
         st.text_input("案件标题（可选）", key="case_title", placeholder="例如：工地欠薪三个月")
 
         st.write("**一、劳动者基本信息**")
@@ -1198,7 +1230,7 @@ def render_user_view() -> None:
     last_submission = st.session_state.get("last_submission")
 
     with right_col:
-        section_intro("结果展示区", "分析结论、重点指标和文书预览统一放在右侧，便于答辩时快速说明。")
+        section_intro("结果展示区", "分析结论、重点指标和文书预览统一放在右侧，提供快速决策支持。")
         if last_submission:
             st.success(
                 f"案件已进入检察后台：{last_submission['submission_id']} | "
@@ -1232,20 +1264,20 @@ def render_user_view() -> None:
             metric_col2.metric("风险等级", assessment["level"])
             metric_col3.metric("风险分数", assessment["score"])
 
-        st.write("**结构化字段**")
-        st.table(
-            [
-                {
-                    "劳动者": structured["worker_name"],
-                    "用工主体": structured["employer_name"],
-                    "纠纷类型": structured["issue_type"],
-                    "涉案金额(元)": structured["amount_claimed"] or "待补充",
-                    "欠薪时长(月)": structured["unpaid_duration_months"] or "待补充",
-                    "是否签合同": "已签" if structured["has_contract"] is True else "未签" if structured["has_contract"] is False else "未知",
-                    "是否工伤": "是" if structured["injury_occurred"] else "否",
-                }
-            ]
-        )
+            st.write("**结构化字段**")
+            st.table(
+                [
+                    {
+                        "劳动者": structured["worker_name"],
+                        "用工主体": structured["employer_name"],
+                        "纠纷类型": structured["issue_type"],
+                        "涉案金额(元)": structured["amount_claimed"] or "待补充",
+                        "欠薪时长(月)": structured["unpaid_duration_months"] or "待补充",
+                        "是否签合同": "已签" if structured["has_contract"] is True else "未签" if structured["has_contract"] is False else "未知",
+                        "是否工伤": "是" if structured["injury_occurred"] else "否",
+                    }
+                ]
+            )
 
             if structured["extraction_notes"]:
                 st.write("**抽取提示**")
@@ -1267,20 +1299,20 @@ def render_user_view() -> None:
 
             render_route_cards(build_route_recommendations(analysis_report, last_submission))
 
-        st.write("**文书预览**")
-        if generated_document:
-            st.code(generated_document["document_text"], language="text")
-            render_field_checklist(generated_document.get("field_checklist", {}))
-            file_stem = st.session_state["case_title"].strip() or structured["issue_type"]
-            st.download_button(
-                "下载文书 .txt",
-                data=generated_document["document_text"],
-                file_name=f"{file_stem}_{generated_document['document_type']}.txt",
-                mime="text/plain",
-                use_container_width=True,
-            )
-        else:
-            st.info("点击“生成文书”后可在这里预览并下载文本版文书。")
+            st.write("**文书预览**")
+            if generated_document:
+                st.code(generated_document["document_text"], language="text")
+                render_field_checklist(generated_document.get("field_checklist", {}))
+                file_stem = st.session_state["case_title"].strip() or structured["issue_type"]
+                st.download_button(
+                    "下载文书 .txt",
+                    data=generated_document["document_text"],
+                    file_name=f"{file_stem}_{generated_document['document_type']}.txt",
+                    mime="text/plain",
+                    use_container_width=True,
+                )
+            else:
+                st.info("点击“生成文书”后可在这里预览并下载文本版文书。")
 
     st.divider()
     render_qa_panel()
@@ -1289,16 +1321,11 @@ def render_user_view() -> None:
 
 
 def render_admin_view() -> None:
-    render_demo_banner(
-        "检察后台展示模式",
-        "后台页只读取聚合后的接口结果，适合在答辩时说明系统已经具备前后端分层、接口复用和后续部署扩展能力。",
-    )
     render_page_hero(
         "检察院决策后台",
         "采用更醒目的数据指标和更克制的页面结构，便于快速查看重点案件与风险分布。",
         ["数据更聚焦", "高亮指标", "前后端分层"],
     )
-    render_emphasis("答辩提示：当前后台展示只依赖 API 聚合数据，不依赖页面本地业务逻辑。")
 
     dashboard = safe_get("/prosecutor/dashboard", {"items": []})
     rows = build_case_rows(dashboard.get("items", []))
@@ -1321,8 +1348,6 @@ def render_admin_view() -> None:
 
     submissions_payload = safe_get("/cases/submissions", {"items": []})
     submissions = submissions_payload.get("items", [])
-    analytics = build_warning_dashboard_data(dashboard.get("items", []), submissions)
-    render_warning_dashboard(analytics, len(rows))
 
     st.divider()
     st.subheader("个案研判")
